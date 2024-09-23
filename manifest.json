@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+  "name": "scraper",
+  "version": "1.0",
+
+  "description": "Scrap the content you need to audit.",
+
+  "icons": {
+    "48": "icons/border-48.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["scraper_client.js"]
+    }
+  ]
+}
