@@ -1,4 +1,4 @@
-package request
+package api
 
 import (
 	"fmt"
@@ -22,4 +22,11 @@ func GetRoot(w http.ResponseWriter, r *http.Request) {
 		has_second, second)
 
 	io.WriteString(w, "Hello scraper\n")
+}
+
+
+func HandleDB(w http.ResponseWriter, r *http.Request) {
+	url := r.URL
+	fmt.Println(url.Hostname())		
+	io.WriteString(w, "It's Me\n")
 }
