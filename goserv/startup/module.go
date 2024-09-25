@@ -36,21 +36,21 @@ func (m *module) GetInstance() *module {
 
 func (m *module) Controllers() []network.Controller {
 	return []network.Controller {
-		auth.NewController(m.AuthenticationProvider(), m.AuthorizationProvider(), m.AuthService)
-		user.NewController(m.AuthenticationProvider(), m.AuthorizationProvider(), m.UserService)
-		blog.NewController(m.AuthenticationProvider(), m.AuthorizationProvider(), m.UserService)
+		auth.NewController(m.AuthenticationProvider(), m.AuthorizationProvider(), m.AuthService),
+		user.NewController(m.AuthenticationProvider(), m.AuthorizationProvider(), m.UserService),
+		blog.NewController(m.AuthenticationProvider(), m.AuthorizationProvider(), m.BlogService),
 		author.NewController(m.AuthenticationProvider(), m.AuthorizationProvider(), author.NewService(m.DB, m.BlogService)),
-		editor.NewController(m.AuthenticationProvider(), m.AuthorizationProvider(), editor.NewService(m.DB, m.BlogService)),
+		editor.NewController(m.AuthenticationProvider(), m.AuthorizationProvider(), editor.NewService(m.DB, m.UserService)),
 		blogs.NewController(m.AuthenticationProvider(), m.AuthorizationProvider(), blogs.NewService(m.DB, m.Store)),
-		contact.NewController(m.AuthenticationProvider(), m.AuthorizationProvider(), contact.NewService(m.DB, m.Store))
+		contact.NewController(m.AuthenticationProvider(), m.AuthorizationProvider(), contact.NewService(m.DB)),
 	}
 }
 
 func (m *module) RootMiddlewares() []network.RootMiddleware {
-	return []network.Controller {
+	return []network.RootMiddleware {
 		coreMW.NewErrorCatcher(), // Has to be first to be mounted
 		authMW.NewKeyProtection(m.AuthService),
-		coreMW.NewNotFound()
+		coreMW.NewNotFound(),
 	}
 }
 
@@ -74,6 +74,6 @@ func NewModule(context context.Context, env *config.Env, db mongo.Database, stor
 		Store:       store,
 		UserService: userService,
 		AuthService: authService,
-		BlogService: blogService
+		BlogService: blogService,
 	}
 }

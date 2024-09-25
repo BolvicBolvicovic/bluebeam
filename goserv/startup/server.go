@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 	
-	"github.com/gin-gonic/gin"
+//	"github.com/gin-gonic/gin"
 	"github.com/unusualcodeorg/goserve/arch/mongo"
 	"github.com/unusualcodeorg/goserve/arch/network"
 	"github.com/unusualcodeorg/goserve/arch/redis"
@@ -24,31 +24,31 @@ func create(env *config.Env) (network.Router, Module, Shutdown) {
 	ctx		:= context.Background()
 	dbConf	:= mongo.DbConfig {
 		User:		env.DBUser,
-		Pwd :		env.DBPwd,
+		Pwd :		env.DBUserPwd,
 		Host:		env.DBHost,
 		Port:		env.DBPort,
 		Name:		env.DBName,
 		MinPoolSize:env.DBMinPoolSize,
 		MaxPoolSize:env.DBMaxPoolSize,
-		Timeout:	env.DBTimeout
+		Timeout:	time.Duration(env.DBQueryTimeout) * time.Second,
 	}
 
-	db := mongo.NewDatabase(context, dbConf)
+	db := mongo.NewDatabase(ctx, dbConf)
 	db.Connect()
 
-	if env.GoMode != gin.TestMode { EnsureDbIndexes(db) }
+	//if env.GoMode != gin.TestMode { EnsureDbIndexes(db) }
 
 	redisConf := redis.Config {
 		Host:	env.RedisHost,
-		Post:	env.RedisPort,
+		Port:	env.RedisPort,
 		Pwd :	env.RedisPwd,
-		DB	:	env.RedisDB
+		DB	:	env.RedisDB,
 	}
 
-	store := redis.NewStore(context, &redisConfig)
+	store := redis.NewStore(ctx, &redisConf)
 	store.Connect()
 
-	module := NewModule(context, env, db, store)
+	module := NewModule(ctx, env, db, store)
 
 	router := network.NewRouter(env.GoMode)
 	router.RegisterValidationParsers(network.CustomTagNameFunc())
