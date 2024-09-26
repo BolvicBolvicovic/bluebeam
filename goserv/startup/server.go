@@ -1,64 +1,53 @@
 package startup
 
 import (
-	"context"
-	"time"
-	
-//	"github.com/gin-gonic/gin"
-	"github.com/unusualcodeorg/goserve/arch/mongo"
-	"github.com/unusualcodeorg/goserve/arch/network"
-	"github.com/unusualcodeorg/goserve/arch/redis"
-	"github.com/unusualcodeorg/goserve/config"
+	"database/sql"
+	"net/http"
+	"github.com/gin-gonic/gin"
+	"github.com/BolvicBolvicovic/scraper/config"
+	_ "github.com/go-sql-driver/mysql"
+	"fmt"
+	"log"
 )
 
 type Shutdown = func()
 
+var db *sql.DB
+
 func Server() {
 	env := config.NewEnv(".env", true)
-	router, _, shutdown := create(env)
+	router, addr, shutdown := create(env)
 	defer shutdown()
-	router.Start(env.ServerHost, env.ServerPort)
+	fmt.Printf("Launching server on: %v:%v\n", env.ServerHost, env.ServerPort)
+	http.ListenAndServe(addr, router)
 }
 
-func create(env *config.Env) (network.Router, Module, Shutdown) {
-	ctx		:= context.Background()
-	dbConf	:= mongo.DbConfig {
-		User:		env.DBUser,
-		Pwd :		env.DBUserPwd,
-		Host:		env.DBHost,
-		Port:		env.DBPort,
-		Name:		env.DBName,
-		MinPoolSize:env.DBMinPoolSize,
-		MaxPoolSize:env.DBMaxPoolSize,
-		Timeout:	time.Duration(env.DBQueryTimeout) * time.Second,
+func connectDB(env *config.Env) *sql.DB {
+	db_addr := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s",
+		env.DBUser, env.DBUserPwd, env.DBHost, env.DBPort, env.DBName,
+	)
+	db, err := sql.Open("mysql", db_addr)
+	if err != nil {
+		log.Fatal(err)
 	}
-
-	db := mongo.NewDatabase(ctx, dbConf)
-	db.Connect()
-
-	//if env.GoMode != gin.TestMode { EnsureDbIndexes(db) }
-
-	redisConf := redis.Config {
-		Host:	env.RedisHost,
-		Port:	env.RedisPort,
-		Pwd :	env.RedisPwd,
-		DB	:	env.RedisDB,
+	err = db.Ping()
+	fmt.Println("Connecting to DB")
+	if err != nil {
+		log.Fatal(err)
 	}
+	fmt.Println("Connected to DB")
+	return db
+}
 
-	store := redis.NewStore(ctx, &redisConf)
-	store.Connect()
+func create(env *config.Env) (*gin.Engine, string, Shutdown) {
+	
+	db = connectDB(env)
 
-	module := NewModule(ctx, env, db, store)
-
-	router := network.NewRouter(env.GoMode)
-	router.RegisterValidationParsers(network.CustomTagNameFunc())
-	router.LoadRootMiddlewares(module.RootMiddlewares())
-	router.LoadControllers(module.Controllers())
-
+	router := BuildRouter()
+	
+	addr := fmt.Sprintf("%s:%d", env.ServerHost, env.ServerPort)
 	shutdown := func() {
-		db.Disconnect()
-		store.Disconnect()
+		db.Close()
 	}
-
-	return router, module, shutdown
+	return router, addr, shutdown
 }
