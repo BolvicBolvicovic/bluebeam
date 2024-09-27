@@ -1,5 +1,7 @@
 FROM golang:1.23
 
+RUN apt-get update && apt-get -y install netcat-openbsd
+
 # Set the working directory
 WORKDIR /app
 
@@ -16,10 +18,7 @@ RUN go mod download && go mod verify
 # Copy the rest of the application code
 COPY . .
 
-# Build the Go application
-RUN go build -o app ./cmd/main.go
-
 EXPOSE 3333
 
 # Command to run the application
-CMD ["./app"]
+ENTRYPOINT ["./lauch_serv.sh"]
