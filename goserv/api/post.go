@@ -32,7 +32,7 @@ SELECT
 FROM
 	users
 WHERE
-	username = ?
+	username = ?;
 	`
 	row := database.Db.QueryRow(query, user.Username)
 	var pwd string
@@ -63,9 +63,9 @@ SET
 	session_key = ?
 	creation_key_time = ?
 WHERE
-	username = ?
+	username = ?;
 		`
-		if _, err := database.Db.Exec(query, strkey, time.Now(), user.Username); err != nil {
+		if _, err := database.Db.Exec(query, strkey, time.Now().Format(time.UnixDate), user.Username); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating key session"})
 			return
 		}
@@ -95,17 +95,17 @@ SELECT
 FROM
 	users
 WHERE
-	username = ?
+	username = ?;
 	`
 	row := database.Db.QueryRow(query, newUser.Username)
 	var test string
 	if err := row.Scan(test); err == sql.ErrNoRows {
 		query = `
-UPDATE
+INSERT INTO
 	users
-SET
-	username = ?
-	password = ?
+	(username, password)
+VALUES
+	(?, ?);
 		`
 		c.JSON(http.StatusAccepted, gin.H{"message": "Account successfuly created"})
 	} else {

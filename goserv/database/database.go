@@ -28,6 +28,18 @@ func ConnectDB(env *config.Env) Shutdown {
 	if Db == nil {
 		log.Fatal("Error, DB not Connected")
 	}
+	if _, err := Db.Exec(`
+CREATE TABLE IF NOT EXISTS users (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	username VARCHAR(100) NOT NULL UNIQUE,
+	password VARCHAR(100) NOT NULL,
+	session_key VARCHAR(32),
+	creation_key_time VARCHAR(50)
+);
+	`); err != nil {
+		log.Fatal(err)
+	}
+
 	return func() {
 		Db.Close()
 	}
