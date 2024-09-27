@@ -7,6 +7,8 @@ import (
 
 func BuildRouter() *gin.Engine {
 	router := gin.Default()
-	router.GET("/pong", api.Pong)
+	router.GET("/ping", api.Pong)
+	router.POST("/login", api.Login)
+	router.POST("/register_account", api.ResgisterAccount)
 	return router
 }

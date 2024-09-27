@@ -20,5 +20,4 @@ COPY . .
 
 EXPOSE 3333
 
-# Command to run the application
-ENTRYPOINT ["./lauch_serv.sh"]
+CMD ["./lauch_serv.sh"]
