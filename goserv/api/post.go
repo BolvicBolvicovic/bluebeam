@@ -109,6 +109,7 @@ SET
 		`
 		c.JSON(http.StatusAccepted, gin.H{"message": "Account successfuly created"})
 	} else {
+		log.Println(err)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Username already taken"})
 	}
 }

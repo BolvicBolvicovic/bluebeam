@@ -24,6 +24,7 @@ func ConnectDB(env *config.Env) Shutdown {
 		log.Fatal(err)
 	}
 	fmt.Println("Connected to DB")
+	Db = db
 	if Db == nil {
 		log.Fatal("Error, DB not Connected")
 	}
