@@ -79,6 +79,7 @@ Scraper is a web extension for auditing websites in one click based on your crit
 
 * [![Go][Go.dev]][Go-url]
 * [![Docker][Docker.com]][Docker-url]
+* [![Mariadb][Mariadb.org]][Mariadb-url]
 
 
 <!-- GETTING STARTED -->
@@ -191,3 +192,5 @@ Project Link: [https://github.com/BolvicBolvicovic/scraper](https://github.com/B
 [Go-url]: https://go.dev/
 [Docker.com]: https://img.shields.io/badge/docker-257bd6?style=for-the-badge&logo=docker&logoColor=white
 [Docker-url]: https://www.docker.com/
+[Mariadb.org]: https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white
+[Mariadb-url]: https://mariadb.org/
