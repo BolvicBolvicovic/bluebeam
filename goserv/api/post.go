@@ -7,6 +7,7 @@ import (
 	"github.com/BolvicBolvicovic/scraper/database"
 	"database/sql"
 	"crypto/rand"
+	"golang.org/x/crypto/bcrypt"
 	"encoding/base64"
 	"log"
 )
@@ -21,11 +22,6 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
-	if database.Db == nil {
-		log.Println("Database connection is not initialized.")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection not initialized"})
-		return
-	}
 	query := `
 SELECT
 	password
@@ -36,16 +32,16 @@ WHERE
 	`
 	row := database.Db.QueryRow(query, user.Username)
 	var pwd string
-	if err := row.Scan(pwd); err != nil {
+	if err := row.Scan(&pwd); err != nil {
 		if err == sql.ErrNoRows {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username/password"})
 		} else {
+			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
 		}
 		return
 	}
-	//TODO: Hash the password
-	if pwd != user.Password {
+	if err := bcrypt.CompareHashAndPassword([]byte(pwd), []byte(user.Password)); err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username/password"})
 		return
 	} else {
@@ -56,16 +52,18 @@ WHERE
 			return
 		}
 		strkey := base64.StdEncoding.EncodeToString(key)
+		log.Println(strkey, "len:", len(strkey))
 		query = `
 UPDATE
 	users
 SET
-	session_key = ?
+	session_key = ?,
 	creation_key_time = ?
 WHERE
 	username = ?;
 		`
 		if _, err := database.Db.Exec(query, strkey, time.Now().Format(time.UnixDate), user.Username); err != nil {
+			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating key session"})
 			return
 		}
@@ -74,11 +72,6 @@ WHERE
 }
 
 func ResgisterAccount(c *gin.Context) {
-	if database.Db == nil {
-		log.Println("Database connection is not initialized.")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection not initialized"})
-		return
-	}
 	var newUser struct {
 		Username	string `json:"username"`
 		Password	string `json:"password"`
@@ -89,6 +82,10 @@ func ResgisterAccount(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
+	if len(newUser.Password) > 20 {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Password too long, max 19 characters"})
+		return
+	}
 	query := `
 SELECT
 	username
@@ -97,9 +94,15 @@ FROM
 WHERE
 	username = ?;
 	`
+	hash, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Hash error"})
+		return
+	}
 	row := database.Db.QueryRow(query, newUser.Username)
 	var test string
-	if err := row.Scan(test); err == sql.ErrNoRows {
+	if err := row.Scan(&test); err == sql.ErrNoRows {
 		query = `
 INSERT INTO
 	users
@@ -107,6 +110,9 @@ INSERT INTO
 VALUES
 	(?, ?);
 		`
+		if _, err := database.Db.Exec(query, newUser.Username, hash); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+		}
 		c.JSON(http.StatusAccepted, gin.H{"message": "Account successfuly created"})
 	} else {
 		log.Println(err)
