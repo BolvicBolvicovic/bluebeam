@@ -12,6 +12,47 @@ import (
 	"log"
 )
 
+func Analyse(c *gin.Context) {
+	var scrapedData struct {
+		Username	string `json:username`
+		SessionKey	string `json:"sessionkey"`
+		Links		[]string `json:"links"`
+		Buttons		[]struct {
+			Text	string `json:"text"`
+			OnClick string `json:"onclick"`
+		} `json:"buttons"`
+		PageHtml	string `json:"pageHtml"`
+	}
+	if err := c.ShouldBindJSON(&scrapedData); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+	query := `
+SELECT
+	session_key,
+	creation_key_time,
+FROM
+	users
+WHERE
+	username = ?;
+	`
+	row := database.Db.QueryRow(query, scrapedData.Username)
+	var sk string
+	if err := row.Scan(&sk); err != nil {
+		if err == sql.ErrNoRows {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username/key"})
+		} else {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
+		}
+		return
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(sk), []byte(scrapedData.SessionKey)); err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username/key"})
+		return
+	}
+
+}
 
 func Login(c *gin.Context) {
 	var user struct {
@@ -52,6 +93,12 @@ WHERE
 			return
 		}
 		strkey := base64.StdEncoding.EncodeToString(key)
+		hash, err := bcrypt.GenerateFromPassword([]byte(strkey), bcrypt.DefaultCost)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Hash error"})
+			return
+		}
 		log.Println(strkey, "len:", len(strkey))
 		query = `
 UPDATE
@@ -62,7 +109,7 @@ SET
 WHERE
 	username = ?;
 		`
-		if _, err := database.Db.Exec(query, strkey, time.Now().Format(time.UnixDate), user.Username); err != nil {
+		if _, err := database.Db.Exec(query, hash, time.Now().Format(time.UnixDate), user.Username); err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating key session"})
 			return
