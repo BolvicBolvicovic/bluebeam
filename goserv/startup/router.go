@@ -10,5 +10,6 @@ func BuildRouter() *gin.Engine {
 	router.GET("/ping", api.Pong)
 	router.POST("/login", api.Login)
 	router.POST("/register_account", api.ResgisterAccount)
+	router.POST("/analyse", api.Analyse)
 	return router
 }

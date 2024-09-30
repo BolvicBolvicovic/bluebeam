@@ -1,17 +1,18 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "scraper",
   "version": "1.0",
+  "permissions": ["activeTab", "scripting", "http://localhost:443/*"],
 
   "description": "Scrap the content you need to audit.",
 
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "48": "icons/icon48.png"
+    }
+  },
   "icons": {
     "48": "icons/border-48.png"
-  },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["scraper_client.js"]
-    }
-  ]
+  }
 }

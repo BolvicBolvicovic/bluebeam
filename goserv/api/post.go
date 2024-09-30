@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"github.com/gin-gonic/gin"
 	"github.com/BolvicBolvicovic/scraper/database"
+	"github.com/BolvicBolvicovic/scraper/analyser"
 	"database/sql"
 	"crypto/rand"
 	"golang.org/x/crypto/bcrypt"
@@ -12,46 +13,62 @@ import (
 	"log"
 )
 
-func Analyse(c *gin.Context) {
-	var scrapedData struct {
-		Username	string `json:username`
-		SessionKey	string `json:"sessionkey"`
-		Links		[]string `json:"links"`
-		Buttons		[]struct {
-			Text	string `json:"text"`
-			OnClick string `json:"onclick"`
-		} `json:"buttons"`
-		PageHtml	string `json:"pageHtml"`
-	}
-	if err := c.ShouldBindJSON(&scrapedData); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
-		return
-	}
+func validUser(c *gin.Context, data analyser.ScrapedDefault) bool {
 	query := `
 SELECT
 	session_key,
-	creation_key_time,
+	creation_key_time
 FROM
 	users
 WHERE
 	username = ?;
 	`
-	row := database.Db.QueryRow(query, scrapedData.Username)
-	var sk string
-	if err := row.Scan(&sk); err != nil {
+	row := database.Db.QueryRow(query, data.Username)
+	var sk, ckt sql.NullString
+	if err := row.Scan(&sk, &ckt); err != nil {
 		if err == sql.ErrNoRows {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username/key"})
 		} else {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
 		}
-		return
+		return false
 	}
-	if err := bcrypt.CompareHashAndPassword([]byte(sk), []byte(scrapedData.SessionKey)); err != nil {
+	if !sk.Valid || !ckt.Valid {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username/key"})
+		return false
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(sk.String), []byte(data.SessionKey)); err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username/key"})
+		return false
+	}
+	creation_key_time, err := time.Parse(time.UnixDate, ckt.String)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
+		return false
+	}
+	y0, m0, d0 := creation_key_time.Date()
+	y1, m1, d1 := time.Now().Date()
+	//TODO: Handle the session key hourly or with the ping function
+	if d0 != d1 || m0 != m1 || y0 != y1 {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Outdated key"})
+		return false
+	}
+	return true
+}
+
+func Analyse(c *gin.Context) {
+	var scrapedData analyser.ScrapedDefault
+	if err := c.ShouldBindJSON(&scrapedData); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
-
+	c.JSON(http.StatusOK, gin.H{"message": "Page well recieved, processing data..."})
+	if !validUser(c, scrapedData) {
+		return
+	}
+	go analyser.Analyser(c, scrapedData)
 }
 
 func Login(c *gin.Context) {
@@ -72,7 +89,7 @@ WHERE
 	username = ?;
 	`
 	row := database.Db.QueryRow(query, user.Username)
-	var pwd string
+	var pwd sql.NullString
 	if err := row.Scan(&pwd); err != nil {
 		if err == sql.ErrNoRows {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username/password"})
@@ -82,7 +99,11 @@ WHERE
 		}
 		return
 	}
-	if err := bcrypt.CompareHashAndPassword([]byte(pwd), []byte(user.Password)); err != nil {
+	if !pwd.Valid {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username/password"})
+		return
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(pwd.String), []byte(user.Password)); err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username/password"})
 		return
 	} else {
@@ -99,7 +120,6 @@ WHERE
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Hash error"})
 			return
 		}
-		log.Println(strkey, "len:", len(strkey))
 		query = `
 UPDATE
 	users
