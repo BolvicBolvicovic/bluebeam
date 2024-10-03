@@ -15,7 +15,7 @@ func Server() {
 	router, addr, shutdown := create(env)
 	defer shutdown()
 	fmt.Printf("Launching server on: %v:%v\n", env.ServerHost, env.ServerPort)
-	http.ListenAndServe(addr, router)
+	http.ListenAndServeTLS(addr, "server.crt", "server.key", router)
 }
 
 

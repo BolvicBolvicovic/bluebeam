@@ -1,0 +1,16 @@
+{
+  "manifest_version": 2,
+  "name": "scraper",
+  "version": "1.0",
+  "permissions": ["activeTab", "scripting", "https://localhost:443/*"],
+
+  "description": "Scrap the content you need to audit.",
+
+  "browser_action": {
+    "title": "Scraper",
+    "default_popup": "popup/popup.html"
+  },
+  "icons": {
+    "48": "icons/border-48.png"
+  }
+}
