@@ -1,4 +1,4 @@
-module github.com/BolvicBolvicovic/scraper
+module github.com/BolvicBolvicovic/bluebeam
 
 go 1.23.1
 

@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/BolvicBolvicovic/scraper/config"
+	"github.com/BolvicBolvicovic/bluebeam/config"
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 	"log"

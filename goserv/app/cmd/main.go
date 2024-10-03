@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/BolvicBolvicovic/scraper/startup"
+	"github.com/BolvicBolvicovic/bluebeam/startup"
 )
 
 func main() {

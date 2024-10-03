@@ -26,16 +26,16 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/BolvicBolvicovic/scraper">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+  <a href="https://github.com/BolvicBolvicovic/bluebeam">
+    <img src="images/bluebeam.png" alt="Logo" width="320" height="320">
   </a>
 
-<h3 align="center">SCRAPER</h3>
+<h3 align="center">bluebeam</h3>
 
   <p align="center">
     Auditing websites in one click
     <br />
-    <a href="https://github.com/BolvicBolvicovic/scraper"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/BolvicBolvicovic/bluebeam"><strong>Explore the docs »</strong></a>
     <br />
   </p>
 </div>
@@ -72,7 +72,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Scraper is a web extension for auditing websites in one click based on your criterias.
+bluebeam is a web extension for auditing websites in one click based on your criterias.
 
 
 ### Built With
@@ -90,8 +90,8 @@ It will lauch the server of the application with docker-compose.
 If you do not use a Linux distro, I recommand that you read the documentation on how to lauch docker-compose on your OS.
 
 ```sh
-git clone https://github.com/BolvicBolvicovic/scraper
-cd scraper
+git clone https://github.com/BolvicBolvicovic/bluebeam
+cd bluebeam
 sudo make
 ```
 
@@ -137,7 +137,7 @@ TODO:
 - [ ] Feature 3
     - [ ] Nested Feature
 
-See the [open issues](https://github.com/BolvicBolvicovic/scraper/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/BolvicBolvicovic/bluebeam/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -161,8 +161,8 @@ Don't forget to give the project a star! Thanks again!
 
 ### Top contributors:
 
-<a href="https://github.com/BolvicBolvicovic/scraper/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=BolvicBolvicovic/scraper" alt="contrib.rocks image" />
+<a href="https://github.com/BolvicBolvicovic/bluebeam/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=BolvicBolvicovic/bluebeam" alt="contrib.rocks image" />
 </a>
 
 
@@ -176,7 +176,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Project Link: [https://github.com/BolvicBolvicovic/scraper](https://github.com/BolvicBolvicovic/scraper)
+Project Link: [https://github.com/BolvicBolvicovic/bluebeam](https://github.com/BolvicBolvicovic/bluebeam)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -184,8 +184,8 @@ Project Link: [https://github.com/BolvicBolvicovic/scraper](https://github.com/B
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[license-shield]: https://img.shields.io/github/license/BolvicBolvicovic/scraper.svg?style=for-the-badge
-[license-url]: https://github.com/BolvicBolvicovic/scraper/blob/master/LICENSE.txt
+[license-shield]: https://img.shields.io/badge/license-EUPL%201.2-blue
+[license-url]: https://github.com/BolvicBolvicovic/bluebeam/blob/main/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/victorcornille
 [product-screenshot]: images/screenshot.png

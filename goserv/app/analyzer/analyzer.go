@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"sync"
-//	"github.com/BolvicBolvicovic/scraper/database"
+//	"github.com/BolvicBolvicovic/bluebeam/database"
 //	"database/sql"
 )
 

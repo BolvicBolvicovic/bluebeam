@@ -3,8 +3,8 @@ package startup
 import (
 	"net/http"
 	"github.com/gin-gonic/gin"
-	"github.com/BolvicBolvicovic/scraper/config"
-	"github.com/BolvicBolvicovic/scraper/database"
+	"github.com/BolvicBolvicovic/bluebeam/config"
+	"github.com/BolvicBolvicovic/bluebeam/database"
 	"fmt"
 )
 
