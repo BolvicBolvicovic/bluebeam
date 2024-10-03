@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"github.com/gin-gonic/gin"
 	"github.com/BolvicBolvicovic/scraper/database"
-	"github.com/BolvicBolvicovic/scraper/analyser"
+	"github.com/BolvicBolvicovic/scraper/analyzer"
 	"database/sql"
 	"crypto/rand"
 	"golang.org/x/crypto/bcrypt"
@@ -13,7 +13,7 @@ import (
 	"log"
 )
 
-func validUser(c *gin.Context, data analyser.ScrapedDefault) bool {
+func validUser(c *gin.Context, data analyzer.ScrapedDefault) bool {
 	query := `
 SELECT
 	session_key,
@@ -58,17 +58,17 @@ WHERE
 	return true
 }
 
-func Analyse(c *gin.Context) {
-	var scrapedData analyser.ScrapedDefault
+func Analyze(c *gin.Context) {
+	var scrapedData analyzer.ScrapedDefault
 	if err := c.ShouldBindJSON(&scrapedData); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Page well recieved, processing data..."})
 	if !validUser(c, scrapedData) {
 		return
 	}
-	go analyser.Analyser(c, scrapedData)
+	analyzer.Analyzer(c, scrapedData)
+	c.JSON(http.StatusOK, gin.H{"message": "Page well recieved, Data processed!"})
 }
 
 func Login(c *gin.Context) {

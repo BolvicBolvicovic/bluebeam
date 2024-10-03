@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "scraper",
   "version": "1.0",
-  "permissions": ["activeTab", "scripting", "https://localhost:443/*"],
+  "permissions": ["webRequest", "activeTab", "scripting", "https://localhost/*"],
 
   "description": "Scrap the content you need to audit.",
 

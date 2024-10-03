@@ -13,9 +13,11 @@ fclean	: clean
 	docker system prune -af
 	rm -rf volumes
 
-re	: fclean all
+full_re	: fclean all
+
+re: clean all
 
 connect_db:
 	docker exec -it mariadb mysql -uroot -proot mariadb
 
-.PHONY	: all stop clean fclean re
+.PHONY	: all stop clean fclean re full_re
