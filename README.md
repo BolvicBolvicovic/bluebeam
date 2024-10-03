@@ -95,9 +95,10 @@ cd scraper
 sudo make
 ```
 
-Then, in a new terminal at the root of the repository, run the following command:
+Then, in a new terminal at the root of the repository, run the following commands:
 
 ```sh
+cd ext
 web-ext run
 ```
 
