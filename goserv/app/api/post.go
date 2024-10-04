@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/BolvicBolvicovic/bluebeam/database"
 	"github.com/BolvicBolvicovic/bluebeam/analyzer"
+	"github.com/BolvicBolvicovic/bluebeam/criterias"
 	"database/sql"
 	"crypto/rand"
 	"golang.org/x/crypto/bcrypt"
@@ -13,7 +14,7 @@ import (
 	"log"
 )
 
-func validUser(c *gin.Context, data analyzer.ScrapedDefault) bool {
+func validUser(c *gin.Context, username string, session_key string) bool {
 	query := `
 SELECT
 	session_key,
@@ -23,7 +24,7 @@ FROM
 WHERE
 	username = ?;
 	`
-	row := database.Db.QueryRow(query, data.Username)
+	row := database.Db.QueryRow(query, username)
 	var sk, ckt sql.NullString
 	if err := row.Scan(&sk, &ckt); err != nil {
 		if err == sql.ErrNoRows {
@@ -38,7 +39,7 @@ WHERE
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username/key"})
 		return false
 	}
-	if err := bcrypt.CompareHashAndPassword([]byte(sk.String), []byte(data.SessionKey)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(sk.String), []byte(session_key)); err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username/key"})
 		return false
 	}
@@ -58,13 +59,29 @@ WHERE
 	return true
 }
 
+func StoreCriterias(c *gin.Context) {
+	var user struct {
+		Username	string `json:"username"`
+		SessionKey	string `json:"sessionkey"`
+	}
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+	if !validUser(c, user.Username, user.SessionKey) {
+		return
+	}
+	criterias.Store(c)
+	c.JSON(http.StatusOK, gin.H{"message": "Criterias well recieved, Data processed!"})
+}
+
 func Analyze(c *gin.Context) {
 	var scrapedData analyzer.ScrapedDefault
 	if err := c.ShouldBindJSON(&scrapedData); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
-	if !validUser(c, scrapedData) {
+	if !validUser(c, scrapedData.Username, scrapedData.SessionKey) {
 		return
 	}
 	analyzer.Analyzer(c, scrapedData)

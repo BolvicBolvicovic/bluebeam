@@ -21,13 +21,18 @@
   </style>
 </head>
 <body>
+  <h1>bluebeam</h1>
   <div id ="login">
     <input type="text" id="username" placeholder="Enter Username" />
     <input type="text" id="password" placeholder="Enter Password" />
     <button id="loginButton">Login</button>
   </div>
   <div id="scrape">
-    <h1>Scrape and Send</h1>
+    <form class="upload">
+      <input type="file" name="criterias" accept=".json" required />
+      <br/><br/>
+      <input type="submit" />
+    </form>
     <button id="scrapeButton">Scrape Content</button>
   </div>
   <script src="popup.js"></script>

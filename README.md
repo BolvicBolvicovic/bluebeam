@@ -78,6 +78,7 @@ bluebeam is a web extension for auditing websites in one click based on your cri
 * [![Go][Go.dev]][Go-url]
 * [![Docker][Docker.com]][Docker-url]
 * [![Mariadb][Mariadb.org]][Mariadb-url]
+* [![Javascript][Javascript.com]][Javascript-url]
 
 
 <!-- GETTING STARTED -->
@@ -154,7 +155,7 @@ See roadmap below.
 ## Roadmap
 
 - [ ] Response with a json that applies the chosen criterias on the website
-- [ ] Response with an analyse in the form of a text
+- [ ] Response with a report in the form of a text, with insights on what to improve/modify
 - [ ] Response with the posibility to create a report with graphs and text
 
 See the [open issues](https://github.com/BolvicBolvicovic/bluebeam/issues) for a full list of proposed features (and known issues).
@@ -216,3 +217,5 @@ Mail: victor.cornille@gmail.com
 [Docker-url]: https://www.docker.com/
 [Mariadb.org]: https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white
 [Mariadb-url]: https://mariadb.org/
+[Javascript.com]: https://shields.io/badge/JavaScript-F7DF1E?logo=JavaScript&logoColor=000&style=flat-square
+[Javascript-url]: https://www.javascript.com/

@@ -31,5 +31,6 @@ func BuildRouter() *gin.Engine {
 	router.POST("/login", api.Login)
 	router.POST("/register_account", api.ResgisterAccount)
 	router.POST("/analyze", api.Analyze)
+	router.POST("/criterias", api.StoreCriterias)
 	return router
 }

@@ -1,14 +1,14 @@
-let username;
-let password;
-let sessionKey;
+function reportError(error) {
+    console.error(`Error caught: ${error}`);
+}
+
 
 function registerLoginButton() {
-  alert("You can register with curl at https://localhost/register_account with a JSON username, password");
   document.getElementById("loginButton").addEventListener("click", (e)=> {
-    username = document.getElementById('username').value;
-    password = document.getElementById('password').value;
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
 
-    if (!username || !sessionKey) {
+    if (!username || !password) {
       alert('Please provide both username and password.');
       return;
     }
@@ -23,23 +23,16 @@ function registerLoginButton() {
         });
       })
       .catch(reportError);
-
-
   })
 }
 
 function registerScrapeButton(scrapeButton) {
   document.getElementById('scrapeButton').addEventListener("click", (e) => {
-    function reportError(error) {
-      console.error(`Error caught: ${error}`);
-    }
     browser.tabs
       .query({ active: true, currentWindow: true })
       .then((tabs) => {
         browser.tabs.sendMessage( tabs[0].id, {
           type: "analyze",
-          username: username,
-          sessionKey: sessionKey,
         });
       })
       .then(() => {
@@ -52,23 +45,57 @@ function registerScrapeButton(scrapeButton) {
 function messageListener() {
   browser.runtime.onMessage.addListener((message) => {
     if (message.type === "loginResponse") {
-      sessionKey = message.data.sessionKey;
       document.getElementById("login").style.display = "none";
       document.getElementById("scrape").style.display = "block";
     } else if (message.type === "analyzeResponse") {
-      alert(message.data)
+      console.log(message.data)
+    } else if (message.isConnected === true) {
+      document.getElementById("login").style.display = "none";
+    } else if (message.isConnected === false) {
+      document.getElementById("scrape").style.display = "none";
     } else if (message.error) {
-      alert(message.error)
+      console.log(message.error)
     }
   });
 }
 
-function handler() {
-  document.getElementById("scrape").style.display = "none";
-  registerLoginButton();
-  registerScrapeButton();
+function requestIsConnected() {
+  browser.tabs
+    .query({ active: true, currentWindow: true })
+    .then((tabs) => {
+      browser.tabs.sendMessage( tabs[0].id, {
+        type: "isConnected",
+      });
+    })
+    .catch(reportError);
 }
 
-browser.tabs
-  .executeScript({ file: "/content_scripts/fetch.js" })
-  .then(handler)
+function submitCriterias() {
+  const uploadForm = document.querySelector('.upload')uploadForm.addEventListener('submit', function(e) {
+   e.preventDefault();
+   // It is possible to send multiple files with files
+   let file = e.target.uploadFile.files[0];
+   let formData = new FormData();
+   formData.append('file', file);
+   browser.tabs
+     .query({ active: true, currentWindow: true })
+     .then((tabs) => {
+       browser.tabs.sendMessage( tabs[0].id, {
+         type: "criterias",
+         body: formData,
+       });
+     })
+     .catch(reportError);
+   })
+}
+
+async function handler() {
+  await browser.tabs.executeScript({ file: "/content_scripts/fetch.js" })
+  messageListener();
+  requestIsConnected();
+  registerLoginButton();
+  registerScrapeButton();
+  //submitCriterias();
+}
+
+handler()
