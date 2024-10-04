@@ -34,9 +34,7 @@
 
   <p align="center">
     Auditing websites in one click
-    <br />
-    <a href="https://github.com/BolvicBolvicovic/bluebeam"><strong>Explore the docs »</strong></a>
-    <br />
+    </br>
   </p>
 </div>
 
@@ -104,15 +102,17 @@ web-ext run
 
 ### Prerequisites
 
-You will need go and docker-compose to run the server.
+You will need web-ext, go and docker-compose to lauch the project..
 * go
 ```sh
-rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.1.linux-amd64.tar.gz
+wget https://go.dev/dl/go1.23.2.linux-amd64.tar.gz
+rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.2.linux-amd64.tar.gz
 export PATH=$PATH:/usr/local/go/bin
 ```
-* docker-compose
+* web-ext, docker and docker-compose
 ```sh
-sudo apt install docker-compose
+sudo apt update && sudo apt upgrade
+sudo apt install -y web-ext docker docker-compose
 ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -122,7 +122,29 @@ sudo apt install docker-compose
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-TODO:
+### Register an account
+
+At the moment, the only way to register an account is to do the request yourself with curl:
+
+```bash
+curl -X POST https://localhost/register_account -p '{"username" :"YourUserName", "password": "YourPassWord"}' -H {"Content-Type": "application/json"} --insecure
+```
+
+If you get a response that is positive, then you can login with this account.
+
+### Login
+
+Running web-ext will open firefox. Because the server is running on localhost and the certificate is self-signed (at the moment),
+you need to go to Settings -> Tools -> Advanced -> View Certificates -> Servers -> Add Exception then Add https://localhost.
+Finally, Go on the web-site you want to analyse and open the extension, then log in with your username and your password.
+
+### Analyse
+
+Once you are logged in, you can click on the analyse button and you will get a response.
+At the moment, the response only says that the server is processing the data. 
+In the future, depending on your settings, it will be able to send a report to help you improve your website based on your needs or just a json filled with the data you wanted to check.
+See roadmap below.
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -131,11 +153,9 @@ TODO:
 <!-- ROADMAP -->
 ## Roadmap
 
-TODO:
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-    - [ ] Nested Feature
+- [ ] Response with a json that applies the chosen criterias on the website
+- [ ] Response with an analyse in the form of a text
+- [ ] Response with the posibility to create a report with graphs and text
 
 See the [open issues](https://github.com/BolvicBolvicovic/bluebeam/issues) for a full list of proposed features (and known issues).
 
@@ -170,13 +190,14 @@ Don't forget to give the project a star! Thanks again!
 <!-- LICENSE -->
 ## License
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+Distributed under the EUPL-1.2 License. See `LICENSE.txt` for more information.
 
 
 <!-- CONTACT -->
 ## Contact
 
 Project Link: [https://github.com/BolvicBolvicovic/bluebeam](https://github.com/BolvicBolvicovic/bluebeam)
+Mail: victor.cornille@gmail.com
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
