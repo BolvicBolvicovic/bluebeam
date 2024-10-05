@@ -69,6 +69,10 @@ function registerSettings() {
 function messageListener() {
   browser.runtime.onMessage.addListener((message) => {
     if (message.type === "loginResponse") {
+      if (message.data.error) {
+        console.log(message.data.error);
+        return;
+      }
       document.getElementById("login").style.display = "none";
       document.getElementById("scrape").style.display = "block";
     } else if (message.type === "analyzeResponse") {
