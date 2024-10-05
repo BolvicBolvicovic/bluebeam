@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "scraper",
+  "name": "bluebeam",
   "version": "1.0",
-  "permissions": ["webRequest", "activeTab", "scripting", "https://localhost/*"],
+  "permissions": ["tabs", "webRequest", "activeTab", "scripting", "https://localhost/*"],
 
   "description": "Scrap the content you need to audit.",
 

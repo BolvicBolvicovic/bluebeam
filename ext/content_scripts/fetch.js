@@ -53,7 +53,6 @@ async function login(message) {
 
   })
   .catch(error => console.error('Error sending data:', error));
-  console.log(username, sessionKey);
   return [username, sessionKey];
 }
 
@@ -62,14 +61,14 @@ function isConnected(sessionKey) {
       browser.runtime.sendMessage({ isConnected: bool });
 }
 
-function sendCriterias(username, sessionKey, body) {
+/*function sendCriterias(username, sessionKey, criterias) {
   fetch('https://localhost/login', {
     method: 'POST',
     mode: 'cors',
     headers: { 'Content-Type': 'application/json' },
     username: username,
     sessionkey: sessionKey,
-    body: body,
+    criterias: criterias,
   })
   .then(response => response.text())
     .then(data => {
@@ -80,6 +79,11 @@ function sendCriterias(username, sessionKey, body) {
   })
   .catch(error => console.error('Error sending data:', error));
   
+}*/
+
+function settingsPage(username, sessionKey) {
+  const url = `https://localhost/settings?username=${encodeURIComponent(username)}&sessionkey=${encodeURIComponent(sessionKey)}`;
+  window.open(url);
 }
 
 (() => {
@@ -103,9 +107,8 @@ function sendCriterias(username, sessionKey, body) {
       sessionKey = values[1];
     } else if (message.type === "isConnected") {
       isConnected(sessionKey);
-    } else if (message.type === "criterias") {
-      sendCriterias(message.body);
+    } else if (message.type === "settingsPage") {
+      settingsPage(username, sessionKey);
     }
-
   });
 })();

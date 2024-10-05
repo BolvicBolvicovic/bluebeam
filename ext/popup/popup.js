@@ -26,7 +26,7 @@ function registerLoginButton() {
   })
 }
 
-function registerScrapeButton(scrapeButton) {
+function registerScrapeButton() {
   document.getElementById('scrapeButton').addEventListener("click", (e) => {
     browser.tabs
       .query({ active: true, currentWindow: true })
@@ -39,6 +39,30 @@ function registerScrapeButton(scrapeButton) {
         alert('Data sent to server');
       })
       .catch(reportError);
+  });
+}
+
+function requestIsConnected() {
+  browser.tabs
+    .query({ active: true, currentWindow: true })
+    .then((tabs) => {
+      browser.tabs.sendMessage( tabs[0].id, {
+        type: "isConnected",
+      });
+    })
+    .catch(reportError);
+}
+
+function registerSettings() {
+  document.getElementById("settingsPage").addEventListener('click', (e) => {
+      browser.tabs
+        .query({ active: true, currentWindow: true })
+        .then((tabs) => {
+          browser.tabs.sendMessage(tabs[0].id, {
+            type: "settingsPage",
+          });
+        })
+        .catch(reportError);
   });
 }
 
@@ -59,43 +83,13 @@ function messageListener() {
   });
 }
 
-function requestIsConnected() {
-  browser.tabs
-    .query({ active: true, currentWindow: true })
-    .then((tabs) => {
-      browser.tabs.sendMessage( tabs[0].id, {
-        type: "isConnected",
-      });
-    })
-    .catch(reportError);
-}
-
-function submitCriterias() {
-  const uploadForm = document.querySelector('.upload')uploadForm.addEventListener('submit', function(e) {
-   e.preventDefault();
-   // It is possible to send multiple files with files
-   let file = e.target.uploadFile.files[0];
-   let formData = new FormData();
-   formData.append('file', file);
-   browser.tabs
-     .query({ active: true, currentWindow: true })
-     .then((tabs) => {
-       browser.tabs.sendMessage( tabs[0].id, {
-         type: "criterias",
-         body: formData,
-       });
-     })
-     .catch(reportError);
-   })
-}
-
 async function handler() {
   await browser.tabs.executeScript({ file: "/content_scripts/fetch.js" })
   messageListener();
   requestIsConnected();
   registerLoginButton();
   registerScrapeButton();
-  //submitCriterias();
+  registerSettings();
 }
 
 handler()

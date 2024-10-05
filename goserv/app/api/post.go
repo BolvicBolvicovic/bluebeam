@@ -60,18 +60,15 @@ WHERE
 }
 
 func StoreCriterias(c *gin.Context) {
-	var user struct {
-		Username	string `json:"username"`
-		SessionKey	string `json:"sessionkey"`
-	}
-	if err := c.ShouldBindJSON(&user); err != nil {
+	crits := criterias.Criterias{}
+	if err := c.ShouldBindJSON(&crits); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
-	if !validUser(c, user.Username, user.SessionKey) {
+	if !validUser(c, crits.Username, crits.SessionKey) {
 		return
 	}
-	criterias.Store(c)
+	criterias.Store(c, crits)
 	c.JSON(http.StatusOK, gin.H{"message": "Criterias well recieved, Data processed!"})
 }
 

@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/BolvicBolvicovic/bluebeam/config"
 	"github.com/BolvicBolvicovic/bluebeam/database"
+	"github.com/BolvicBolvicovic/bluebeam/criterias"
 	"fmt"
 )
 
@@ -15,6 +16,7 @@ func Server() {
 	router, addr, shutdown := create(env)
 	defer shutdown()
 	fmt.Printf("Launching server on: %v:%v\n", env.ServerHost, env.ServerPort)
+	criterias.SetKey()
 	http.ListenAndServeTLS(addr, "server.crt", "server.key", router)
 }
 
