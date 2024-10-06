@@ -1,13 +1,12 @@
 package analyzer
 
 import (
+	"database/sql"
 	"github.com/gin-gonic/gin"
 	"log"
 	"sync"
 	"net/http"
-//	"github.com/BolvicBolvicovic/bluebeam/criterias"
-//	"github.com/BolvicBolvicovic/bluebeam/database"
-//	"database/sql"
+	"github.com/BolvicBolvicovic/bluebeam/criterias"
 )
 
 type _Buttons struct {
@@ -45,10 +44,15 @@ func checkHTML(html string) {
 }
 
 func Analyzer(c *gin.Context, sd ScrapedDefault) {
+	crits, err := criterias.Get(c, sd.Username)
+	if err != nil && err != sql.ErrNoRows {
+		return
+	}
 	wg.Add(3)
 	go checkLinks(sd.Links)
 	go checkButtons(sd.Buttons)
 	go checkHTML(sd.PageHtml)
 	wg.Wait()
+	log.Println(crits)
 	c.JSON(http.StatusOK, gin.H{"message": "Page well recieved, Data processed!"})
 }

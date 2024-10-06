@@ -13,7 +13,6 @@ function analyze(username, sessionKey) {
       buttons,
       pageHtml
   })
-  console.log(sessionKey)
 
   // Send the scraped data along with the username and session key to your Go server
   fetch('https://localhost/analyze', {

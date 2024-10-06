@@ -34,7 +34,16 @@ CREATE TABLE IF NOT EXISTS users (
 	username VARCHAR(100) NOT NULL UNIQUE,
 	password VARCHAR(100) NOT NULL,
 	session_key VARCHAR(72),
-	creation_key_time VARCHAR(72)
+	creation_key_time VARCHAR(72),
+	criterias_file VARBINARY(1500)
+);
+	`); err != nil {
+		log.Fatal(err)
+	}
+	if _, err := Db.Exec(`
+CREATE TABLE IF NOT EXISTS decrypt_keys (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	first_key VARBINARY(400)
 );
 	`); err != nil {
 		log.Fatal(err)
