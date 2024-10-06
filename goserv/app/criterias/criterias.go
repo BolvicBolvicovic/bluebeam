@@ -4,13 +4,19 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
-	"github.com/firdasafridi/gocrypt"
+	"github.com/google/tink/go/aead"
+	"github.com/google/tink/go/keyset"
+	"github.com/google/tink/go/tink"
 	"crypto/rand"
 	"encoding/hex"
-	"strings"
+	"encoding/json"
+	"sync"
 )
 
-var aeskey string
+var (
+	aeadInstance tink.AEAD
+	once         sync.Once
+)
 
 func randomHex(n int) (string, error) {
 	bytes := make([]byte, n)
@@ -22,13 +28,13 @@ func randomHex(n int) (string, error) {
 }
 
 type Feature struct {
-	Topic 		string    `json:"topic" gocrypt:"aes"` 
-	FeatureName 	string    `json:"featurename" gocrypt:"aes"`
-	FeatureType	string	  `json:"featuretype" gocrypt:"aes"`
-	Description 	string    `json:"description" gocrypt:"aes"`
-	MinimumCriterias []string `json:"minimumcriterias" gocrypt:"aes"`
-	YesCases 	[]string  `json:"yescases" gocrypt:"aes"`
-	NoCases 	[]string  `json:"nocases" gocrypt:"aes"`
+	Topic 		string    `json:"topic" ` 
+	FeatureName 	string    `json:"featurename" `
+	FeatureType	string	  `json:"featuretype" `
+	Description 	string    `json:"description" `
+	MinimumCriterias []string `json:"minimumcriterias" `
+	YesCases 	[]string  `json:"yescases" `
+	NoCases 	[]string  `json:"nocases" `
 }
 
 type Criterias struct {
@@ -38,25 +44,44 @@ type Criterias struct {
 }
 
 func Store(c *gin.Context, crits Criterias) {
-	aesOpt, err := gocrypt.NewAESOpt(aeskey)
+	log.Println(crits)
+	data, _ := json.Marshal(crits)
+	encryptedData, err := aeadInstance.Encrypt(data, nil)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
 		return
 	}
-	log.Println(crits)
+	//TODO: Resquest to db to store data
+	c.JSON(http.StatusOK, gin.H{"message": "Criterias well recieved, Data processed!"})
+}
 
-	cryptRunner := gocrypt.New(&gocrypt.Option {AESOpt : aesOpt,})
-	if err = cryptRunner.Encrypt(&crits); err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
-		return
+func Get(c *gin.Context, username string) Criterias, error {
+	//TODO: Resquest to db to get data
+	decryptedData, err := aeadInstance.Decrypt(encryptedData, nil)
+	if err != nil {
+		log.Fatalf("Failed to decrypt data: %v", err)
 	}
-	log.Println("Criterias encrypted:", crits)
-	c.JSON(http.StatusOK, gin.H{"message": "Page well recieved, Data processed!"})
+	var decryptedStruct Criterias
+	err = json.Unmarshal(decryptedData, &decryptedStruct)
+	if err != nil {
+		log.Fatalf("Failed to deserialize decrypted data: %v", err)
+	}
+	log.Println("Criterias decrypted:", decryptedStruct)
 }
 
 func SetKey() {
-	aeskey, _ = randomHex(64)
-	aeskey = strings.ToLower(aeskey)
+	once.Do(func() {
+		kh, err := keyset.NewHandle(aead.AES256CTRHMACSHA256KeyTemplate())
+		if err != nil {
+			log.Fatalf("Failed to generate new key handle: %v", err)
+		}
+
+		a, err := aead.New(kh)
+		if err != nil {
+			log.Fatalf("Failed to get AEAD primitive: %v", err)
+		}
+
+		aeadInstance = a
+	})
 }

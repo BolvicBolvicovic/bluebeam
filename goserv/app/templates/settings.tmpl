@@ -18,7 +18,7 @@
 
 	    const reader = new FileReader();
 	    reader.onload = function() {
-	      const criterias = reader.result;
+	      const features = JSON.parse(reader.result);
 	      fetch('https://localhost/criterias', {
 	        method: 'POST',
 	        mode: 'cors',
@@ -26,7 +26,7 @@
 		body: JSON.stringify({
 		  username: "{{ .username }}",
 	          sessionkey: "{{ .sessionkey }}",
-	          criterias: criterias
+	          features: features
 		}),
 	      })
 	      .then(response => response.text())

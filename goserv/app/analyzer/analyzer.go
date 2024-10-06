@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"sync"
+	"net/http"
 //	"github.com/BolvicBolvicovic/bluebeam/criterias"
 //	"github.com/BolvicBolvicovic/bluebeam/database"
 //	"database/sql"
@@ -49,4 +50,5 @@ func Analyzer(c *gin.Context, sd ScrapedDefault) {
 	go checkButtons(sd.Buttons)
 	go checkHTML(sd.PageHtml)
 	wg.Wait()
+	c.JSON(http.StatusOK, gin.H{"message": "Page well recieved, Data processed!"})
 }

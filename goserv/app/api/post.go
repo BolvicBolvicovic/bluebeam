@@ -69,7 +69,6 @@ func StoreCriterias(c *gin.Context) {
 		return
 	}
 	criterias.Store(c, crits)
-	c.JSON(http.StatusOK, gin.H{"message": "Criterias well recieved, Data processed!"})
 }
 
 func Analyze(c *gin.Context) {
