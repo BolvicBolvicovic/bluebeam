@@ -38,30 +38,25 @@ type Criterias struct {
 }
 
 func Store(c *gin.Context, crits Criterias) {
-	criterias := Criterias{}
-
-	if err := c.ShouldBindJSON(&criterias); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
-		return
-	}
 	aesOpt, err := gocrypt.NewAESOpt(aeskey)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
 		return
 	}
-	log.Println(criterias)
+	log.Println(crits)
 
 	cryptRunner := gocrypt.New(&gocrypt.Option {AESOpt : aesOpt,})
-	if err = cryptRunner.Encrypt(&criterias); err != nil {
+	if err = cryptRunner.Encrypt(&crits); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
 		return
 	}
-	log.Println("Criterias encrypted:", criterias)
+	log.Println("Criterias encrypted:", crits)
+	c.JSON(http.StatusOK, gin.H{"message": "Page well recieved, Data processed!"})
 }
 
 func SetKey() {
-	aeskey, _ = randomHex(20)
+	aeskey, _ = randomHex(64)
 	aeskey = strings.ToLower(aeskey)
 }

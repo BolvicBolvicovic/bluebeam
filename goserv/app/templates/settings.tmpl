@@ -1,8 +1,46 @@
 <html>
 	<h1>Välkommen {{ .username }}</h1>
 	<div>Here is your key: {{ .sessionkey }}</div>
-  	<form class="upload">
+  	<form class="upload" onsubmit="sendCriterias(event)">
 		<input type="file" name="criterias" id="criterias" accept=".json" required />
 		<button type="submit">Submit your criterias</button>
 	</form>
+	<script>
+	  function sendCriterias(event) {
+	    event.preventDefault();
+
+	    const file = document.getElementById("criterias").files[0];
+
+	    if (!file) {
+	      console.error("No file selected.");
+	      return;
+	    }
+
+	    const reader = new FileReader();
+	    reader.onload = function() {
+	      const criterias = reader.result;
+	      fetch('https://localhost/criterias', {
+	        method: 'POST',
+	        mode: 'cors',
+	        headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({
+		  username: "{{ .username }}",
+	          sessionkey: "{{ .sessionkey }}",
+	          criterias: criterias
+		}),
+	      })
+	      .then(response => response.text())
+	        .then(data => {
+	          console.log("Criterias sent!")
+		  console.log("Response:", data)
+	      })
+	      .catch(error => console.error('Error sending data:', error));
+	    }
+
+	    reader.readAsText(file);
+	    
+	  }
+	  
+
+	</script>
 </html>

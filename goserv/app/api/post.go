@@ -82,7 +82,6 @@ func Analyze(c *gin.Context) {
 		return
 	}
 	analyzer.Analyzer(c, scrapedData)
-	c.JSON(http.StatusOK, gin.H{"message": "Page well recieved, Data processed!"})
 }
 
 func Login(c *gin.Context) {

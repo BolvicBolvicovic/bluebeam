@@ -61,25 +61,6 @@ function isConnected(sessionKey) {
       browser.runtime.sendMessage({ isConnected: bool });
 }
 
-/*function sendCriterias(username, sessionKey, criterias) {
-  fetch('https://localhost/login', {
-    method: 'POST',
-    mode: 'cors',
-    headers: { 'Content-Type': 'application/json' },
-    username: username,
-    sessionkey: sessionKey,
-    criterias: criterias,
-  })
-  .then(response => response.text())
-    .then(data => {
-      const jsonData = JSON.parse(data);
-      browser.runtime.sendMessage({ type: 'loginResponse', data: jsonData });
-      sessionKey = jsonData.session_key;
-
-  })
-  .catch(error => console.error('Error sending data:', error));
-  
-}*/
 
 function settingsPage(username, sessionKey) {
   const url = `https://localhost/settings?username=${encodeURIComponent(username)}&sessionkey=${encodeURIComponent(sessionKey)}`;
