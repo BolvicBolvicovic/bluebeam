@@ -13,7 +13,6 @@ import (
 	"github.com/google/tink/go/tink"
 	"github.com/google/tink/go/proto/tink_go_proto"
 	"github.com/google/tink/go/proto/aes_gcm_go_proto"
-	"github.com/golang/protobuf/proto"
 	"encoding/json"
 )
 
@@ -91,18 +90,13 @@ WHERE
 }
 
 func SetKey() {
-	var kek = aes_gcm_go_proto.AesGcmKeyFormat {
+	var kek = aes_gcm_go_proto.AesGcmKey {
 		Version: 0,
-		//KeyValue: []byte("O/xst9IYnh4yyhUC7++rBOsHsJy2m0Den1BD32hxwQw="),
-		KeySize: 32,
+		KeyValue: []byte("O/xst9IYnh4yyhUC7++rBOsHsJy2m0Den1BD32hxwQw="),
 	}
-	val, err := proto.Marshal(&kek)
-    	if err != nil {
-		log.Fatalf("Failed to generate new kek handle: %v", err)
-    	}
 	keyTemplate := tink_go_proto.KeyTemplate{
 		TypeUrl: "type.googleapis.com/google.crypto.tink.AesGcmKey",
-		Value:   val,
+		Value:   []byte(kek),
 		OutputPrefixType: tink_go_proto.OutputPrefixType_TINK,
 	}
 
