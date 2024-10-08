@@ -7,6 +7,8 @@ import (
 	"sync"
 	"net/http"
 	"github.com/BolvicBolvicovic/bluebeam/criterias"
+	"sync"
+	"os/exec"
 )
 
 type _Buttons struct {
@@ -19,28 +21,51 @@ type ScrapedDefault struct {
 	SessionKey	string `json:"sessionkey"`
 	Links		[]string `json:"links"`
 	Buttons		[]_Buttons `json:"buttons"`
-	PageHtml	string `json:"pageHtml"`
+	BodyInnerText	string `json:"bodyText"`
+}
+
+type LLMQuestions struct {
+	SystemMessage	string `json:"systemmessage"`
+	Data		ScrapedDefault `json:"data"`
+	Features	[]criterias.Feature `json:"features"`
+}
+
+type LLMQuestion struct {
+	systemMessage	string `json:"systemmessage"`
+	data		ScrapedDefault `json:"data"`
+	feature 	criterias.Feature `json:"feature"`
+}
+
+type LLMResponse struct {
+	response	string
+	mutex		sync.Mutex
 }
 
 var wg sync.WaitGroup
 
-func checkLinks(links []string) {
+func sendLLMQuestion(f criterias.Feature, sd *ScrapedDefault, r *LLMResponse) {
 	defer wg.Done()
-	for i, link := range links {
-		log.Println("link", i + 1, link)
-	}
-}
 
-func checkButtons(buttons []_Buttons) {
-	defer wg.Done()
-	for i, button := range buttons {
-		log.Println("button", i + 1, button)
+	question := LLMQuestion {
+		systemMessage: "You extract feature from data into JSON data if you find the feature in data else precise otherwise in the JSON data",
+		data: sd,
+		feature: f
 	}
-}
+	questionJSON, err := json.Marshal(question)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
-func checkHTML(html string) {
-	defer wg.Done()
-	log.Println("html", html)
+	response, err := exec.Command("python3", "analyzer/llm_client.py", string(questionJSON)).CombinedOutput()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	r.mutex.Lock()
+	r.response += string(response)
+	r.mutex.Unlock()
 }
 
 func Analyzer(c *gin.Context, sd ScrapedDefault) {
@@ -48,11 +73,11 @@ func Analyzer(c *gin.Context, sd ScrapedDefault) {
 	if err != nil && err != sql.ErrNoRows {
 		return
 	}
-	wg.Add(3)
-	go checkLinks(sd.Links)
-	go checkButtons(sd.Buttons)
-	go checkHTML(sd.PageHtml)
+	var response LLMResponse
+	for _, feat := range crits.Features {
+		wg.Add(1)
+		go sendLLMQuestion(feat, &sd, &response)				
+	}
 	wg.Wait()
-	log.Println(crits)
-	c.JSON(http.StatusOK, gin.H{"message": "Page well recieved, Data processed!"})
+	c.JSON(http.StatusOK, gin.H{"message": response.response})
 }

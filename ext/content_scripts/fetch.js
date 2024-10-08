@@ -5,13 +5,13 @@ function analyze(username, sessionKey) {
     text: b.innerText,
     onclick: b.onclick ? b.onclick.toString() : null
   }));
-  let pageHtml = document.documentElement.outerHTML;
+  let bodyText = document.body.innerText;
   let body = JSON.stringify({ 
       username: username,
       sessionkey: sessionKey,
       links,
       buttons,
-      pageHtml
+      bodyText
   })
 
   // Send the scraped data along with the username and session key to your Go server
