@@ -2,24 +2,24 @@ from openai import OpenAI
 import sys
 import json
 
-question_json = sys.stdin.read()
+question_json = sys.argv[1]
 question_data = json.loads(question_json)
 
-system_message = question_data.get('systemMessage')
+system_message = question_data.get('systemmessage')
 data = question_data.get('data')
 feature = question_data.get('feature')
 client = OpenAI()
 
 response = client.chat.completions.create(
-    model="",
+    model="gpt-3.5-turbo",
     messages=[
         {
             "role": "system",
             "content": system_message
         },
         {
-            "data": data,
-            "feature": feature
+            "role": "user",
+            "content": f"Data: {data}, Feature: {feature}"
         }
     ],
     response_format={
@@ -36,13 +36,13 @@ response = client.chat.completions.create(
                     "ispresent": {
                         "description": "If the feature is present or not",
                         "type": "boolean"
-                    }
+                    },
                     "textifpresent": {
                         "description": "If the feature is present then extract the concise part of the data that shows the feature is present else leave an empty string",
                         "type": "string"
-                    }
+                    },
                     "insight": {
-                        "description": "Give a very short (1 line) insight on the feature and it presence or no presence",
+                        "description": "Give a very short (1 line) insight on the feature and its presence or no presence, if it has a positve or negative impact",
                         "type": "string"
                     }
                 }

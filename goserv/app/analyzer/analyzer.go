@@ -7,8 +7,8 @@ import (
 	"sync"
 	"net/http"
 	"github.com/BolvicBolvicovic/bluebeam/criterias"
-	"sync"
 	"os/exec"
+	"encoding/json"
 )
 
 type _Buttons struct {
@@ -48,8 +48,8 @@ func sendLLMQuestion(f criterias.Feature, sd *ScrapedDefault, r *LLMResponse) {
 
 	question := LLMQuestion {
 		systemMessage: "You extract feature from data into JSON data if you find the feature in data else precise otherwise in the JSON data",
-		data: sd,
-		feature: f
+		data: *sd,
+		feature: f,
 	}
 	questionJSON, err := json.Marshal(question)
 	if err != nil {
@@ -62,6 +62,7 @@ func sendLLMQuestion(f criterias.Feature, sd *ScrapedDefault, r *LLMResponse) {
 		log.Println(err)
 		return
 	}
+	log.Println(response)
 
 	r.mutex.Lock()
 	r.response += string(response)

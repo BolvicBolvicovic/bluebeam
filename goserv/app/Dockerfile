@@ -1,6 +1,11 @@
 FROM golang:1.23
 
-RUN apt-get update && apt-get -y install netcat-openbsd openssl ca-certificates
+RUN apt-get update && apt-get -y install netcat-openbsd openssl ca-certificates python3 python3-pip python3.11-venv && python3 -m venv /venv
+
+RUN /venv/bin/pip install --upgrade pip && \
+    /venv/bin/pip install openai
+
+ENV PATH="/venv/bin:$PATH"
 
 # Set the working directory
 WORKDIR /app

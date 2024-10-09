@@ -1,0 +1,11 @@
+[
+	{
+		"topic": "store_web_page",
+		"featurename": "prices",
+		"featuretype": "content",
+		"description": "Is the price of each article shown?",
+		"minimumcriterias": ["There is a number related to the article price close to the article"],
+		"yescases": ["minimumcriterias is enough for a yescase"],
+		"nocases": ["no prices are shown"]
+	}
+]
