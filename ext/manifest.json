@@ -5,7 +5,7 @@
   "permissions": ["tabs", "webRequest", "activeTab", "scripting", "https://localhost/*"],
 
   "description": "Scrap the content you need to audit.",
-
+  "content_security_policy": "script-src 'self'; style-src 'self' https://cdn.jsdelivr.net; object-src 'self'",
   "browser_action": {
     "title": "Scraper",
     "default_popup": "popup/popup.html"

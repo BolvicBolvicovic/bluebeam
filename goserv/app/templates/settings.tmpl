@@ -1,46 +1,57 @@
 <html>
-	<h1>Välkommen {{ .username }}</h1>
-	<div>Here is your key: {{ .sessionkey }}</div>
-  	<form class="upload" onsubmit="sendCriterias(event)">
-		<input type="file" name="criterias" id="criterias" accept=".json" required />
-		<button type="submit">Submit your criterias</button>
-	</form>
-	<script>
-	  function sendCriterias(event) {
-	    event.preventDefault();
+  <head>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="flex items-center justify-center min-h-screen bg-gray-100">
+    <div class="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
+      <!-- Header Section -->
+      <h1 class="text-2xl font-bold text-blue-600 text-center mb-4">Välkommen, {{ .username }}</h1>
+      <!-- File Upload Form -->
+      <form class="upload space-y-4" onsubmit="sendCriterias(event)">
+        <label for="criterias" class="block w-full py-2 px-4 text-center bg-blue-50 text-blue-600 border border-blue-300 rounded-lg cursor-pointer hover:bg-blue-100 transition">
+          Choose criteria file
+        </label>
+        <input type="file" name="criterias" id="criterias" accept=".json" required class="hidden" />
+        
+        <button type="submit" class="w-full py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition">
+          Submit Criteria
+        </button>
+      </form>
+    </div>
 
-	    const file = document.getElementById("criterias").files[0];
+    <script>
+      function sendCriterias(event) {
+        event.preventDefault();
 
-	    if (!file) {
-	      console.error("No file selected.");
-	      return;
-	    }
+        const file = document.getElementById("criterias").files[0];
+        if (!file) {
+          console.error("No file selected.");
+          return;
+        }
 
-	    const reader = new FileReader();
-	    reader.onload = function() {
-	      const features = JSON.parse(reader.result);
-	      fetch('https://localhost/criterias', {
-	        method: 'POST',
-	        mode: 'cors',
-	        headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({
-		  username: "{{ .username }}",
-	          sessionkey: "{{ .sessionkey }}",
-	          features: features
-		}),
-	      })
-	      .then(response => response.text())
-	        .then(data => {
-	          console.log("Criterias sent!")
-		  console.log("Response:", data)
-	      })
-	      .catch(error => console.error('Error sending data:', error));
-	    }
+        const reader = new FileReader();
+        reader.onload = function() {
+          const features = JSON.parse(reader.result);
+          fetch('https://localhost/criterias', {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              username: "{{ .username }}",
+              sessionkey: "{{ .sessionkey }}",
+              features: features
+            }),
+          })
+          .then(response => response.text())
+          .then(data => {
+            console.log("Criteria submitted!");
+            console.log("Response:", data);
+          })
+          .catch(error => console.error('Error sending data:', error));
+        }
 
-	    reader.readAsText(file);
-	    
-	  }
-	  
-
-	</script>
+        reader.readAsText(file);
+      }
+    </script>
+  </body>
 </html>

@@ -3,36 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scraper</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 10px;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-    }
-    input {
-      margin-bottom: 10px;
-      padding: 5px;
-      width: 100%;
-    }
-  </style>
+  <title>bluebeam</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body>
-  <h1>bluebeam</h1>
-  <div id ="login">
-    <input type="text" id="username" placeholder="Enter Username" />
-    <input type="password" id="password" placeholder="Enter Password" />
-    <button id="loginButton">Login</button>
-    <button id="registerButton">Register</button>
+  <div class="w-96 p-6 bg-white rounded-lg shadow-lg font-sans text-gray-800">
+    <h1 class="text-3xl font-bold text-blue-600 mb-6 text-center">bluebeam</h1>
+  
+    <!-- Login Section -->
+    <div id="login" class="space-y-4">
+      <input 
+        type="text" 
+        id="username" 
+        placeholder="Username" 
+        class="w-full px-4 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <input 
+        type="password" 
+        id="password" 
+        placeholder="Password" 
+        class="w-full px-4 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <button 
+        id="loginButton" 
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md transition duration-200"
+      >
+        Login
+      </button>
+      <button 
+        id="registerButton" 
+        class="w-full bg-blue-200 hover:bg-blue-300 text-blue-800 font-semibold py-2 rounded-md transition duration-200"
+      >
+        Register
+      </button>
+    </div>
+  
+    <!-- Action Buttons -->
+    <div id="scrape" class="mt-6 space-y-3">
+      <button 
+        id="scrapeButton" 
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md transition duration-200"
+      >
+        Scrape Content
+      </button>
+      <button 
+        id="settingsPage" 
+        class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 rounded-md transition duration-200"
+      >
+        Settings
+      </button>
+    </div>
+  
+    <!-- Message Display -->
+    <div id="consoleMessage" class="mt-6 text-center text-red-600 font-medium"></div>
   </div>
-  <div id="scrape">
-    <button id=settingsPage>Settings</button>
-    <button id="scrapeButton">Scrape Content</button>
-  </div>
-  <div id="consoleMessage"></div>
+
   <script src="popup.js"></script>
 </body>
 </html>
