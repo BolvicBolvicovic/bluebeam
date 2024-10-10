@@ -9,6 +9,7 @@ import (
 	"github.com/BolvicBolvicovic/bluebeam/criterias"
 	"os/exec"
 	"encoding/json"
+//	"strconv"
 )
 
 type _Buttons struct {
@@ -31,9 +32,9 @@ type LLMQuestions struct {
 }
 
 type LLMQuestion struct {
-	systemMessage	string `json:"systemmessage"`
-	data		ScrapedDefault `json:"data"`
-	feature 	criterias.Feature `json:"feature"`
+	SystemMessage	string `json:"systemmessage"`
+	Data		ScrapedDefault `json:"data"`
+	Feature 	criterias.Feature `json:"feature"`
 }
 
 type LLMResponse struct {
@@ -47,25 +48,33 @@ func sendLLMQuestion(f criterias.Feature, sd *ScrapedDefault, r *LLMResponse) {
 	defer wg.Done()
 
 	question := LLMQuestion {
-		systemMessage: "You extract feature from data into JSON data if you find the feature in data else precise otherwise in the JSON data",
-		data: *sd,
-		feature: f,
+		SystemMessage: "You extract feature from data into JSON data if you find the feature in data else precise otherwise in the JSON data",
+		Data: *sd,
+		Feature: f,
 	}
 	questionJSON, err := json.Marshal(question)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-
-	response, err := exec.Command("python3", "analyzer/llm_client.py", string(questionJSON)).CombinedOutput()
+	var strResponse string
+	response, err := exec.Command(
+			"/venv/bin/python3",
+			"analyzer/llm_client.py",
+			string(questionJSON),
+		).Output()
 	if err != nil {
-		log.Println(err)
-		return
+		if exitError, ok := err.(*exec.ExitError); ok {
+			strResponse = string(exitError.Stderr)
+		} else {
+			strResponse = err.Error()
+		}
+	} else {
+		strResponse = string(response)
 	}
-	log.Println(response)
 
 	r.mutex.Lock()
-	r.response += string(response)
+	r.response += strResponse
 	r.mutex.Unlock()
 }
 
