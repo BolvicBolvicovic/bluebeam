@@ -1,4 +1,3 @@
-
 function analyze(username, sessionKey) {
   let links = Array.from(document.querySelectorAll('a')).map(a => a.href);
   let buttons = Array.from(document.querySelectorAll('button')).map(b => ({
@@ -60,6 +59,26 @@ function isConnected(sessionKey) {
       browser.runtime.sendMessage({ isConnected: bool });
 }
 
+function register(message) {
+  let body = JSON.stringify({ 
+      username: message.username,
+      password: message.password,
+  })
+
+  fetch('https://localhost/register_account', {
+    method: 'POST',
+    mode: 'cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: body
+  })
+  .then(response => response.text())
+    .then(data => {
+      //const jsonData = JSON.parse(data);
+      console.log(data);
+      browser.runtime.sendMessage({ type: 'registerResponse', data: data });
+  })
+  .catch(error => console.error('Error sending data:', error));
+}
 
 function settingsPage(username, sessionKey) {
   const url = `https://localhost/settings?username=${encodeURIComponent(username)}&sessionkey=${encodeURIComponent(sessionKey)}`;
@@ -87,6 +106,8 @@ function settingsPage(username, sessionKey) {
       sessionKey = values[1];
     } else if (message.type === "isConnected") {
       isConnected(sessionKey);
+    } else if (message.type === "register") {
+      register(message);
     } else if (message.type === "settingsPage") {
       settingsPage(username, sessionKey);
     }

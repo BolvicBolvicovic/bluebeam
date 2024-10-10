@@ -80,12 +80,14 @@ WHERE
 	}
 	decryptedData, err := aeadInstance.Decrypt(encryptedData.V, nil)
 	if err != nil {
-		log.Fatalf("Failed to decrypt data: %v", err)
+		log.Printf("Failed to decrypt data: %v", err)
+		return Criterias{}, err
 	}
 	var decryptedStruct Criterias
 	err = json.Unmarshal(decryptedData, &decryptedStruct)
 	if err != nil {
-		log.Fatalf("Failed to deserialize decrypted data: %v", err)
+		log.Printf("Failed to deserialize decrypted data: %v", err)
+		return Criterias{}, err
 	}
 	return decryptedStruct, nil
 }
@@ -93,7 +95,6 @@ WHERE
 func SetKey() {
 	var kek = aes_gcm_go_proto.AesGcmKeyFormat {
 		Version: 0,
-		//KeyValue: []byte("O/xst9IYnh4yyhUC7++rBOsHsJy2m0Den1BD32hxwQw="),
 		KeySize: 32,
 	}
 	val, err := proto.Marshal(&kek)
