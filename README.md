@@ -33,7 +33,7 @@
 <h3 align="center">bluebeam</h3>
 
   <p align="center">
-    Auditing websites in one click
+    audit websites in one click
     </br>
   </p>
 </div>
@@ -70,7 +70,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-bluebeam is a web extension for auditing websites in one click based on your criterias.
+bluebeam: AI-powered web audits in one click, customized to your criteria.
 
 
 ### Built With
@@ -79,6 +79,7 @@ bluebeam is a web extension for auditing websites in one click based on your cri
 * [![Docker][Docker.com]][Docker-url]
 * [![Mariadb][Mariadb.org]][Mariadb-url]
 * [![Javascript][Javascript.com]][Javascript-url]
+* [![Python][Python.org]][Python-url]
 
 
 <!-- GETTING STARTED -->
@@ -114,6 +115,12 @@ export PATH=$PATH:/usr/local/go/bin
 ```sh
 sudo apt update && sudo apt upgrade
 sudo apt install -y web-ext docker docker-compose
+```
+
+Furthermore, if you actually want to make some request and analyse a page, you will need an OpenAI API key.
+* in goserve/app/.env add:
+```code
+OPENAI_API_KEY="your key"
 ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -154,7 +161,7 @@ See roadmap below.
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Response with a json that applies the chosen criterias on the website
+- [x] Response with a json that applies the chosen criterias on the website
 - [ ] Response with a report in the form of a text, with insights on what to improve/modify
 - [ ] Response with the posibility to create a report with graphs and text
 
@@ -219,3 +226,5 @@ Mail: victor.cornille@gmail.com
 [Mariadb-url]: https://mariadb.org/
 [Javascript.com]: https://shields.io/badge/JavaScript-F7DF1E?logo=JavaScript&logoColor=000&style=flat-square
 [Javascript-url]: https://www.javascript.com/
+[Python.org]: https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54 
+[Python-url]: https://www.python.org/
