@@ -11,13 +11,6 @@
 
 
 <!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
@@ -126,31 +119,27 @@ OPENAI_API_KEY="your key"
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-
 <!-- USAGE EXAMPLES -->
 ## Usage
 
 ### Register an account
 
-At the moment, the only way to register an account is to do the request yourself with curl:
-
-```bash
-curl -X POST https://localhost/register_account -p '{"username" :"YourUserName", "password": "YourPassWord"}' -H {"Content-Type": "application/json"} --insecure
-```
-
-If you get a response that is positive, then you can login with this account.
+Running web-ext will open firefox. Because the server is running on localhost and the certificate is self-signed (at the moment),
+you need to go to Settings -> Tools -> Advanced -> View Certificates -> Servers -> Add Exception then Add https://localhost.
+Open your extension. (You have to be on a website that accepts scripting). Enter the username/password you want and click on register.
+If you get a response that is positive, then you can login with this account. Else, try with an other username/password.
 
 ### Login
 
-Running web-ext will open firefox. Because the server is running on localhost and the certificate is self-signed (at the moment),
-you need to go to Settings -> Tools -> Advanced -> View Certificates -> Servers -> Add Exception then Add https://localhost.
-Finally, Go on the web-site you want to analyse and open the extension, then log in with your username and your password.
+Simply go on the website you want to analyse and open the extension.
+Then log in with your username and your password.
 
 ### Analyse
 
 Once you are logged in, you can click on the analyse button and you will get a response.
-At the moment, the response only says that the server is processing the data. 
-In the future, depending on your settings, it will be able to send a report to help you improve your website based on your needs or just a json filled with the data you wanted to check.
+If you have not given any criteria file, it will not work. You need to go on settings and upload a JSON file.
+The json file has to contain an array of features described in the template example.json at the root of the repository.
+In the future, depending on your settings, it will be able to send a report to help you improve your website based on your needs or just a json filled with the data you wanted to check (as it does now).
 See roadmap below.
 
 
