@@ -70,7 +70,7 @@ type LLMQuestion struct {
 }
 
 type LLMResponse struct {
-	response	string
+	Response	[]json.RawMessage
 	mutex		sync.Mutex
 }
 
@@ -105,8 +105,10 @@ func sendLLMQuestion(f criterias.Feature, sd *ScrapedDefault, r *LLMResponse) {
 		strResponse = string(response)
 	}
 
+	jsonResponse := json.RawMessage(strResponse)
+
 	r.mutex.Lock()
-	r.response += strResponse
+	r.Response = append(r.Response, jsonResponse)
 	r.mutex.Unlock()
 }
 
@@ -122,5 +124,5 @@ func Analyzer(c *gin.Context, sd ScrapedDefault) {
 		go sendLLMQuestion(feat, &sd, &response)				
 	}
 	wg.Wait()
-	c.JSON(http.StatusOK, gin.H{"message": response.response})
+	c.JSON(http.StatusOK, gin.H{"message": response.Response})
 }

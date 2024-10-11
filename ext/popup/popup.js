@@ -89,6 +89,17 @@ function registerSettings() {
   });
 }
 
+function buildDataFile(data) {
+  const link = document.getElementById("consoleMessage");
+  const dataStr = JSON.stringify(data, null, 2);
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  link.textContent = "Click to open result in a new tab";
+  link.addEventListener("click", () => {
+    window.open(url, "_blank");
+  })
+}
+
 function messageListener() {
   browser.runtime.onMessage.addListener((message) => {
     if (message.type === "loginResponse") {
@@ -102,7 +113,11 @@ function messageListener() {
     } else if (message.type === "registerResponse") {
       document.getElementById("consoleMessage").innerHTML = (message.data.error != undefined) ? message.data.error : message.data.message;
     } else if (message.type === "analyzeResponse") {
-      document.getElementById("consoleMessage").innerHTML = (message.data.error != undefined) ? message.data.error : JSON.stringify(message.data.message);
+      if (message.data.error != undefined) {
+        document.getElementById("consoleMessage").innerHTML =  message.data.error;
+      } else {
+        buildDataFile(message.data.message);
+      }
     } else if (message.isConnected === true) {
       document.getElementById("login").style.display = "none";
     } else if (message.isConnected === false) {

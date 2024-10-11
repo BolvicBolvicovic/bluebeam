@@ -39,11 +39,11 @@ try:
                             "type": "boolean"
                         },
                         "textifpresent": {
-                            "description": "If the feature is present then extract the concise part of the data that shows the feature is present else leave an empty string",
+                            "description": "If the feature is present then extract a part from the provided data set proving the presence of the feature else leave an empty string",
                             "type": "string"
                         },
                         "insight": {
-                            "description": "Give a very short (1 line) insight on the feature and its presence or no presence, if it has a positve or negative impact",
+                            "description": "Give a very short (1 line) insight on the feature and its presence or no presence, if it has a positve or negative impact on the webpage",
                             "type": "string"
                         }
                     }

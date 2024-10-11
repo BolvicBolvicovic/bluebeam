@@ -8,5 +8,15 @@
 		"yescases": [""],
 		"nocases": ["there is just a try playground and no argument"],
 		"authorizeddata": ["all"]
+	},
+	{
+		"topic": "programming_language_webpage",
+		"featurename": "community_section",
+		"featuretype": "content",
+		"description": "Is there a community section?",
+		"minimumcriterias": ["there is a button that links to a community section"],
+		"yescases": [""],
+		"nocases": [""],
+		"authorizeddata": ["buttons"]
 	}
 ]
