@@ -27,6 +27,7 @@ type Feature struct {
 	MinimumCriterias []string `json:"minimumcriterias" `
 	YesCases 	[]string  `json:"yescases" `
 	NoCases 	[]string  `json:"nocases" `
+	AuthorizedData	[]string  `json:"authorizeddata"`
 }
 
 type Criterias struct {

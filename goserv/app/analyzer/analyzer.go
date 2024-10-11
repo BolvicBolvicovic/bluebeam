@@ -11,17 +11,50 @@ import (
 	"encoding/json"
 )
 
-type _Buttons struct {
-	Text	string `json:"text"`
+type _Button struct {
+	Text    string `json:"text"`
 	OnClick string `json:"onclick"`
+	ID      string `json:"id"`
+	Classes string `json:"classes"`
+}
+
+type _Link struct {
+	Href string `json:"href"`
+	Text string `json:"text"`
+}
+
+type _Image struct {
+	Src     string `json:"src"`
+	Alt     string `json:"alt"`
+	Classes string `json:"classes"`
+}
+
+type _FormInput struct {
+	Type  string `json:"type"`
+	Name  string `json:"name"`
+	Value string `json:"value"`
+}
+
+type _MetaTag struct {
+	Name    string `json:"name"`
+	Content string `json:"content"`
+}
+
+type _Header struct {
+	Tag  string `json:"tag"`
+	Text string `json:"text"`
 }
 
 type ScrapedDefault struct {
-	Username	string `json:username`
-	SessionKey	string `json:"sessionkey"`
-	Links		[]string `json:"links"`
-	Buttons		[]_Buttons `json:"buttons"`
-	BodyInnerText	string `json:"bodyText"`
+	Username     string       `json:"username"`
+	SessionKey   string       `json:"sessionkey"`
+	Links        []_Link      `json:"links"`
+	Buttons      []_Button    `json:"buttons"`
+	Images       []_Image     `json:"images"`
+	FormInputs   []_FormInput `json:"formInputs"`
+	MetaTags     []_MetaTag   `json:"metaTags"`
+	Headers      []_Header    `json:"headers"`
+	BodyInnerText string      `json:"bodyText"`
 }
 
 type LLMQuestions struct {

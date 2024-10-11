@@ -6,6 +6,7 @@
 		"description": "Is there any argument on why the user should use the language?",
 		"minimumcriterias": ["There is at least one argument"],
 		"yescases": [""],
-		"nocases": ["there is just a try playground and no argument"]
+		"nocases": ["there is just a try playground and no argument"],
+		"authorizeddata": ["all"]
 	}
 ]

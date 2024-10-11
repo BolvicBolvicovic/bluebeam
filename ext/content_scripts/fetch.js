@@ -1,24 +1,57 @@
 function analyze(username, sessionKey) {
-  let links = Array.from(document.querySelectorAll('a')).map(a => a.href);
+  let links = Array.from(document.querySelectorAll('a')).map(a => ({
+    href: a.href,
+    text: a.innerText
+  }));
+
   let buttons = Array.from(document.querySelectorAll('button')).map(b => ({
     text: b.innerText,
-    onclick: b.onclick ? b.onclick.toString() : null
+    onclick: b.onclick ? b.onclick.toString() : null,
+    id: b.id || null,
+    classes: b.className || null
   }));
-  let bodyText = document.body.innerText;
-  let body = JSON.stringify({ 
-      username: username,
-      sessionkey: sessionKey,
-      links,
-      buttons,
-      bodyText
-  })
 
-  // Send the scraped data along with the username and session key to your Go server
+  let images = Array.from(document.querySelectorAll('img')).map(img => ({
+    src: img.src,
+    alt: img.alt || null,
+    classes: img.className || null
+  }));
+
+  let formInputs = Array.from(document.querySelectorAll('input')).map(input => ({
+    type: input.type,
+    name: input.name || null,
+    value: input.value || null
+  }));
+
+  let metaTags = Array.from(document.querySelectorAll('meta')).map(meta => ({
+    name: meta.getAttribute('name') || meta.getAttribute('property') || null,
+    content: meta.getAttribute('content') || null
+  }));
+
+  let headers = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6')).map(header => ({
+    tag: header.tagName,
+    text: header.innerText
+  }));
+
+  let bodyText = document.body.innerText;
+
+  let dataPayload = JSON.stringify({ 
+    username: username,
+    sessionKey: sessionKey,
+    links,
+    buttons,
+    images,
+    formInputs,
+    metaTags,
+    headers,
+    bodyText
+  });
+
   fetch('https://localhost/analyze', {
     method: 'POST',
     mode: 'cors',
     headers: { 'Content-Type': 'application/json' },
-    body: body
+    body: dataPayload
   })
   .then(response => response.text())
     .then(data => {
