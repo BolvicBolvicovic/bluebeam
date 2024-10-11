@@ -23,7 +23,6 @@ function analyze(username, sessionKey) {
   .then(response => response.text())
     .then(data => {
       const jsonData = JSON.parse(data);
-      console.log(jsonData);
       browser.runtime.sendMessage({ type: 'analyzeResponse', data: jsonData });
   })
   .catch(error => console.error('Error sending data:', error));
@@ -73,9 +72,8 @@ function register(message) {
   })
   .then(response => response.text())
     .then(data => {
-      //const jsonData = JSON.parse(data);
-      console.log(data);
-      browser.runtime.sendMessage({ type: 'registerResponse', data: data });
+      const jsonData = JSON.parse(data);
+      browser.runtime.sendMessage({ type: 'registerResponse', data: jsonData });
   })
   .catch(error => console.error('Error sending data:', error));
 }

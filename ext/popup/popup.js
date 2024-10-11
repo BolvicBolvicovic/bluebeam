@@ -1,4 +1,3 @@
-
 function reportError(error) {
     console.error(`Error caught: ${error}`);
 }
@@ -101,15 +100,15 @@ function messageListener() {
       document.getElementById("login").style.display = "none";
       document.getElementById("scrape").style.display = "block";
     } else if (message.type === "registerResponse") {
-      document.getElementById("consoleMessage").innerHTML = message.data.error ? message.data.error : message.data;
+      document.getElementById("consoleMessage").innerHTML = (message.data.error != undefined) ? message.data.error : message.data.message;
     } else if (message.type === "analyzeResponse") {
-      document.getElementById("consoleMessage").innerHTML = JSON.stringify(message.data);
+      document.getElementById("consoleMessage").innerHTML = (message.data.error != undefined) ? message.data.error : JSON.stringify(message.data.message);
     } else if (message.isConnected === true) {
       document.getElementById("login").style.display = "none";
     } else if (message.isConnected === false) {
       document.getElementById("scrape").style.display = "none";
     } else if (message.error) {
-      document.getElementById("consoleMessage").innerHTML = JSON.stringify(message.error);
+      document.getElementById("consoleMessage").innerHTML = message.error;
     }
   });
 }

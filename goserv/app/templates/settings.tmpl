@@ -4,14 +4,21 @@
   </head>
   <body class="flex items-center justify-center min-h-screen bg-gray-100">
     <div class="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
+      <!-- Webextension Name -->
+      <h1 class="text-3xl font-bold text-blue-600 text-center mb-6 lowercase">bluebeam</h1>
+
       <!-- Header Section -->
       <h1 class="text-2xl font-bold text-blue-600 text-center mb-4">Välkommen, {{ .username }}</h1>
+
       <!-- File Upload Form -->
       <form class="upload space-y-4" onsubmit="sendCriterias(event)">
         <label for="criterias" class="block w-full py-2 px-4 text-center bg-blue-50 text-blue-600 border border-blue-300 rounded-lg cursor-pointer hover:bg-blue-100 transition">
           Choose criteria file
         </label>
-        <input type="file" name="criterias" id="criterias" accept=".json" required class="hidden" />
+        <input type="file" name="criterias" id="criterias" accept=".json" required class="hidden" onchange="showFileSelected()" />
+
+        <!-- Notification Message -->
+        <div id="fileStatus" class="text-center mt-2"></div>
         
         <button type="submit" class="w-full py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition">
           Submit Criteria
@@ -20,18 +27,36 @@
     </div>
 
     <script>
+      function showFileSelected() {
+        const fileStatus = document.getElementById("fileStatus");
+        const fileInput = document.getElementById("criterias");
+
+        if (fileInput.files.length > 0) {
+          fileStatus.textContent = "File selected: " + fileInput.files[0].name;
+          fileStatus.classList.remove("text-blue-800");
+          fileStatus.classList.add("text-blue-400");
+        } else {
+          fileStatus.textContent = "";
+        }
+      }
+
       function sendCriterias(event) {
         event.preventDefault();
 
         const file = document.getElementById("criterias").files[0];
+        const fileStatus = document.getElementById("fileStatus");
+
         if (!file) {
-          console.error("No file selected.");
+          fileStatus.textContent = "Please select a file before submitting.";
+          fileStatus.classList.remove("text-blue-400");
+          fileStatus.classList.add("text-blue-800");
           return;
         }
 
         const reader = new FileReader();
         reader.onload = function() {
           const features = JSON.parse(reader.result);
+
           fetch('https://localhost/criterias', {
             method: 'POST',
             mode: 'cors',
@@ -44,10 +69,16 @@
           })
           .then(response => response.text())
           .then(data => {
-            console.log("Criteria submitted!");
-            console.log("Response:", data);
+            fileStatus.textContent = "Criteria successfully submitted!";
+            fileStatus.classList.remove("text-blue-800");
+            fileStatus.classList.add("text-blue-400");
           })
-          .catch(error => console.error('Error sending data:', error));
+          .catch(error => {
+            console.error('Error sending data:', error);
+            fileStatus.textContent = "Error submitting criteria.";
+            fileStatus.classList.remove("text-blue-400");
+            fileStatus.classList.add("text-blue-800");
+          });
         }
 
         reader.readAsText(file);

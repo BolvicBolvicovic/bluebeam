@@ -9,7 +9,6 @@ import (
 	"github.com/BolvicBolvicovic/bluebeam/criterias"
 	"os/exec"
 	"encoding/json"
-//	"strconv"
 )
 
 type _Buttons struct {
@@ -81,6 +80,7 @@ func sendLLMQuestion(f criterias.Feature, sd *ScrapedDefault, r *LLMResponse) {
 func Analyzer(c *gin.Context, sd ScrapedDefault) {
 	crits, err := criterias.Get(c, sd.Username)
 	if err != nil && err != sql.ErrNoRows {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": ("No criterias chosen or " + err.Error())})
 		return
 	}
 	var response LLMResponse

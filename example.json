@@ -1,11 +1,11 @@
 [
 	{
-		"topic": "store_web_page",
-		"featurename": "prices",
+		"topic": "programming_language_webpage",
+		"featurename": "arguments",
 		"featuretype": "content",
-		"description": "Is the price of each article shown?",
-		"minimumcriterias": ["There is a number related to the article price close to the article"],
-		"yescases": ["minimumcriterias is enough for a yescase"],
-		"nocases": ["no prices are shown"]
+		"description": "Is there any argument on why the user should use the language?",
+		"minimumcriterias": ["There is at least one argument"],
+		"yescases": [""],
+		"nocases": ["there is just a try playground and no argument"]
 	}
 ]
