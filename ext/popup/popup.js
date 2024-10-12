@@ -89,15 +89,91 @@ function registerSettings() {
   });
 }
 
-function buildDataFile(data) {
-  const link = document.getElementById("consoleMessage");
+function authenticate() {
+  const clientID = "726518157620-ue8o67ep33k2cr2k6ra8uqlpneo6uodu.apps.googleusercontent.com";
+  const redirectURI = browser.identity.getRedirectURL();
+  const authURL = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=https://www.googleapis.com/auth/spreadsheets`;
+  return browser.identity.lauchWebAuthFlow({
+    interactive: true,
+    url: authURL
+  }).then(responseURL => {
+    const params = new URL(responseURL).hash.substring(1);
+    return URLSearchParams(params).get("access_token");
+  });
+}
+
+function createSpreadSheet(accessToken) {
+  const url = 'https://sheets.googleapis.com/v4/spreadsheets';
+  const body = {
+    properties: {
+      // TODO: Add the name of the website we are on
+      title: "data"
+    }
+  };
+  return fetch(url, {
+    method: 'POST',
+    headers: {
+      "Authorization": `Bearer ${accessToken}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(body)
+  })
+  .then(response => response.json())
+  .then(data => {
+    return data.spreadsheetId;
+  })
+  .catch(e => console.error("Error creating spreadsheet:", e));
+}
+
+function updateSpreadsheet(accessToken, spreadsheetId, range, values) {
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}:append?valueInputOption=RAW`;
+    const body = JSON.stringify({
+        values: values
+    });
+
+    return fetch(url, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+        },
+        body: body
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Spreadsheet updated:', data);
+    })
+    .catch(error => console.error('Error updating spreadsheet:', error));
+}
+
+function convertTo2DArray(jsonArray) {
+    if (jsonArray.length === 0) return [];
+    
+    const headers = Object.keys(jsonArray[0]);
+    const rows = jsonArray.map(obj => headers.map(header => obj[header]));
+    
+    return [headers, ...rows];
+}
+
+function buildDataFiles(data) {
+  // JSON
   const dataStr = JSON.stringify(data, null, 2);
   const blob = new Blob([dataStr], { type: "application/json" });
   const url = URL.createObjectURL(blob);
-  link.textContent = "Click to open result in a new tab";
-  link.addEventListener("click", () => {
+  document.getElementById("getJSON").addEventListener("click", () => {
     window.open(url, "_blank");
-  })
+  });
+
+  //Google Sheet
+  document.getElementById("getGoogleSpreadsheet").addEventListener("click", () => {
+    authenticate().then(accessToken => {
+      createSpreadSheet(accessToken).then(spreadsheetId => {
+        const range = 'Sheet1!A1';
+        const values = convertJSONTo2DArray(data);
+        updateSpreadsheet(accessToken, spreadsheetId, range, values);
+      });
+    });
+  });
 }
 
 function messageListener() {
@@ -116,7 +192,8 @@ function messageListener() {
       if (message.data.error != undefined) {
         document.getElementById("consoleMessage").innerHTML =  message.data.error;
       } else {
-        buildDataFile(message.data.message);
+        buildDataFiles(message.data.message);
+        document.getElementById("getOutput").style.display = "block";
       }
     } else if (message.isConnected === true) {
       document.getElementById("login").style.display = "none";
@@ -130,6 +207,7 @@ function messageListener() {
 
 async function handler() {
   await browser.tabs.executeScript({ file: "/content_scripts/fetch.js" })
+  document.getElementById("getOutput").style.display = "none";
   messageListener();
   requestIsConnected();
   registerLoginButton();

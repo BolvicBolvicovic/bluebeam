@@ -2,12 +2,17 @@
   "manifest_version": 2,
   "name": "bluebeam",
   "version": "1.0",
-  "permissions": ["tabs", "webRequest", "activeTab", "scripting", "https://localhost/*"],
+  "permissions": ["identity", "storage", "tabs", "webRequest", "activeTab", "scripting", "https://localhost/*"],
 
-  "description": "Scrap the content you need to audit.",
+  "description": "Analyse any webpage in one click.",
   "content_security_policy": "script-src 'self'; style-src 'self' https://cdn.jsdelivr.net; object-src 'self'",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "bluebeam"
+    }
+  },
   "browser_action": {
-    "title": "Scraper",
+    "title": "bluebeam",
     "default_popup": "popup/popup.html"
   },
   "icons": {
