@@ -43,7 +43,7 @@ try:
                             "type": "string"
                         },
                         "insight": {
-                            "description": "Give a very short (1 line) insight on the feature and its presence or no presence, if it has a positve or negative impact on the webpage",
+                           "description": "Give a very short (1 line) insight on the feature (its presence or no presence) and the topic, if it has a positve or negative impact on the webpage",
                             "type": "string"
                         }
                     }

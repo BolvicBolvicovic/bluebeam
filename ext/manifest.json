@@ -2,18 +2,19 @@
   "manifest_version": 2,
   "name": "bluebeam",
   "version": "1.0",
-  "permissions": ["identity", "storage", "tabs", "webRequest", "activeTab", "scripting", "https://localhost/*"],
-
+  "permissions": [
+    "identity", 
+    "storage", 
+    "tabs", 
+    "webRequest", 
+    "activeTab", 
+    "https://localhost/*"
+  ],
   "description": "Analyse any webpage in one click.",
-  "content_security_policy": "script-src 'self'; style-src 'self' https://cdn.jsdelivr.net; object-src 'self'",
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "bluebeam"
-    }
-  },
+  "content_security_policy": "default-src 'self'; connect-src 'self' https://localhost https://www.google-analytics.com https://stats.g.doubleclick.net; script-src 'self'; style-src 'self' https://cdn.jsdelivr.net; object-src 'self'",
   "browser_action": {
-    "title": "bluebeam",
-    "default_popup": "popup/popup.html"
+    "default_popup": "popup/popup.html",
+    "default_icon": "icons/border-48.png"
   },
   "icons": {
     "48": "icons/border-48.png"

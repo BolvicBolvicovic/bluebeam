@@ -10,6 +10,16 @@
 		"authorizeddata": ["all"]
 	},
 	{
+		"topic": "pizzeria_webpage",
+		"featurename": "pizza_type",
+		"featuretype": "content",
+		"description": "Is there any pizza available?",
+		"minimumcriterias": ["There is at least two types of pizzas"],
+		"yescases": [""],
+		"nocases": ["if there is one or less pizza available"],
+		"authorizeddata": ["all"]
+	},
+	{
 		"topic": "programming_language_webpage",
 		"featurename": "community_section",
 		"featuretype": "content",

@@ -90,8 +90,9 @@ function registerSettings() {
 }
 
 function authenticate() {
-  const clientID = "726518157620-ue8o67ep33k2cr2k6ra8uqlpneo6uodu.apps.googleusercontent.com";
-  const redirectURI = browser.identity.getRedirectURL();
+  const clientId = "726518157620-ue8o67ep33k2cr2k6ra8uqlpneo6uodu.apps.googleusercontent.com";
+  const redirectUri = browser.identity.getRedirectURL();
+  console.log(redirectUri);
   const authURL = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=https://www.googleapis.com/auth/spreadsheets`;
   return browser.identity.lauchWebAuthFlow({
     interactive: true,
@@ -166,13 +167,14 @@ function buildDataFiles(data) {
 
   //Google Sheet
   document.getElementById("getGoogleSpreadsheet").addEventListener("click", () => {
-    authenticate().then(accessToken => {
-      createSpreadSheet(accessToken).then(spreadsheetId => {
-        const range = 'Sheet1!A1';
-        const values = convertJSONTo2DArray(data);
-        updateSpreadsheet(accessToken, spreadsheetId, range, values);
-      });
-    });
+    document.getElementById("consoleMessage").innerHTML = "Google spreadsheet are not available yet";
+    //authenticate().then(accessToken => {
+    //  createSpreadSheet(accessToken).then(spreadsheetId => {
+    //    const range = 'Sheet1!A1';
+    //    const values = convertJSONTo2DArray(data);
+    //    updateSpreadsheet(accessToken, spreadsheetId, range, values);
+    //  });
+    //});
   });
 }
 
@@ -194,6 +196,7 @@ function messageListener() {
       } else {
         buildDataFiles(message.data.message);
         document.getElementById("getOutput").style.display = "block";
+        document.getElementById("consoleMessage").innerHTML = "";
       }
     } else if (message.isConnected === true) {
       document.getElementById("login").style.display = "none";
@@ -206,7 +209,7 @@ function messageListener() {
 }
 
 async function handler() {
-  await browser.tabs.executeScript({ file: "/content_scripts/fetch.js" })
+  await browser.tabs.executeScript({file: "/content_scripts/fetch.js"});
   document.getElementById("getOutput").style.display = "none";
   messageListener();
   requestIsConnected();
