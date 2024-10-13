@@ -7,10 +7,14 @@ import (
 	"github.com/BolvicBolvicovic/bluebeam/database"
 	"github.com/BolvicBolvicovic/bluebeam/analyzer"
 	"github.com/BolvicBolvicovic/bluebeam/criterias"
+	"google.golang.org/api/sheets/v4"
+	"google.golang.org/api/drive/v3"
+	"fmt"
 	"database/sql"
 	"crypto/rand"
 	"golang.org/x/crypto/bcrypt"
 	"encoding/base64"
+	"encoding/json"
 	"log"
 )
 
@@ -81,6 +85,172 @@ func Analyze(c *gin.Context) {
 		return
 	}
 	analyzer.Analyzer(c, scrapedData)
+}
+
+func UpdateEmail(c *gin.Context) {
+	var newEmail struct {
+		Username	string `json:"username"`
+		SessionKey	string `json:"sessionkey"`
+		Email		string `json:"email"`
+	}
+	if err := c.ShouldBindJSON(&newEmail); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+	if !validUser(c, newEmail.Username, newEmail.SessionKey) {
+		return
+	}
+	query := `
+UPDATE
+	users
+SET
+	email = ?
+WHERE
+	username = ?;
+	`
+	if _, err := database.Db.Exec(query, newEmail.Email, newEmail.Username); err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating email"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Email updated successfuly"})
+}
+
+func createAndFillSpreadsheet(srv *sheets.Service, d *drive.Service, data json.RawMessage, email string) (string, error) {
+	spreadsheet := &sheets.Spreadsheet{
+	    Properties: &sheets.SpreadsheetProperties{
+	        Title: "New dataset",
+	    },
+	}
+	
+	sheet, err := srv.Spreadsheets.Create(spreadsheet).Do()
+	if err != nil {
+	    return "", fmt.Errorf("unable to create spreadsheet: %v", err)
+	}
+	
+	spreadsheetID := sheet.SpreadsheetId
+	
+	// Parse the JSON data
+	var records []map[string]interface{}
+	if err := json.Unmarshal(data, &records); err != nil {
+	    return "", fmt.Errorf("error parsing JSON: %v", err)
+	}
+	
+	// Check if records are available
+	if len(records) == 0 {
+	    return "", fmt.Errorf("no data to fill")
+	}
+	
+	// Extract headers from the first record
+	headers := []string{}
+	for key := range records[0] {
+	    headers = append(headers, key)
+	}
+	
+	// Prepare the 2D array for Google Sheets
+	values := [][]interface{}{}
+	
+	// Add headers as the first row
+	headerRow := make([]interface{}, len(headers))
+	for i, header := range headers {
+	    headerRow[i] = header
+	}
+	values = append(values, headerRow)
+	
+	// Convert each JSON object into a row
+	for _, record := range records {
+	    row := make([]interface{}, len(headers))
+	    for i, header := range headers {
+	        row[i] = record[header]
+	    }
+	    values = append(values, row)
+	}
+	
+	vr := &sheets.ValueRange{
+	    Values: values,
+	}
+	
+	_, err = srv.Spreadsheets.Values.Update(spreadsheetID, "Sheet1!A1", vr).ValueInputOption("RAW").Do()
+	if err != nil {
+	    return "", fmt.Errorf("unable to update spreadsheet values: %v", err)
+	}
+
+	permission := &drive.Permission{
+		Type:         "user",
+		Role:         "writer", // Can be "reader" or "writer"
+		EmailAddress: email,
+	}
+	_, err = d.Permissions.Create(spreadsheetID, permission).SendNotificationEmail(true).Do()
+	if err != nil {
+	        return "", fmt.Errorf("unable to share spreadsheet: %v", err)
+	}
+
+	return fmt.Sprintf("https://docs.google.com/spreadsheets/d/%s", spreadsheetID), nil
+}
+
+func OutputGoogleSpreadsheet(c *gin.Context) {
+	var output struct {
+		Username	string `json:"username"`
+		SessionKey	string `json:"sessionkey"`
+		Data		json.RawMessage `json:"data"`
+	}
+	if err := c.ShouldBindJSON(&output); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+	if !validUser(c, output.Username, output.SessionKey) {
+		return
+	}
+	query := `
+SELECT
+	email
+FROM
+	users
+WHERE
+	username = ?
+	`
+	row := database.Db.QueryRow(query, output.Username)
+	var email sql.NullString
+	if err := row.Scan(&email); err != nil {
+		if err == sql.ErrNoRows {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username"})
+		} else {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
+		}
+		return
+	}
+	if !email.Valid {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email"})
+		return
+	}
+	service, exists := c.Get("sheetsService")
+	if !exists {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Sheets service not found"})
+		return
+	}
+	sheetsService, ok := service.(*sheets.Service)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid Sheets service instance"})
+		return
+	}
+	service, exists = c.Get("driveService")
+	if !exists {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Drive service not found"})
+		return
+	}
+	driveService, ok := service.(*drive.Service)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid drive service instance"})
+		return
+	}
+
+	url, err := createAndFillSpreadsheet(sheetsService, driveService, output.Data, email.String)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"spreadsheetUrl": url})
 }
 
 func Login(c *gin.Context) {
@@ -154,7 +324,8 @@ func ResgisterAccount(c *gin.Context) {
 	var newUser struct {
 		Username	string `json:"username"`
 		Password	string `json:"password"`
-		//TODO: Add phone/email verification
+		Email		string `json:"email"`
+		//TODO: Add email verification and hash usernam/email
 		//TODO: On the frontend, double check the password and how strong it is
 	}
 	if err := c.ShouldBindJSON(&newUser); err != nil {
@@ -185,11 +356,11 @@ WHERE
 		query = `
 INSERT INTO
 	users
-	(username, password)
+	(username, password, email)
 VALUES
-	(?, ?);
+	(?, ?, ?);
 		`
-		if _, err := database.Db.Exec(query, newUser.Username, hash); err != nil {
+		if _, err := database.Db.Exec(query, newUser.Username, hash, newUser.Email); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
 		}
 		c.JSON(http.StatusAccepted, gin.H{"message": "Account successfuly created"})

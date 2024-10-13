@@ -42,8 +42,8 @@ try:
                             "description": "If the feature is present then extract a part from the provided data set proving the presence of the feature else leave an empty string",
                             "type": "string"
                         },
-                        "insight": {
-                           "description": "Give a very short (1 line) insight on the feature (its presence or no presence) and the topic, if it has a positve or negative impact on the webpage",
+                        "thoughtprocess": {
+                           "description": "Give a very short (1 line) explaination of how the data you extracted validates the feature or, if the feature is not found why no data match the feature.",
                             "type": "string"
                         }
                     }

@@ -116,6 +116,8 @@ Furthermore, if you actually want to make some request and analyse a page, you w
 OPENAI_API_KEY="your key"
 ```
 
+If you want to use the google spreadsheet feature, add your google credentials file as googlecredentials.json from the root at ./goserv/app/startup/
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 

@@ -10,7 +10,8 @@ ENV PATH="/venv/bin:$PATH"
 # Set the working directory
 WORKDIR /app
 
-RUN go env -w GOPROXY=direct
+RUN export GOPROXY=https://proxy.golang.org
+
 
 COPY go.mod ./
 COPY go.sum ./

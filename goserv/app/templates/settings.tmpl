@@ -17,12 +17,24 @@
         </label>
         <input type="file" name="criterias" id="criterias" accept=".json" required class="hidden" onchange="showFileSelected()" />
 
-        <!-- Notification Message -->
-        <div id="fileStatus" class="text-center mt-2"></div>
-        
         <button type="submit" class="w-full py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition">
           Submit Criteria
         </button>
+
+        <!-- Notification Message -->
+        <div id="fileStatus" class="text-center mt-2"></div>
+      </form>
+
+      <!-- Email Update Form -->
+      <form class="update-email space-y-4 mt-6" onsubmit="updateEmail(event)">
+        <input type="email" id="email" name="email" placeholder="Enter new email" required class="w-full py-2 px-4 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" />
+
+        <button type="submit" class="w-full py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition">
+          Update Email
+        </button>
+
+        <!-- Notification Message -->
+        <div id="emailStatus" class="text-center mt-2"></div>
       </form>
     </div>
 
@@ -42,7 +54,6 @@
 
       function sendCriterias(event) {
         event.preventDefault();
-
         const file = document.getElementById("criterias").files[0];
         const fileStatus = document.getElementById("fileStatus");
 
@@ -82,6 +93,35 @@
         }
 
         reader.readAsText(file);
+      }
+
+      function updateEmail(event) {
+        event.preventDefault();
+        const email = document.getElementById("email").value;
+        const emailStatus = document.getElementById("emailStatus");
+
+        fetch('https://localhost/updateEmail', {
+          method: 'POST',
+          mode: 'cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: "{{ .username }}",
+            sessionkey: "{{ .sessionkey }}",
+            email: email
+          }),
+        })
+        .then(response => response.text())
+        .then(data => {
+          emailStatus.textContent = "Email updated successfully!";
+          emailStatus.classList.remove("text-blue-800");
+          emailStatus.classList.add("text-blue-400");
+        })
+        .catch(error => {
+          console.error('Error updating email:', error);
+          emailStatus.textContent = "Error updating email.";
+          emailStatus.classList.remove("text-blue-400");
+          emailStatus.classList.add("text-blue-800");
+        });
       }
     </script>
   </body>
