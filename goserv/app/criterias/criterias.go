@@ -37,7 +37,6 @@ type Criterias struct {
 }
 
 func Store(c *gin.Context, crits Criterias) {
-	log.Println(crits)
 	data, _ := json.Marshal(crits)
 	encryptedData, err := aeadInstance.Encrypt(data, nil)
 	if err != nil {

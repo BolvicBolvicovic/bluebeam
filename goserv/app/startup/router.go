@@ -63,6 +63,8 @@ func BuildRouter() *gin.Engine {
 
 	router.GET("/ping", api.Pong)
 	router.GET("/settings", api.Settings)
+	router.GET("/initOAuth", api.InitOAuth)
+	router.GET("/selectGoogleFile", api.SelectGoogleFile)
 
 	router.POST("/login", api.Login)
 	router.POST("/registerAccount", api.ResgisterAccount)
