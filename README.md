@@ -51,6 +51,7 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
+    <li><a href="#example">Example</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
@@ -124,12 +125,14 @@ If you want to use the google spreadsheet feature, add your google credentials f
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-### Register an account
-
 Running web-ext will open firefox. Because the server is running on localhost and the certificate is self-signed (at the moment),
 you need to go to Settings -> Tools -> Advanced -> View Certificates -> Servers -> Add Exception then Add https://localhost.
-Open your extension. (You have to be on a website that accepts scripting). Enter the username/password you want and click on register.
-If you get a response that is positive, then you can login with this account. Else, try with an other username/password.
+
+### Register an account
+
+Open your extension, (You have to be on a website that accepts scripting) and click on register a new account.
+Fill all fields. It's important that the email you give is a valid google email account. It will enable the extension to provide access to the output Google Spreadsheet.
+If you get a response that is positive, you can go back and login with this account. Else, try with an other username/password.
 
 ### Login
 
@@ -139,21 +142,29 @@ Then log in with your username and your password.
 ### Analyse
 
 Once you are logged in, you can click on the analyse button and you will get a response.
-If you have not given any criteria file, it will not work. You need to go on settings and upload a JSON file.
-The json file has to contain an array of features described in the template example.json at the root of the repository.
-In the future, depending on your settings, it will be able to send a report to help you improve your website based on your needs or just a json filled with the data you wanted to check (as it does now).
-See roadmap below.
+Current possible outputs are:
+- a blob containing a JSON file
+- a google spreadsheet
+
+If you have not given any criteria file, you will get an error. You need to go on settings and upload a JSON file.
+It has to contain an array of features described in the template example.json at the root of the repository.
+
+See roadmap below for future improvements.
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
+## Example
+
+Here is a concret output example with the example.json file used as an input and the (<a href="https://go.dev/">Go website</a>).
+![Alt text](images/example.png)
 
 <!-- ROADMAP -->
 ## Roadmap
 
-- [x] Response with a json that applies the chosen criterias on the website
-- [ ] Response with a report in the form of a text, with insights on what to improve/modify
+- [x] Response with a json/google spreadsheet that applies the chosen criterias on the website
+- [ ] ~Response with a report in the form of a text, with insights on what to improve/modify~ This is not relevant for the final user as they can make up their own mind based on the output.
 - [ ] Response with the posibility to create a report with graphs and text
 
 See the [open issues](https://github.com/BolvicBolvicovic/bluebeam/issues) for a full list of proposed features (and known issues).
