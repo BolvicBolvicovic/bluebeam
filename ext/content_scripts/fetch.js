@@ -95,9 +95,10 @@ function register(message) {
   let body = JSON.stringify({ 
       username: message.username,
       password: message.password,
-  })
+      email: message.email
+  });
 
-  fetch('https://localhost/register_account', {
+  fetch('https://localhost/registerAccount', {
     method: 'POST',
     mode: 'cors',
     headers: { 'Content-Type': 'application/json' },
@@ -114,6 +115,30 @@ function register(message) {
 function settingsPage(username, sessionKey) {
   const url = `https://localhost/settings?username=${encodeURIComponent(username)}&sessionkey=${encodeURIComponent(sessionKey)}`;
   window.open(url);
+}
+
+function outputGoogleSpreadsheet(username, sessionkey, data) {
+  let body = JSON.stringify({
+    username: username,
+    sessionkey: sessionkey,
+    data: data
+  });
+
+  fetch('https://localhost/outputGoogleSpreadsheet', {
+    method: "POST",
+    mode: "cors",
+    headers: { "Content-Type": "application/json" },
+    body: body
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (!data.error) {
+      window.open(data.spreadsheetUrl);
+    } else {
+      console.error(data.error);
+    }
+  })
+  .catch(e => console.error(e));
 }
 
 (() => {
@@ -139,6 +164,8 @@ function settingsPage(username, sessionKey) {
       isConnected(sessionKey);
     } else if (message.type === "register") {
       register(message);
+    } else if (message.type === "outputGoogleSpreadsheet") {
+      outputGoogleSpreadsheet(username, sessionKey, message.data);
     } else if (message.type === "settingsPage") {
       settingsPage(username, sessionKey);
     }

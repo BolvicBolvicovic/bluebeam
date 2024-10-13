@@ -2,10 +2,10 @@ function reportError(error) {
     console.error(`Error caught: ${error}`);
 }
 
-function registerLoginButton() {
+function registerLoginButtons() {
   document.getElementById("loginButton").addEventListener("click", (e)=> {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
+    const username = document.getElementById('lUsername').value;
+    const password = document.getElementById('lPassword').value;
 
     if (!username || !password) {
       document.getElementById("consoleMessage").innerHTML = 'Please provide both username and password.';
@@ -22,16 +22,28 @@ function registerLoginButton() {
         });
       })
       .catch(reportError);
-  })
+  });
+  document.getElementById("lRegisterButton").addEventListener("click", () => {
+    document.getElementById("consoleMessage").innerHTML = "";
+    document.getElementById("login").style.display = "none";
+    document.getElementById("register").style.display = "block";
+  });
 }
 
-function registerRegisterButton() {
-  document.getElementById("registerButton").addEventListener("click", (e)=> {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
+function registerRegisterButtons() {
+  document.getElementById("rRegisterButton").addEventListener("click", (e)=> {
+    const username = document.getElementById('rUsername').value;
+    const password = document.getElementById('rPassword').value;
+    const password2 = document.getElementById('rPassword2').value;
+    const email = document.getElementById("email").value;
 
-    if (!username || !password) {
-      document.getElementById("consoleMessage").innerHTML = 'Please provide both username and password.';
+    if (!username || !password || !email) {
+      document.getElementById("consoleMessage").innerHTML = 'Please fill all fields.';
+      return;
+    }
+
+    if (password != password2) {
+      document.getElementById("consoleMessage").innerHTML = 'The two passwords are different.';
       return;
     }
 
@@ -42,10 +54,16 @@ function registerRegisterButton() {
           type: "register",
           username: username,
           password: password,
+          email: email
         });
       })
       .catch(reportError);
-  })
+  });
+  document.getElementById("backButton").addEventListener("click", () => {
+    document.getElementById("consoleMessage").innerHTML = "";
+    document.getElementById("register").style.display = "none";
+    document.getElementById("login").style.display = "block";
+  });
 }
 
 
@@ -89,73 +107,6 @@ function registerSettings() {
   });
 }
 
-function authenticate() {
-  const clientId = "726518157620-ue8o67ep33k2cr2k6ra8uqlpneo6uodu.apps.googleusercontent.com";
-  const redirectUri = browser.identity.getRedirectURL();
-  console.log(redirectUri);
-  const authURL = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=https://www.googleapis.com/auth/spreadsheets`;
-  return browser.identity.lauchWebAuthFlow({
-    interactive: true,
-    url: authURL
-  }).then(responseURL => {
-    const params = new URL(responseURL).hash.substring(1);
-    return URLSearchParams(params).get("access_token");
-  });
-}
-
-function createSpreadSheet(accessToken) {
-  const url = 'https://sheets.googleapis.com/v4/spreadsheets';
-  const body = {
-    properties: {
-      // TODO: Add the name of the website we are on
-      title: "data"
-    }
-  };
-  return fetch(url, {
-    method: 'POST',
-    headers: {
-      "Authorization": `Bearer ${accessToken}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(body)
-  })
-  .then(response => response.json())
-  .then(data => {
-    return data.spreadsheetId;
-  })
-  .catch(e => console.error("Error creating spreadsheet:", e));
-}
-
-function updateSpreadsheet(accessToken, spreadsheetId, range, values) {
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}:append?valueInputOption=RAW`;
-    const body = JSON.stringify({
-        values: values
-    });
-
-    return fetch(url, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json'
-        },
-        body: body
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Spreadsheet updated:', data);
-    })
-    .catch(error => console.error('Error updating spreadsheet:', error));
-}
-
-function convertTo2DArray(jsonArray) {
-    if (jsonArray.length === 0) return [];
-    
-    const headers = Object.keys(jsonArray[0]);
-    const rows = jsonArray.map(obj => headers.map(header => obj[header]));
-    
-    return [headers, ...rows];
-}
-
 function buildDataFiles(data) {
   // JSON
   const dataStr = JSON.stringify(data, null, 2);
@@ -167,14 +118,16 @@ function buildDataFiles(data) {
 
   //Google Sheet
   document.getElementById("getGoogleSpreadsheet").addEventListener("click", () => {
-    document.getElementById("consoleMessage").innerHTML = "Google spreadsheet are not available yet";
-    //authenticate().then(accessToken => {
-    //  createSpreadSheet(accessToken).then(spreadsheetId => {
-    //    const range = 'Sheet1!A1';
-    //    const values = convertJSONTo2DArray(data);
-    //    updateSpreadsheet(accessToken, spreadsheetId, range, values);
-    //  });
-    //});
+    document.getElementById("consoleMessage").innerHTML = "Data sent to Google, a new page will open soon...";
+    browser.tabs
+      .query({ active: true, currentWindow: true })
+      .then((tabs) => {
+        browser.tabs.sendMessage(tabs[0].id, {
+          type: "outputGoogleSpreadsheet",
+          data: data
+        });
+      })
+      .catch(reportError);
   });
 }
 
@@ -211,10 +164,11 @@ function messageListener() {
 async function handler() {
   await browser.tabs.executeScript({file: "/content_scripts/fetch.js"});
   document.getElementById("getOutput").style.display = "none";
+  document.getElementById("register").style.display = "none";
   messageListener();
   requestIsConnected();
-  registerLoginButton();
-  registerRegisterButton();
+  registerLoginButtons();
+  registerRegisterButtons();
   registerScrapeButton();
   registerSettings();
 }

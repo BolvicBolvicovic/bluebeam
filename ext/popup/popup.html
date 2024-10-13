@@ -14,13 +14,13 @@
     <div id="login" class="space-y-4">
       <input 
         type="text" 
-        id="username" 
+        id="lUsername" 
         placeholder="Username" 
         class="w-full px-4 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <input 
         type="password" 
-        id="password" 
+        id="lPassword" 
         placeholder="Password" 
         class="w-full px-4 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
@@ -31,13 +31,53 @@
         Login
       </button>
       <button 
-        id="registerButton" 
+        id="lRegisterButton" 
         class="w-full bg-blue-200 hover:bg-blue-300 text-blue-800 font-semibold py-2 rounded-md transition duration-200"
       >
-        Register
+        Register a new account
       </button>
     </div>
   
+    <!-- Register Section -->
+    <div id="register" class="space-y-4">
+      <input 
+        type="text" 
+        id="rUsername" 
+        placeholder="Username" 
+        class="w-full px-4 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <input 
+        type="password" 
+        id="rPassword" 
+        placeholder="Password" 
+        class="w-full px-4 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <input 
+        type="password" 
+        id="rPassword2" 
+        placeholder="Confirm password" 
+        class="w-full px-4 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <input 
+        type="text" 
+        id="email" 
+        placeholder="Email" 
+        class="w-full px-4 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <button 
+        id="rRegisterButton" 
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md transition duration-200"
+      >
+        Register
+      </button>
+      <button 
+        id="backButton" 
+        class="w-full bg-blue-200 hover:bg-blue-300 text-blue-800 font-semibold py-2 rounded-md transition duration-200"
+      >
+        Go back
+      </button>
+    </div>
+
     <!-- Action Buttons -->
     <div id="scrape" class="mt-6 space-y-3">
       <button 
