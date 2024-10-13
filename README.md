@@ -147,7 +147,7 @@ Current possible outputs are:
 - a google spreadsheet
 
 If you have not given any criteria file, you will get an error. You need to go on settings and upload a JSON file.
-It has to contain an array of features described in the template example.json at the root of the repository.
+It has to contain an array of features described in the template <a href="example.json">example.json</a> at the root of the repository.
 
 See roadmap below for future improvements.
 
@@ -157,14 +157,16 @@ See roadmap below for future improvements.
 
 ## Example
 
-Here is a concret output example with the example.json file used as an input and the (<a href="https://go.dev/">Go website</a>).
+Here is a concret output example with the <a href="example.json">example.json</a> file used as an input and the <a href="https://go.dev/">Go website</a>.
 ![Alt text](images/example.png)
 
 <!-- ROADMAP -->
 ## Roadmap
 
 - [x] Response with a json/google spreadsheet that applies the chosen criterias on the website
-- [ ] ~Response with a report in the form of a text, with insights on what to improve/modify~ This is not relevant for the final user as they can make up their own mind based on the output.
+- [ ] Image analysis
+- [ ] Scraping social-medias
+- [ ] Possibility to audit many websites at the same time
 - [ ] Response with the posibility to create a report with graphs and text
 
 See the [open issues](https://github.com/BolvicBolvicovic/bluebeam/issues) for a full list of proposed features (and known issues).
