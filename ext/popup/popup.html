@@ -4,110 +4,43 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>bluebeam</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body>
-  <div class="w-96 p-6 bg-white rounded-lg shadow-lg font-sans text-gray-800">
+  <div id="container" class="w-96 p-6 bg-white rounded-lg shadow-lg font-sans text-gray-800 transition-all duration-300 overflow-hidden">
     <h1 class="text-3xl font-bold text-blue-600 mb-6 text-center">bluebeam</h1>
-  
-    <!-- Login Section -->
-    <div id="login" class="space-y-4">
-      <input 
-        type="text" 
-        id="lUsername" 
-        placeholder="Username" 
-        class="w-full px-4 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      <input 
-        type="password" 
-        id="lPassword" 
-        placeholder="Password" 
-        class="w-full px-4 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      <button 
-        id="loginButton" 
-        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md transition duration-200"
-      >
-        Login
-      </button>
-      <button 
-        id="lRegisterButton" 
-        class="w-full bg-blue-200 hover:bg-blue-300 text-blue-800 font-semibold py-2 rounded-md transition duration-200"
-      >
-        Register a new account
-      </button>
-    </div>
-  
-    <!-- Register Section -->
-    <div id="register" class="space-y-4">
-      <input 
-        type="text" 
-        id="rUsername" 
-        placeholder="Username" 
-        class="w-full px-4 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      <input 
-        type="password" 
-        id="rPassword" 
-        placeholder="Password" 
-        class="w-full px-4 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      <input 
-        type="password" 
-        id="rPassword2" 
-        placeholder="Confirm password" 
-        class="w-full px-4 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      <input 
-        type="text" 
-        id="email" 
-        placeholder="Email" 
-        class="w-full px-4 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      <button 
-        id="rRegisterButton" 
-        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md transition duration-200"
-      >
-        Register
-      </button>
-      <button 
-        id="backButton" 
-        class="w-full bg-blue-200 hover:bg-blue-300 text-blue-800 font-semibold py-2 rounded-md transition duration-200"
-      >
-        Go back
-      </button>
+
+    <!-- Wrapper for Dynamic Height Adjustment -->
+    <div id="contentWrapper" class="transition-all duration-300">
+      <!-- Login Section -->
+      <div id="login" class="space-y-4">
+        <input type="text" id="lUsername" placeholder="Username" class="w-full px-4 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <input type="password" id="lPassword" placeholder="Password" class="w-full px-4 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <button id="loginButton" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md transition duration-200">Login</button>
+        <button id="lRegisterButton" class="w-full bg-blue-200 hover:bg-blue-300 text-blue-800 font-semibold py-2 rounded-md transition duration-200">Register a new account</button>
+      </div>
+
+      <!-- Register Section -->
+      <div id="register" class="space-y-4 hidden">
+        <input type="text" id="rUsername" placeholder="Username" class="w-full px-4 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <input type="password" id="rPassword" placeholder="Password" class="w-full px-4 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <input type="password" id="rPassword2" placeholder="Confirm password" class="w-full px-4 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <input type="text" id="email" placeholder="Email" class="w-full px-4 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <button id="rRegisterButton" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md transition duration-200">Register</button>
+        <button id="backButton" class="w-full bg-blue-200 hover:bg-blue-300 text-blue-800 font-semibold py-2 rounded-md transition duration-200">Go back</button>
+      </div>
     </div>
 
     <!-- Action Buttons -->
     <div id="scrape" class="mt-6 space-y-3">
-      <button 
-        id="scrapeButton" 
-        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md transition duration-200"
-      >
-        Scrape Content
-      </button>
-      <button 
-        id="settingsPage" 
-        class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 rounded-md transition duration-200"
-      >
-        Settings
-      </button>
-      <div id ="getOutput" class="flex space-x-2">
-        <button
-          id="getJSON"
-          class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-1 px-4 rounded-md transition duration-200"
-        >
-        JSON file
-        </button>
-        <button
-          id="getGoogleSpreadsheet"
-          class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-1 px-4 rounded-md transition duration-200"
-        >
-        Google sheet
-        </button>
+      <button id="scrapeButton" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md transition duration-200">Scrape Content</button>
+      <button id="settingsPage" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 rounded-md transition duration-200">Settings</button>
+      <div id="getOutput" class="flex space-x-2">
+        <button id="getJSON" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-1 px-4 rounded-md transition duration-200">JSON file</button>
+        <button id="getGoogleSpreadsheet" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-1 px-4 rounded-md transition duration-200">Google sheet</button>
       </div>
     </div>
-  
+
     <!-- Message Display -->
     <div id="consoleMessage" class="mt-6 text-center text-red-600 font-medium"></div>
   </div>

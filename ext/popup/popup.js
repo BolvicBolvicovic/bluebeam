@@ -1,3 +1,8 @@
+const login = document.getElementById("login");
+const register = document.getElementById("register");
+const consoleMessage = document.getElementById("consoleMessage");
+
+
 function reportError(error) {
     console.error(`Error caught: ${error}`);
 }
@@ -8,7 +13,7 @@ function registerLoginButtons() {
     const password = document.getElementById('lPassword').value;
 
     if (!username || !password) {
-      document.getElementById("consoleMessage").innerHTML = 'Please provide both username and password.';
+      consoleMessage.innerHTML = 'Please provide both username and password.';
       return;
     }
 
@@ -24,7 +29,7 @@ function registerLoginButtons() {
       .catch(reportError);
   });
   document.getElementById("lRegisterButton").addEventListener("click", () => {
-    document.getElementById("consoleMessage").innerHTML = "";
+    consoleMessage.innerHTML = "";
     document.getElementById("login").style.display = "none";
     document.getElementById("register").style.display = "block";
   });
@@ -38,12 +43,12 @@ function registerRegisterButtons() {
     const email = document.getElementById("email").value;
 
     if (!username || !password || !email) {
-      document.getElementById("consoleMessage").innerHTML = 'Please fill all fields.';
+      consoleMessage.innerHTML = 'Please fill all fields.';
       return;
     }
 
     if (password != password2) {
-      document.getElementById("consoleMessage").innerHTML = 'The two passwords are different.';
+      consoleMessage.innerHTML = 'The two passwords are different.';
       return;
     }
 
@@ -60,7 +65,7 @@ function registerRegisterButtons() {
       .catch(reportError);
   });
   document.getElementById("backButton").addEventListener("click", () => {
-    document.getElementById("consoleMessage").innerHTML = "";
+    consoleMessage.innerHTML = "";
     document.getElementById("register").style.display = "none";
     document.getElementById("login").style.display = "block";
   });
@@ -77,7 +82,7 @@ function registerScrapeButton() {
         });
       })
       .then(() => {
-        document.getElementById("consoleMessage").innerHTML = 'Data sent, analysing...';
+        consoleMessage.innerHTML = 'Data sent, analysing...';
       })
       .catch(reportError);
   });
@@ -118,7 +123,7 @@ function buildDataFiles(data) {
 
   //Google Sheet
   document.getElementById("getGoogleSpreadsheet").addEventListener("click", () => {
-    document.getElementById("consoleMessage").innerHTML = "Data sent to Google, a new page will open soon...";
+    consoleMessage.innerHTML = "Data sent to Google, a new page will open soon...";
     browser.tabs
       .query({ active: true, currentWindow: true })
       .then((tabs) => {
@@ -135,28 +140,28 @@ function messageListener() {
   browser.runtime.onMessage.addListener((message) => {
     if (message.type === "loginResponse") {
       if (message.data.error) {
-        document.getElementById("consoleMessage").innerHTML = message.data.error;
+        consoleMessage.innerHTML = message.data.error;
         return;
       }
-      document.getElementById("consoleMessage").innerHTML = "";
+      consoleMessage.innerHTML = "";
       document.getElementById("login").style.display = "none";
       document.getElementById("scrape").style.display = "block";
     } else if (message.type === "registerResponse") {
-      document.getElementById("consoleMessage").innerHTML = (message.data.error != undefined) ? message.data.error : message.data.message;
+      consoleMessage.innerHTML = (message.data.error != undefined) ? message.data.error : message.data.message;
     } else if (message.type === "analyzeResponse") {
       if (message.data.error != undefined) {
-        document.getElementById("consoleMessage").innerHTML =  message.data.error;
+        consoleMessage.innerHTML =  message.data.error;
       } else {
         buildDataFiles(message.data.message);
         document.getElementById("getOutput").style.display = "block";
-        document.getElementById("consoleMessage").innerHTML = "";
+        consoleMessage.innerHTML = "";
       }
     } else if (message.isConnected === true) {
       document.getElementById("login").style.display = "none";
     } else if (message.isConnected === false) {
       document.getElementById("scrape").style.display = "none";
     } else if (message.error) {
-      document.getElementById("consoleMessage").innerHTML = message.error;
+      consoleMessage.innerHTML = message.error;
     }
   });
 }
