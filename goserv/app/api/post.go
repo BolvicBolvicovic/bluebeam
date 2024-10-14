@@ -188,6 +188,58 @@ func createAndFillSpreadsheet(srv *sheets.Service, d *drive.Service, data json.R
 	return fmt.Sprintf("https://docs.google.com/spreadsheets/d/%s", spreadsheetID), nil
 }
 
+func ProcessGoogleSpreadsheet(c *gin.Context) {
+	var output struct {
+		Username	string `json:"username"`
+		SessionKey	string `json:"sessionkey"`
+		FileId		string `json:"fileid"`
+		Token		string `json:"token"`
+	}
+	if err := c.ShouldBindJSON(&output); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+	if !validUser(c, output.Username, output.SessionKey) {
+		return
+	}
+	service, exists := c.Get("sheetsService")
+	if !exists {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Sheets service not found"})
+		return
+	}
+	sheetsService, ok := service.(*sheets.Service)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid Sheets service instance"})
+		return
+	}
+	rangeData := "Sheet1!A1:E" // Adjust the range as needed
+
+	resp, err := sheetsService.Spreadsheets.Values.Get(output.FileId, rangeData).Do()
+	if err != nil {
+	    c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to retrieve data from spreadsheet"})
+	    return
+	}
+	
+	if len(resp.Values) == 0 {
+	    c.JSON(http.StatusNotFound, gin.H{"error": "No data found"})
+	    return
+	}
+	
+	keys := resp.Values[0]
+	var result []map[string]interface{}
+	
+	for _, row := range resp.Values[1:] {
+		obj := make(map[string]interface{})
+	    for i, value := range row {
+	        if i < len(keys) {
+			obj[keys[i].(string)] = value
+		}
+	    }
+	    result = append(result, obj)
+	}
+	//TODO: need to add criteria and call the function to store them
+}
+
 func OutputGoogleSpreadsheet(c *gin.Context) {
 	var output struct {
 		Username	string `json:"username"`

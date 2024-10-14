@@ -5,7 +5,6 @@ import (
 	"golang.org/x/oauth2/google"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"log"
 	"context"
 )
 
@@ -46,9 +45,34 @@ func Settings(c *gin.Context) {
 }
 
 func InitOAuth(c *gin.Context) {
-
+	authURL := oauthConfig.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
+	c.Redirect(http.StatusFound, authURL)
 }
 
 func SelectGoogleFile(c *gin.Context) {
+	var user struct {
+		Username	string `form:"username" binding:"required"`
+		SessionKey	string `form:"sessionkey" binding:"required"`
+	}
 
+	if err := c.ShouldBindQuery(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if !validUser(c, user.Username, user.SessionKey) {
+		return
+	}
+
+	code := c.Query("code")
+	token, err := oauthConfig.Exchange(context.Background(), code)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.HTML(http.StatusOK, "selectGoogleFile.tmpl", gin.H {
+		"username": user.Username,
+		"sessionkey": user.SessionKey,
+		"token": token,
+	})
 }

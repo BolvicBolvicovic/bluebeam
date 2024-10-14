@@ -72,6 +72,7 @@ func BuildRouter() *gin.Engine {
 	router.POST("/criterias", api.StoreCriterias)
 	router.POST("/updateEmail", api.UpdateEmail)
 	router.POST("/outputGoogleSpreadsheet", api.OutputGoogleSpreadsheet)
+	router.POST("/processGoogleSpreadsheet", api.ProcessGoogleSpreadsheet)
 
 	return router
 }
