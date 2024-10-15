@@ -46,8 +46,6 @@ type _Header struct {
 }
 
 type ScrapedDefault struct {
-	Username     string       `json:"username"`
-	SessionKey   string       `json:"sessionkey"`
 	Links        []_Link      `json:"links"`
 	Buttons      []_Button    `json:"buttons"`
 	Images       []_Image     `json:"images"`
@@ -86,7 +84,7 @@ func sendLLMQuestion(f criterias.Feature, sd *ScrapedDefault, r *LLMResponse) {
 	}
 	questionJSON, err := json.Marshal(question)
 	if err != nil {
-		log.Println(err)
+		log.Println("here",err)
 		return
 	}
 	var strResponse string
@@ -112,8 +110,8 @@ func sendLLMQuestion(f criterias.Feature, sd *ScrapedDefault, r *LLMResponse) {
 	r.mutex.Unlock()
 }
 
-func Analyzer(c *gin.Context, sd ScrapedDefault) {
-	crits, err := criterias.Get(c, sd.Username)
+func Analyzer(c *gin.Context, sd ScrapedDefault, username string) {
+	crits, err := criterias.Get(c, username)
 	if err != nil && err != sql.ErrNoRows {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": ("No criterias chosen or " + err.Error())})
 		return

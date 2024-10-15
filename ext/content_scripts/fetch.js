@@ -1,4 +1,4 @@
-function analyze(username, sessionKey) {
+function analyze() {
   let links = Array.from(document.querySelectorAll('a')).map(a => ({
     href: a.href,
     text: a.innerText
@@ -36,8 +36,6 @@ function analyze(username, sessionKey) {
   let bodyText = document.body.innerText;
 
   let dataPayload = JSON.stringify({ 
-    username: username,
-    sessionKey: sessionKey,
     links,
     buttons,
     images,
@@ -55,15 +53,13 @@ function analyze(username, sessionKey) {
   })
   .then(response => response.text())
     .then(data => {
-      const jsonData = JSON.parse(data);
+      const jsonData = data ? JSON.parse(data) : "";
       browser.runtime.sendMessage({ type: 'analyzeResponse', data: jsonData });
   })
   .catch(error => console.error('Error sending data:', error));
 }
 
 async function login(message) {
-  let username = message.username;
-  let sessionKey;
   let body = JSON.stringify({ 
       username: message.username,
       password: message.password,
@@ -79,22 +75,13 @@ async function login(message) {
     .then(data => {
       const jsonData = JSON.parse(data);
       browser.runtime.sendMessage({ type: 'loginResponse', data: jsonData });
-      sessionKey = jsonData.session_key;
 
   })
   .catch(error => console.error('Error sending data:', error));
-  return [username, sessionKey];
-}
-
-function isConnected(sessionKey) {
-      let bool = sessionKey ? true : false;
-      browser.runtime.sendMessage({ isConnected: bool });
 }
 
 function register(message) {
   let body = JSON.stringify({ 
-      username: message.username,
-      password: message.password,
       email: message.email
   });
 
@@ -112,15 +99,25 @@ function register(message) {
   .catch(error => console.error('Error sending data:', error));
 }
 
-function settingsPage(username, sessionKey) {
-  const url = `https://localhost/settings?username=${encodeURIComponent(username)}&sessionkey=${encodeURIComponent(sessionKey)}`;
+function settingsPage() {
+  const url = `https://localhost/settings`;
   window.open(url);
 }
 
-function outputGoogleSpreadsheet(username, sessionkey, data) {
+function pingServer() {
+  fetch("https://localhost/ping")
+  .then(response => response.json())
+  .then(data => {
+    if (!data.error) {
+      browser.runtime.sendMessage({ isConnected: true });
+    } else {
+      browser.runtime.sendMessage({ isConnected: false });
+    }
+  })
+}
+
+function outputGoogleSpreadsheet(data) {
   let body = JSON.stringify({
-    username: username,
-    sessionkey: sessionkey,
     data: data
   });
 
@@ -151,23 +148,19 @@ function outputGoogleSpreadsheet(username, sessionkey, data) {
     return;
   }
   window.hasRun = true;
-  let username;
-  let sessionKey;
   browser.runtime.onMessage.addListener(async (message) => {
     if (message.type === "analyze") {
-      analyze(username, sessionKey);
+      analyze();
     } else if (message.type === "login") {
-      values = await login(message);
-      username = values[0];
-      sessionKey = values[1];
-    } else if (message.type === "isConnected") {
-      isConnected(sessionKey);
+      login(message);
     } else if (message.type === "register") {
       register(message);
     } else if (message.type === "outputGoogleSpreadsheet") {
-      outputGoogleSpreadsheet(username, sessionKey, message.data);
+      outputGoogleSpreadsheet(message.data);
     } else if (message.type === "settingsPage") {
-      settingsPage(username, sessionKey);
+      settingsPage();
+    } else if (message.type === "isConnected") {
+      pingServer();
     }
   });
 })();

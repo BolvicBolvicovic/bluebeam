@@ -65,39 +65,67 @@ WHERE
 
 func StoreCriterias(c *gin.Context) {
 	crits := criterias.Criterias{}
+	username, err := c.Cookie("bluebeam_username")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Need to log in again"})
+		return
+	}
+	session_key, err := c.Cookie("bluebeam_session_key")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Need to log in again"})
+		return
+	}
 	if err := c.ShouldBindJSON(&crits); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
-	if !validUser(c, crits.Username, crits.SessionKey) {
+	if !validUser(c, username, session_key) {
 		return
 	}
-	criterias.Store(c, crits)
+	criterias.Store(c, crits, username)
 }
 
 func Analyze(c *gin.Context) {
 	var scrapedData analyzer.ScrapedDefault
+	username, err := c.Cookie("bluebeam_username")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Need to log in again"})
+		return
+	}
+	session_key, err := c.Cookie("bluebeam_session_key")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Need to log in again"})
+		return
+	}
 	if err := c.ShouldBindJSON(&scrapedData); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
-	if !validUser(c, scrapedData.Username, scrapedData.SessionKey) {
+	if !validUser(c, username, session_key) {
 		return
 	}
-	analyzer.Analyzer(c, scrapedData)
+	analyzer.Analyzer(c, scrapedData, username)
 }
 
 func UpdateEmail(c *gin.Context) {
 	var newEmail struct {
-		Username	string `json:"username"`
-		SessionKey	string `json:"sessionkey"`
 		Email		string `json:"email"`
+	}
+	username, err := c.Cookie("bluebeam_username")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Need to log in again"})
+		return
+	}
+	session_key, err := c.Cookie("bluebeam_session_key")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Need to log in again"})
+		return
 	}
 	if err := c.ShouldBindJSON(&newEmail); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
-	if !validUser(c, newEmail.Username, newEmail.SessionKey) {
+	if !validUser(c, username, session_key) {
 		return
 	}
 	query := `
@@ -108,7 +136,7 @@ SET
 WHERE
 	username = ?;
 	`
-	if _, err := database.Db.Exec(query, newEmail.Email, newEmail.Username); err != nil {
+	if _, err := database.Db.Exec(query, newEmail.Email, username); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating email"})
 		return
@@ -190,16 +218,24 @@ func createAndFillSpreadsheet(srv *sheets.Service, d *drive.Service, data json.R
 
 func ProcessGoogleSpreadsheet(c *gin.Context) {
 	var output struct {
-		Username	string `json:"username"`
-		SessionKey	string `json:"sessionkey"`
 		FileId		string `json:"fileid"`
 		Token		string `json:"token"`
+	}
+	username, err := c.Cookie("bluebeam_username")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Need to log in again"})
+		return
+	}
+	session_key, err := c.Cookie("bluebeam_session_key")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Need to log in again"})
+		return
 	}
 	if err := c.ShouldBindJSON(&output); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
-	if !validUser(c, output.Username, output.SessionKey) {
+	if !validUser(c, username, session_key) {
 		return
 	}
 	service, exists := c.Get("sheetsService")
@@ -242,15 +278,23 @@ func ProcessGoogleSpreadsheet(c *gin.Context) {
 
 func OutputGoogleSpreadsheet(c *gin.Context) {
 	var output struct {
-		Username	string `json:"username"`
-		SessionKey	string `json:"sessionkey"`
 		Data		json.RawMessage `json:"data"`
+	}
+	username, err := c.Cookie("bluebeam_username")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Need to log in again"})
+		return
+	}
+	session_key, err := c.Cookie("bluebeam_session_key")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Need to log in again"})
+		return
 	}
 	if err := c.ShouldBindJSON(&output); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
-	if !validUser(c, output.Username, output.SessionKey) {
+	if !validUser(c, username, session_key) {
 		return
 	}
 	query := `
@@ -261,7 +305,7 @@ FROM
 WHERE
 	username = ?
 	`
-	row := database.Db.QueryRow(query, output.Username)
+	row := database.Db.QueryRow(query, username)
 	var email sql.NullString
 	if err := row.Scan(&email); err != nil {
 		if err == sql.ErrNoRows {
@@ -368,7 +412,9 @@ WHERE
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating key session"})
 			return
 		}
-		c.JSON(http.StatusAccepted, gin.H{"session_key": strkey})
+		c.SetCookie("bluebeam_username", user.Username, 3600, "/", "localhost", true, true)
+		c.SetCookie("bluebeam_session_key", strkey, 3600, "/", "localhost", true, true)
+		c.JSON(http.StatusAccepted, gin.H{"message": "connected!"})
 	}
 }
 

@@ -34,7 +34,7 @@
             const picker = new google.picker.PickerBuilder()
                 .addView(google.picker.ViewId.SPREADSHEETS)
                 .setOAuthToken(oauthToken)
-                .setDeveloperKey('YOUR_API_KEY')
+                .setDeveloperKey('')
                 .setCallback(pickerCallback)
                 .build();
             picker.setVisible(true);
@@ -49,8 +49,6 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        username: "{{.username}}",
-                        sessionKey: "{{.sessionkey}}",
                         fileid: fileId,
                         token: oauthToken
                     })

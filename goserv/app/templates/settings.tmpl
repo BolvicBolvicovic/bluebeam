@@ -28,7 +28,8 @@
       </form>
 
       <button
-          class="w-full py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition">
+          class="w-full py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+          onclick="initOAuth(event)">
           Submit Google Spreadsheet criteria
       </button>
 
@@ -80,8 +81,6 @@
             mode: 'cors',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              username: "{{ .username }}",
-              sessionkey: "{{ .sessionkey }}",
               features: features
             }),
           })
@@ -102,6 +101,10 @@
         reader.readAsText(file);
       }
 
+      function initOAuth(event) {
+        window.location.href = `https://localhost/initOAuth`
+      }
+
       function updateEmail(event) {
         event.preventDefault();
         const email = document.getElementById("email").value;
@@ -112,8 +115,6 @@
           mode: 'cors',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            username: "{{ .username }}",
-            sessionkey: "{{ .sessionkey }}",
             email: email
           }),
         })

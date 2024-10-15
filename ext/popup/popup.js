@@ -133,7 +133,7 @@ function buildDataFiles(data) {
         });
       })
       .catch(reportError);
-  });
+   ["all"]});
 }
 
 function messageListener() {

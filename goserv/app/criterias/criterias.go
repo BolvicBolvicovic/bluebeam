@@ -31,12 +31,10 @@ type Feature struct {
 }
 
 type Criterias struct {
-	Username	string	  `json:"username"`
-	SessionKey	string    `json:"sessionkey"`
 	Features	[]Feature `json:"features"`
 }
 
-func Store(c *gin.Context, crits Criterias) {
+func Store(c *gin.Context, crits Criterias, username string) {
 	data, _ := json.Marshal(crits)
 	encryptedData, err := aeadInstance.Encrypt(data, nil)
 	if err != nil {
@@ -52,7 +50,7 @@ SET
 WHERE
 	username = ?;
 	`
-	if _, err := database.Db.Exec(query, encryptedData, crits.Username); err != nil {
+	if _, err := database.Db.Exec(query, encryptedData, username); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error loading file into database"})
 		return
