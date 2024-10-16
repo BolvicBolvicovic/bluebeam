@@ -82,6 +82,8 @@ async function login(message) {
 
 function register(message) {
   let body = JSON.stringify({ 
+      username: message.username,
+      password: message.password,
       email: message.email
   });
 

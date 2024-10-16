@@ -1,68 +1,79 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Select Google Spreadsheet</title>
-    <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
+  <title>Select Spreadsheet</title>
+  <meta charset="utf-8" />
 </head>
-<body onload="loadPicker()">
-    <h2>Select a Google Spreadsheet</h2>
-    <button onclick="loadPicker()">Open Google Picker</button>
+<body>
+<p>Select spreadsheet</p>
 
-    <script type="text/javascript">
-        let oauthToken = "{{.token}}"; 
-        function loadPicker() {
-            gapi.load('auth', { 'callback': onAuthApiLoad });
-            gapi.load('picker', { 'callback': onPickerApiLoad });
-        }
+<!-- Add buttons to initiate auth sequence and sign out -->
+<button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
 
-        function onAuthApiLoad() {
-            if (oauthToken) {
-                createPicker();
-            }
-        }
+<pre id="content" style="white-space: pre-wrap;"></pre>
 
-        function onPickerApiLoad() {
-            createPicker();
-        }
+<script type="text/javascript">
+  /* exported gapiLoaded */
+  /* exported handleSignoutClick */
 
-        function createPicker() {
-            if (!oauthToken) {
-                console.error("OAuth token not available");
-                return;
-            }
-            
-            const picker = new google.picker.PickerBuilder()
-                .addView(google.picker.ViewId.SPREADSHEETS)
-                .setOAuthToken(oauthToken)
-                .setDeveloperKey('')
-                .setCallback(pickerCallback)
-                .build();
-            picker.setVisible(true);
-        }
+  const SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly';
+  const CLIENT_ID = '<726518157620-8s2194lb2ka65vfga9loee2sookpjfda.apps.googleusercontent.com>';
+  const API_KEY = '<>';
+  const APP_ID = '<bluebeam-438322>';
 
-        function pickerCallback(data) {
-            if (data.action === google.picker.Action.PICKED) {
-                const fileId = data.docs[0].id;
-                fetch('/processGoogleSpreadsheet', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        fileid: fileId,
-                        token: oauthToken
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('File processed successfully:', data);
-                    window.location.replace("https://localhost/settings");
-                })
-                .catch(error => {
-                    console.error('Error processing file:', error);
-                });
-            }
-        }
-    </script>
+  // This should be set by your Go server
+  let accessToken = {{.token}}; 
+  let pickerInited = false;
+
+  document.getElementById('signout_button').style.visibility = 'hidden';
+
+  function gapiLoaded() {
+    gapi.load('client:picker', initializePicker);
+  }
+
+  async function initializePicker() {
+    await gapi.client.load('https://www.googleapis.com/discovery/v1/apis/drive/v3/rest');
+    pickerInited = true;
+    createPicker(); // Open the picker once initialized
+  }
+
+  function createPicker() {
+    const view = new google.picker.View(google.picker.ViewId.SPREADSHEETS);
+    const picker = new google.picker.PickerBuilder()
+        .enableFeature(google.picker.Feature.NAV_HIDDEN)
+        .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
+        .setDeveloperKey(API_KEY)
+        .setAppId(APP_ID)
+        .setOAuthToken(accessToken) // Use the token from the server
+        .addView(view)
+        .setCallback(pickerCallback)
+        .build();
+    picker.setVisible(true);
+  }
+
+  async function pickerCallback(data) {
+    if (data[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
+      let text = `Picker response: \n${JSON.stringify(data, null, 2)}\n`;
+      const document = data[google.picker.Response.DOCUMENTS][0];
+      const fileId = document[google.picker.Document.ID];
+      console.log(fileId);
+      const res = await gapi.client.drive.files.get({
+        'fileId': fileId,
+        'fields': '*',
+      });
+      text += `Drive API response for first document: \n${JSON.stringify(res.result, null, 2)}\n`;
+      window.document.getElementById('content').innerText = text;
+
+      // Here you can add your logic to upload the spreadsheet to your server
+    }
+  }
+
+  function handleSignoutClick() {
+    accessToken = null; // Clear the access token
+    document.getElementById('content').innerText = '';
+    document.getElementById('signout_button').style.visibility = 'hidden';
+  }
+</script>
+<script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
 </body>
 </html>

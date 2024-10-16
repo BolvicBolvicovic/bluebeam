@@ -8,16 +8,13 @@ import (
 	"context"
 )
 
-var (
-	oauthConfig = &oauth2.Config{
-		RedirectURL:  "https://localhost/selectGoogleFile",
-		ClientID:     "726518157620-8s2194lb2ka65vfga9loee2sookpjfda.apps.googleusercontent.com",
-		ClientSecret: "",
-		Scopes:       []string{"https://www.googleapis.com/auth/spreadsheets.readonly"},
-		Endpoint:     google.Endpoint,
-	}
-	tokenStore = map[string]*oauth2.Token{} // Temporary store; replace with secure storage for production
-)
+var oauthConfig = &oauth2.Config{
+	RedirectURL:  "https://localhost/selectGoogleFile",
+	ClientID:     "726518157620-8s2194lb2ka65vfga9loee2sookpjfda.apps.googleusercontent.com",
+	ClientSecret: "",
+	Scopes:       []string{"https://www.googleapis.com/auth/spreadsheets.readonly", "https://www.googleapis.com/auth/drive"},
+	Endpoint:     google.Endpoint,
+}
 
 func Pong(c *gin.Context) {
 	username, err := c.Cookie("bluebeam_username")
