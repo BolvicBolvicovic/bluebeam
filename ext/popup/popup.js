@@ -52,6 +52,11 @@ function registerRegisterButtons() {
       return;
     }
 
+    if (password.length < 8) {
+      consoleMessage.innerHTML = 'Password needs to be 8 or more characters long.';
+      return;
+    }
+
     browser.tabs
       .query({ active: true, currentWindow: true })
       .then((tabs) => {

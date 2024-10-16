@@ -164,6 +164,7 @@ Here is a concret output example with the <a href="example.json">example.json</a
 ## Roadmap
 
 - [x] Response with a json/google spreadsheet that applies the chosen criterias on the website
+- [ ] Google spreadsheet format as the criteria's input
 - [ ] Image analysis
 - [ ] Scraping social-medias
 - [ ] Possibility to audit many websites at the same time
