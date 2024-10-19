@@ -74,18 +74,21 @@ bluebeam: AI-powered web audits in one click, customized to your criteria.
 * [![Mariadb][Mariadb.org]][Mariadb-url]
 * [![Javascript][Javascript.com]][Javascript-url]
 * [![Python][Python.org]][Python-url]
+* [![GoogleCloudPlatform][GoogleCloudPlatform.com]][GoogleCloudPlatform-url]
+
+And OpenAI API.
 
 
 <!-- GETTING STARTED -->
 ## Getting Started
 
-To get a local copy up and running follow these simple example steps.
+To get a local copy up and running, follow these simple example steps.
 It will lauch the server of the application with docker-compose.
 If you do not use a Linux distro, I recommand that you read the documentation on how to lauch docker-compose on your OS.
 
 ```sh
 git clone https://github.com/BolvicBolvicovic/bluebeam
-cd bluebeam
+cd bluebeam/goserv
 sudo make
 ```
 
@@ -98,7 +101,7 @@ web-ext run
 
 ### Prerequisites
 
-You will need web-ext, go and docker-compose to lauch the project..
+You will need web-ext, go and docker-compose to lauch the project.
 * go
 ```sh
 wget https://go.dev/dl/go1.23.2.linux-amd64.tar.gz
@@ -112,7 +115,7 @@ sudo apt install -y web-ext docker docker-compose
 ```
 
 Furthermore, if you actually want to make some request and analyse a page, you will need an OpenAI API key.
-* in goserve/app/.env add:
+* in goserv/app/.env add:
 ```code
 OPENAI_API_KEY="your key"
 ```
@@ -132,13 +135,14 @@ you need to go to Settings -> Tools -> Advanced -> View Certificates -> Servers 
 ### Register an account
 
 Open your extension, (You have to be on a website that accepts scripting) and click on register a new account.
-Fill all fields. It's important that the email you give is a valid google email account. It will enable the extension to provide access to the output Google Spreadsheet.
+Fill all fields. It's important that the email you give is a valid Google email account. It will enable the extension to provide access to the output Google Spreadsheet.
 If you get a response that is positive, you can go back and login with this account. Else, try with an other username/password.
 
 ### Login
 
 Simply go on the website you want to analyse and open the extension.
 Then log in with your username and your password.
+An HTTP-only cookie will keep you connected for an hour and you will not need to reconnect yourself everytime you open the extension.
 
 ### Analyse
 
@@ -197,7 +201,6 @@ Don't forget to give the project a star! Thanks again!
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Top contributors:
 
@@ -217,7 +220,7 @@ Distributed under the EUPL-1.2 License. See `LICENSE.txt` for more information.
 ## Contact
 
 Project Link: [https://github.com/BolvicBolvicovic/bluebeam](https://github.com/BolvicBolvicovic/bluebeam)
-Mail: victor.cornille@gmail.com
+Mail: victor.bolheme@gmail.com
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -240,3 +243,5 @@ Mail: victor.cornille@gmail.com
 [Javascript-url]: https://www.javascript.com/
 [Python.org]: https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54 
 [Python-url]: https://www.python.org/
+[GoogleCloudPlatform.com]: https://img.shields.io/badge/-Google%20Cloud%20Platform-4285F4?style=flat&logo=google%20cloud&logoColor=white 
+[GoogleCloudPlatform-url]: https://console.cloud.google.com/ 
