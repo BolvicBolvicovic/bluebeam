@@ -61,10 +61,10 @@ func BuildRouter() *gin.Engine {
 	router.Use(SheetsServiceMiddleware())
 	router.LoadHTMLGlob("templates/*")
 
+	router.StaticFile("/favicon.ico", "./favicon.ico")
+
 	router.GET("/ping", api.Pong)
 	router.GET("/settings", api.Settings)
-	router.GET("/initOAuth", api.InitOAuth)
-	router.GET("/selectGoogleFile", api.SelectGoogleFile)
 
 	router.POST("/login", api.Login)
 	router.POST("/registerAccount", api.ResgisterAccount)
@@ -72,7 +72,6 @@ func BuildRouter() *gin.Engine {
 	router.POST("/criterias", api.StoreCriterias)
 	router.POST("/updateEmail", api.UpdateEmail)
 	router.POST("/outputGoogleSpreadsheet", api.OutputGoogleSpreadsheet)
-	router.POST("/processGoogleSpreadsheet", api.ProcessGoogleSpreadsheet)
 
 	return router
 }

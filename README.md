@@ -118,6 +118,7 @@ OPENAI_API_KEY="your key"
 ```
 
 If you want to use the google spreadsheet feature, add your google credentials file as googlecredentials.json from the root at ./goserv/app/startup/
+Furthermore, you will need to create a OAuth2.0 client and an API key in your google cloud account for your project and add the clientId and the key to the settigns template.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -141,13 +142,19 @@ Then log in with your username and your password.
 
 ### Analyse
 
+If you have not given any criteria file, you will get an error. You need to go on settings and upload your criterias in the format you want.
+Current possible inputs are:
+- a JSON file
+- the first sheet of a google spreadsheet
+
+For a JSON file, it has to contain an array of features described in the template <a href="example.json">example.json</a> at the root of the repository.
+For the first sheet of a google spreadsheet, there is a <a href="images/example2.png">screenshot</a> in the folder images at the root of the repository.
+
 Once you are logged in, you can click on the analyse button and you will get a response.
 Current possible outputs are:
 - a blob containing a JSON file
 - a google spreadsheet
 
-If you have not given any criteria file, you will get an error. You need to go on settings and upload a JSON file.
-It has to contain an array of features described in the template <a href="example.json">example.json</a> at the root of the repository.
 
 See roadmap below for future improvements.
 
@@ -164,10 +171,10 @@ Here is a concret output example with the <a href="example.json">example.json</a
 ## Roadmap
 
 - [x] Response with a json/google spreadsheet that applies the chosen criterias on the website
-- [ ] Google spreadsheet format as the criteria's input
+- [x] Google spreadsheet format as the criteria's input
+- [ ] Possibility to audit many websites at the same time
 - [ ] Image analysis
 - [ ] Scraping social-medias
-- [ ] Possibility to audit many websites at the same time
 - [ ] Response with the posibility to create a report with graphs and text
 
 See the [open issues](https://github.com/BolvicBolvicovic/bluebeam/issues) for a full list of proposed features (and known issues).
