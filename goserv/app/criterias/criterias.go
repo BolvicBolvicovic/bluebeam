@@ -24,10 +24,10 @@ type Feature struct {
 	FeatureName 	string    `json:"featurename" `
 	FeatureType	string	  `json:"featuretype" `
 	Description 	string    `json:"description" `
-	MinimumCriterias []string `json:"minimumcriterias" `
-	YesCases 	[]string  `json:"yescases" `
-	NoCases 	[]string  `json:"nocases" `
-	AuthorizedData	[]string  `json:"authorizeddata"`
+	MinimumCriterias string `json:"minimumcriterias" `
+	YesCases 	string  `json:"yescases" `
+	NoCases 	string  `json:"nocases" `
+	AuthorizedData	string  `json:"authorizeddata"`
 }
 
 type Criterias struct {

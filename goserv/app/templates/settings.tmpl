@@ -238,13 +238,7 @@
           const jsonArray = rows.slice(1).map(row => {
             let obj = {};
             headers.forEach((header, index) => {
-              try {
-                // Parse JSON if the value is a string representation of an array
-                obj[header] = JSON.parse(row[index]);
-              } catch (e) {
-                // If not a valid JSON string, store it as a plain string
-                obj[header] = row[index] || "";
-              }
+              obj[header] = row[index] || "";
             });
             return obj;
           });
