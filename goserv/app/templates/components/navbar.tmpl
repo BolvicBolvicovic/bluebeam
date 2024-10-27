@@ -1,0 +1,18 @@
+{{define "navbar"}}
+  <div class="container mx-auto flex flex-wrap p-5 items-center bg-blue-200 shadow-md  top-0 z-50 w-full">
+    <a href="/" class="relative overflow-visible">
+      <img src="/logo.png" class="w-24 h-24 md:w-28 md:h-28 -mb-4 md:-mb-6">
+    </a>
+
+    <div class="ml-auto flex space-x-4">
+      {{template "button" .WhysButton}}
+      {{template "button" .ApisButton}}
+      {{if .IsLoggedIn}}
+        {{template "button" .SettingsButton}}
+        {{template "button" .LogoutButton}}
+      {{else}}
+        {{template "button" .LoginButton}}
+      {{end}}
+    </div>
+  </div>
+{{end}}

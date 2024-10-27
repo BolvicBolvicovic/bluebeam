@@ -18,6 +18,20 @@ import (
 	"log"
 )
 
+func clearSessionKey(username string) error {
+	query := `
+UPDATE
+	users
+SET
+	session_key = NULL,
+	creation_key_time = NULL
+WHERE
+	username = ?;
+	`
+	_, err := database.Db.Exec(query, username)
+	return err
+}
+
 func validUser(c *gin.Context, username string, session_key string) bool {
 	query := `
 SELECT
@@ -352,8 +366,8 @@ WHERE
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating key session"})
 			return
 		}
-		c.SetCookie("bluebeam_username", user.Username, 3600, "/", "localhost", true, true)
-		c.SetCookie("bluebeam_session_key", strkey, 3600, "/", "localhost", true, true)
+		c.SetCookie("bluebeam_username", user.Username, 86400, "/", "localhost", true, true)
+		c.SetCookie("bluebeam_session_key", strkey, 86400, "/", "localhost", true, true)
 		c.JSON(http.StatusAccepted, gin.H{"message": "connected!"})
 	}
 }

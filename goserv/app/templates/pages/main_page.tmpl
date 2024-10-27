@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    if (document.location.href != "https://localhost/") {
+      document.location.href = "https://localhost";
+    }
+    </script>
+  </head>
+  <body class="bg-gray-100">
+    {{template "navbar" .Navbar}}
+    <div>
+      blubeam: audit your website in one click with your own criteria
+    </div>
+  </body>
+</html>

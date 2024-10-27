@@ -1,0 +1,15 @@
+{{define "button"}}
+  <button 
+    class="w-full py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+    id="{{.ID}}">
+    <a
+      class="block w-full h-full text-center"
+      {{if eq .IsSubmit true}}
+        type="submit"
+      {{else}}
+        href="{{.Link}}"
+      {{end}}>
+      {{.Text}}
+    </a>
+  </button>
+{{end}}{end}}

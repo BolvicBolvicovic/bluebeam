@@ -59,12 +59,17 @@ func BuildRouter() *gin.Engine {
 
 	router.Use(cors.New(config))
 	router.Use(SheetsServiceMiddleware())
-	router.LoadHTMLGlob("templates/*")
+	
+	router.LoadHTMLGlob("templates/*/**")
 
 	router.StaticFile("/favicon.ico", "./favicon.ico")
+	router.StaticFile("/logo.png", "./logo.png")
 
 	router.GET("/ping", api.Pong)
 	router.GET("/settings", api.Settings)
+	router.GET("/loginPage", api.LoginPage)
+	router.GET("/", api.MainPage)
+	router.GET("/logout", api.Logout)
 
 	router.POST("/login", api.Login)
 	router.POST("/registerAccount", api.ResgisterAccount)
