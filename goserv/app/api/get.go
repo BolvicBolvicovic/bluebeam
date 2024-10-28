@@ -25,7 +25,7 @@ func Pong(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H { "message": "pong", })
 }
 
-func Settings(c *gin.Context) {
+func Dashboard(c *gin.Context) {
 	username, err := c.Cookie("bluebeam_username")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Need to log in again"})
@@ -41,35 +41,13 @@ func Settings(c *gin.Context) {
 		return
 	}
 
-	c.HTML(http.StatusOK, "settings.tmpl", gin.H{
+	c.HTML(http.StatusOK, "dashboard.tmpl", gin.H{
 		"username": username,
 		"Navbar": components.NewNavbar(true),
-	})
-}
-
-func AnalyzerPage(c *gin.Context) {
-	username, err := c.Cookie("bluebeam_username")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Need to log in again"})
-		return
-	}
-	session_key, err := c.Cookie("bluebeam_session_key")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Need to log in again"})
-		return
-	}
-
-	if !validUser(c, username, session_key) {
-		return
-	}
-
-	c.HTML(http.StatusOK, "analyzer_page.tmpl", gin.H{
 		"UrlsSubmitButton": components.Button{
-			ID: "urlsSubmitButton",
 			Text: "let's go!",
 			IsSubmit: true,
 		},
-		"Navbar": components.NewNavbar(true),
 	})
 }
 

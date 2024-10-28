@@ -71,13 +71,14 @@ func BuildRouter() *gin.Engine {
 	router.StaticFile("/why_bluebeam.md", "./templates/pages/why_bluebeam.md")
 
 	router.GET("/ping", api.Pong)
-	router.GET("/settings", api.Settings)
-	router.GET("/loginPage", api.LoginPage)
+
 	router.GET("/", api.MainPage)
-	router.GET("/logout", api.Logout)
 	router.GET("/whyBluebeam", api.WhyBluebeam)
 	router.GET("/apiPage", api.ApiPage)
-	router.GET("/analyzerPage", api.AnalyzerPage)
+	router.GET("/loginPage", api.LoginPage)
+
+	router.GET("/dashboard", api.Dashboard)
+	router.GET("/logout", api.Logout)
 
 	router.POST("/login", api.Login)
 	router.POST("/registerAccount", api.ResgisterAccount)
@@ -85,6 +86,7 @@ func BuildRouter() *gin.Engine {
 	router.POST("/criterias", api.StoreCriterias)
 	router.POST("/updateEmail", api.UpdateEmail)
 	router.POST("/outputGoogleSpreadsheet", api.OutputGoogleSpreadsheet)
+	router.POST("urls", api.Urls)
 
 	return router
 }

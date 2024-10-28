@@ -99,6 +99,28 @@ func StoreCriterias(c *gin.Context) {
 	criterias.Store(c, crits, username)
 }
 
+func Urls(c *gin.Context) {
+	var scrapedUrls analyzer.ScrapedUrls
+	username, err := c.Cookie("bluebeam_username")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Need to log in again"})
+		return
+	}
+	session_key, err := c.Cookie("bluebeam_session_key")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Need to log in again"})
+		return
+	}
+	if err := c.ShouldBindJSON(&scrapedUrls); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+	if !validUser(c, username, session_key) {
+		return
+	}
+	analyzer.HandleUrls(c, scrapedUrls, username)
+}
+
 func Analyze(c *gin.Context) {
 	var scrapedData analyzer.ScrapedDefault
 	username, err := c.Cookie("bluebeam_username")

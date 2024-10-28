@@ -1,4 +1,4 @@
-# bluebeam API Documentation
+# <span style="color:#60a5fa">bluebeam</span> API Documentation
 
 ## Overview
 

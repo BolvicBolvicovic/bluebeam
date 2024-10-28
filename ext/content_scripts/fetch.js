@@ -102,7 +102,7 @@ function register(message) {
 }
 
 function settingsPage() {
-  const url = `https://localhost/settings`;
+  const url = `https://localhost/dashboard`;
   window.open(url);
 }
 

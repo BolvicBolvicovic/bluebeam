@@ -2,9 +2,8 @@ package components
 
 type Navbar struct {
 	WhysButton 	Button
-	SettingsButton 	Button
+	DashboardButton	Button
 	ApisButton 	Button
-	AnalyzerButton	Button
 	LoginButton	Button
 	LogoutButton	Button
 	IsLoggedIn	bool
@@ -18,15 +17,9 @@ func NewNavbar(isLoggedIn bool) Navbar {
 			IsSubmit:	false,
 			IsPrimary:	false,
 		},
-		SettingsButton: Button{
-			Text:		"settings",
-			Link:		"/settings",
-			IsSubmit:	false,
-			IsPrimary:	false,
-		},
-		AnalyzerButton: Button{
-			Text:		"analyzer",
-			Link:		"/analyzerPage",
+		DashboardButton: Button{
+			Text:		"dashboard",
+			Link:		"/dashboard",
 			IsSubmit:	false,
 			IsPrimary:	false,
 		},

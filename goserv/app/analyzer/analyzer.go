@@ -55,6 +55,10 @@ type ScrapedDefault struct {
 	BodyInnerText string      `json:"bodyText"`
 }
 
+type ScrapedUrls struct {
+	Urls        []string      `json:"urls"`
+}
+
 type LLMQuestions struct {
 	SystemMessage	string `json:"systemmessage"`
 	Data		ScrapedDefault `json:"data"`
@@ -124,4 +128,12 @@ func Analyzer(c *gin.Context, sd ScrapedDefault, username string) {
 	}
 	wg.Wait()
 	c.JSON(http.StatusOK, gin.H{"message": response.Response})
+}
+
+func HandleUrls(c *gin.Context, su ScrapedUrls, username string) {
+	message := "urls received for " + username + ":"
+	for _, item := range su.Urls {
+		message += (item + "\n")
+	}
+	c.JSON(http.StatusOK, gin.H{"message": message})
 }

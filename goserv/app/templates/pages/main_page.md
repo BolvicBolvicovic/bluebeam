@@ -1,5 +1,12 @@
 <a id="readme-top"></a>
 
+<!-- ABOUT THE PROJECT -->
+## About The Project
+
+bluebeam: AI-powered web audits in one click, customized to your criteria.
+
+
+
 <title align="center">
   audit websites in one click
   </br>
@@ -19,7 +26,6 @@
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
@@ -31,14 +37,6 @@
   </ol>
 </details>
 
-
-
-<!-- ABOUT THE PROJECT -->
-## About The Project
-
-bluebeam: AI-powered web audits in one click, customized to your criteria.
-
-
 ### Built With
 
 * [![Go][Go.dev]][Go-url]
@@ -49,7 +47,6 @@ bluebeam: AI-powered web audits in one click, customized to your criteria.
 * [![GoogleCloudPlatform][GoogleCloudPlatform.com]][GoogleCloudPlatform-url]
 
 And OpenAI API.
-
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -101,8 +98,11 @@ Furthermore, you will need to create a OAuth2.0 client and an API key in your go
 <!-- USAGE EXAMPLES -->
 ## Usage
 
+If you intend to use the web extention:<br/>
 Running web-ext will open firefox. Because the server is running on localhost and the certificate is self-signed (at the moment),
-you need to go to Settings -> Tools -> Advanced -> View Certificates -> Servers -> Add Exception then Add https://localhost.
+you need to go to Settings -> Tools -> Advanced -> View Certificates -> Servers -> Add Exception then Add https://localhost.<br/>
+If you intend to use the dashboard, login on the <a href="https://localhost/loginPage">website</a> and go to the dedicated section.<br/>
+If you intend to use the API, you will have to wait, it is not implemented yet :)
 
 ### Register an account
 
@@ -149,6 +149,7 @@ Here is a concret output example with the <a href="https://github.com/BolvicBolv
 - [x] Response with a json/google spreadsheet that applies the chosen criteria on the website
 - [x] Google spreadsheet format as the criteria's input
 - [ ] Possibility to audit many websites at the same time
+- [ ] API service that can be integrated to your application
 - [ ] Image analysis
 - [ ] Scraping social-medias
 - [ ] Response with the posibility to create a report with graphs and text

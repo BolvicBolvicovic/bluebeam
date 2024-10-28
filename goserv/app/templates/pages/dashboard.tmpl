@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100">
+    {{template "navbar" .Navbar}}
+    <br/>
+    <div class="flex flex-col items-center mx-auto p-8 bg-white shadow-lg rounded-lg max-w-3xl">
+      <!-- Welcome Message -->
+      <h2 class="text-3xl font-bold text-blue-400 text-center mb-6">Välkommen, <span class="text-gray-700">{{ .username }}</span></h2>
+      
+      <!-- Form Section -->
+      <form id="urls" class="w-full space-y-4">
+        <label for="textarea" class="text-gray-700 font-medium">Enter root URLs:</label>
+        <textarea 
+          id="textArea"
+          class="w-full h-32 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-200" 
+          placeholder="Write one root URL per line"
+          required
+        ></textarea>
+        
+        <!-- Submit Button -->
+        <div class="flex justify-end">
+          {{template "button" .UrlsSubmitButton}}
+          <div id="messageOutput" class="text-red-500 text-sm mt-2"></div>
+        </div>
+      </form>
+      
+      <!-- Additional Settings -->
+      <div class="mt-6 w-full border-t border-gray-200 pt-4">
+        {{template "settings"}}
+      </div>
+    </div>
+    <br/>
+    <script>
+      const urls = document.getElementById("urls");
+      const textArea = document.getElementById("textArea");
+      
+      urls.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const parsedUrls = textArea.value.split('\n').map(line => line.trim()).filter(line => line !== '');
+        const body = JSON.stringify({ urls: parsedUrls });
+
+        fetch("/urls", {
+          method: 'POST',
+          mode: 'cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: body
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            messageOutput.innerHTML = data.error;
+          } else {
+            messageOutput.innerHTML = data.message;
+          }
+        })
+        .catch(error => {
+          console.error('Error sending data:', error);
+          document.getElementById("messageOutput").innerText = 'An unexpected error occurred. Please try again.';
+        });
+      });
+    </script>
+  </body>
+</html>

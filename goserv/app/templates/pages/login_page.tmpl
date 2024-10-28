@@ -30,7 +30,7 @@
         {{template "input" .EmailInputRegister}}
         {{template "button" .SubmitButtonRegister}}
       </form>
-      <div class="place-content-end p-2 py-4">
+      <div class="place-content-end py-4">
         {{template "button" .Switch}}
         <div id="messageOutput" class="text-red-500 text-sm mt-2"></div>
       </div>
@@ -68,7 +68,12 @@
           const password = document.getElementById("passwordLogin").value;
           const body = JSON.stringify({ username, password });
 
-          fetch('https://localhost/login', {
+          if (!username || !password) {
+            messageOutput.innerHTML = 'Please fill all fields.';
+            return;
+          }
+
+          fetch('/login', {
             method: 'POST',
             mode: 'cors',
             headers: { 'Content-Type': 'application/json' },
@@ -110,7 +115,7 @@
             return;
           }
 
-          fetch('https://localhost/registerAccount', {
+          fetch('/registerAccount', {
             method: 'POST',
             mode: 'cors',
             headers: { 'Content-Type': 'application/json' },

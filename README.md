@@ -60,25 +60,6 @@
 </details>
 
 
-
-<!-- ABOUT THE PROJECT -->
-## About The Project
-
-bluebeam: AI-powered web audits in one click, customized to your criteria.
-
-
-### Built With
-
-* [![Go][Go.dev]][Go-url]
-* [![Docker][Docker.com]][Docker-url]
-* [![Mariadb][Mariadb.org]][Mariadb-url]
-* [![Javascript][Javascript.com]][Javascript-url]
-* [![Python][Python.org]][Python-url]
-* [![GoogleCloudPlatform][GoogleCloudPlatform.com]][GoogleCloudPlatform-url]
-
-And OpenAI API.
-
-
 <!-- GETTING STARTED -->
 ## Getting Started
 
@@ -129,8 +110,11 @@ Furthermore, you will need to create a OAuth2.0 client and an API key in your go
 <!-- USAGE EXAMPLES -->
 ## Usage
 
+If you intend to use the web extention:<br/>
 Running web-ext will open firefox. Because the server is running on localhost and the certificate is self-signed (at the moment),
-you need to go to Settings -> Tools -> Advanced -> View Certificates -> Servers -> Add Exception then Add https://localhost.
+you need to go to Settings -> Tools -> Advanced -> View Certificates -> Servers -> Add Exception then Add https://localhost.<br/>
+If you intend to use the dashboard, login on the <a href="https://localhost/loginPage">website</a> and go to the dedicated section.<br/>
+If you intend to use the API, you will have to wait, it is not implemented yet :)
 
 ### Register an account
 
@@ -146,12 +130,12 @@ An HTTP-only cookie will keep you connected for an hour and you will not need to
 
 ### Analyse
 
-If you have not given any criteria file, you will get an error. You need to go on settings and upload your criterias in the format you want.
+If you have not given any criteria file, you will get an error. You need to go on settings and upload your criteria in the format you want.
 Current possible inputs are:
 - a JSON file
 - the first sheet of a google spreadsheet
 
-For a JSON file, it has to contain an array of features described in the template <a href="example.json">example.json</a> at the root of the repository.
+For a JSON file, it has to contain an array of features described in the template <a href="https://github.com/BolvicBolvicovic/bluebeam/blob/main/example.json">example.json</a> at the root of the repository.
 For the first sheet of a google spreadsheet, there is a <a href="images/example2.png">screenshot</a> in the folder images at the root of the repository.
 
 Once you are logged in, you can click on the analyse button and you will get a response.
@@ -168,15 +152,16 @@ See roadmap below for future improvements.
 
 ## Example
 
-Here is a concret output example with the <a href="example.json">example.json</a> file used as an input and the <a href="https://go.dev/">Go website</a>.
+Here is a concret output example with the <a href="https://github.com/BolvicBolvicovic/bluebeam/blob/main/example.json">example.json</a> file used as an input and the <a href="https://go.dev/">Go website</a>.
 ![Alt text](images/example.png)
 
 <!-- ROADMAP -->
 ## Roadmap
 
-- [x] Response with a json/google spreadsheet that applies the chosen criterias on the website
+- [x] Response with a json/google spreadsheet that applies the chosen criteria on the website
 - [x] Google spreadsheet format as the criteria's input
 - [ ] Possibility to audit many websites at the same time
+- [ ] API service that can be integrated to your application
 - [ ] Image analysis
 - [ ] Scraping social-medias
 - [ ] Response with the posibility to create a report with graphs and text
@@ -200,13 +185,6 @@ Don't forget to give the project a star! Thanks again!
 3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
-
-
-### Top contributors:
-
-<a href="https://github.com/BolvicBolvicovic/bluebeam/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=BolvicBolvicovic/bluebeam" alt="contrib.rocks image" />
-</a>
 
 
 
