@@ -4,47 +4,65 @@
   </head>
   <body class="bg-gray-100">
     {{template "navbar" .Navbar}}
-    <div class="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
-      <!-- Webextension Name -->
-      <h1 class="text-3xl font-bold text-blue-600 text-center mb-6 lowercase">bluebeam</h1>
-
-      <!-- Header Section -->
-      <h1 class="text-2xl font-bold text-blue-600 text-center mb-4">Välkommen, {{ .username }}</h1>
-
+    <br/>
+    <div class="w-full max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+      <!-- Welcome Message -->
+      <h2 class="text-2xl font-semibold text-blue-600 text-center mb-4">Välkommen, {{ .username }}</h2>
+    
       <!-- File Upload Form -->
-      <form class="upload space-y-4" onsubmit="sendCriterias(event)">
+      <form class="space-y-4" onsubmit="sendCriterias(event)">
         <label for="criterias" class="block w-full py-2 px-4 text-center bg-blue-50 text-blue-600 border border-blue-300 rounded-lg cursor-pointer hover:bg-blue-100 transition">
           Choose JSON criteria file
         </label>
-        <input type="file" name="criterias" id="criterias" accept=".json" required class="hidden" onchange="showFileSelected()" />
-
+        <input 
+          type="file" 
+          name="criterias" 
+          id="criterias" 
+          accept=".json" 
+          required 
+          class="hidden" 
+          onchange="showFileSelected()" 
+        />
+    
         <button 
           type="submit" 
           class="w-full py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition">
           Submit JSON criteria file
         </button>
-        <button
-            class="w-full py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
-            onclick="initOAuth(event)"
-            id="googleSsButton">
-            Submit Google Spreadsheet criteria
+    
+        <button 
+          class="w-full py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition" 
+          onclick="initOAuth(event)" 
+          id="googleSsButton">
+          Submit Google Spreadsheet criteria
         </button>
-
+    
         <!-- Notification Message -->
-        <div id="fileStatus" class="text-center mt-2"></div>
+        <div id="fileStatus" class="text-center text-red-500 mt-2"></div>
       </form>
-
-
+    
+      <!-- Divider -->
+      <div class="border-t border-gray-300 my-6"></div>
+    
       <!-- Email Update Form -->
-      <form class="update-email space-y-4 mt-6" onsubmit="updateEmail(event)">
-        <input type="email" id="email" name="email" placeholder="Enter new email" required class="w-full py-2 px-4 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" />
-
-        <button type="submit" class="w-full py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition">
+      <form class="space-y-4" onsubmit="updateEmail(event)">
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          placeholder="Enter new email" 
+          required 
+          class="w-full py-2 px-4 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" 
+        />
+    
+        <button 
+          type="submit" 
+          class="w-full py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition">
           Update Email
         </button>
-
+    
         <!-- Notification Message -->
-        <div id="emailStatus" class="text-center mt-2"></div>
+        <div id="emailStatus" class="text-center text-red-500 mt-2"></div>
       </form>
     </div>
 

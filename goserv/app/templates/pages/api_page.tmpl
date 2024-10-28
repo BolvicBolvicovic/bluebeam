@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script>
-    if (document.location.href != "https://localhost/") {
-      document.location.href = "https://localhost";
-    }
-    </script>
     <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs@2/webcomponents-loader.min.js"></script>
     <script type="module" src="https://cdn.jsdelivr.net/gh/zerodevx/zero-md@1/src/zero-md.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -13,7 +8,7 @@
   <body class="bg-gray-100">
     {{template "navbar" .Navbar}}
     <br/>
-    <zero-md src="main_page.md" class="flex flex-col items-center mx-auto p-6 bg-white shadow-lg rounded-lg max-w-4xl"></zero-md>
+    <zero-md src="api_page.md" class="flex flex-col items-center mx-auto p-6 bg-white shadow-lg rounded-lg max-w-4xl"></zero-md>
     <br/>
   </body>
 </html>

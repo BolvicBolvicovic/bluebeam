@@ -47,6 +47,32 @@ func Settings(c *gin.Context) {
 	})
 }
 
+func AnalyzerPage(c *gin.Context) {
+	username, err := c.Cookie("bluebeam_username")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Need to log in again"})
+		return
+	}
+	session_key, err := c.Cookie("bluebeam_session_key")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Need to log in again"})
+		return
+	}
+
+	if !validUser(c, username, session_key) {
+		return
+	}
+
+	c.HTML(http.StatusOK, "analyzer_page.tmpl", gin.H{
+		"UrlsSubmitButton": components.Button{
+			ID: "urlsSubmitButton",
+			Text: "let's go!",
+			IsSubmit: true,
+		},
+		"Navbar": components.NewNavbar(true),
+	})
+}
+
 func MainPage(c *gin.Context) {
 	isLoggedIn := true
 	username, err := c.Cookie("bluebeam_username")
@@ -67,6 +93,54 @@ func MainPage(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "main_page.tmpl", gin.H{
+		"Navbar": components.NewNavbar(isLoggedIn),
+	})
+}
+
+func WhyBluebeam(c *gin.Context) {
+	isLoggedIn := true
+	username, err := c.Cookie("bluebeam_username")
+	if err != nil {
+		isLoggedIn = false
+	}
+	session_key, err := c.Cookie("bluebeam_session_key")
+	if err != nil {
+		isLoggedIn = false
+	}
+	if username == "" || session_key == "" {
+		isLoggedIn = false
+	}
+	if isLoggedIn {
+		if !validUser(c, username, session_key) {
+			return
+		}
+	}
+
+	c.HTML(http.StatusOK, "why_bluebeam.tmpl", gin.H{
+		"Navbar": components.NewNavbar(isLoggedIn),
+	})
+}
+
+func ApiPage(c *gin.Context) {
+	isLoggedIn := true
+	username, err := c.Cookie("bluebeam_username")
+	if err != nil {
+		isLoggedIn = false
+	}
+	session_key, err := c.Cookie("bluebeam_session_key")
+	if err != nil {
+		isLoggedIn = false
+	}
+	if username == "" || session_key == "" {
+		isLoggedIn = false
+	}
+	if isLoggedIn {
+		if !validUser(c, username, session_key) {
+			return
+		}
+	}
+
+	c.HTML(http.StatusOK, "api_page.tmpl", gin.H{
 		"Navbar": components.NewNavbar(isLoggedIn),
 	})
 }
@@ -93,16 +167,47 @@ func LoginPage(c *gin.Context) {
 	}
 	c.HTML(http.StatusOK, "login_page.tmpl", gin.H{
 		"Navbar": components.NewNavbar(false),
-		"UsernameInput": components.Input{
-			ID: "username",
+		"UsernameInputLogin": components.Input{
+			ID: "usernameLogin",
+			Placeholder: "Username",
 		},
-		"PasswordInput": components.Input{
-			ID: "password",
+		"PasswordInputLogin": components.Input{
+			ID: "passwordLogin",
+			Type: "password",
+			Placeholder: "Password",
 		},
-		"SubmitButton": components.Button{
-			ID: "submitButton",
-			Text: "login",
+		"SubmitButtonLogin": components.Button{
+			ID: "submitButtonLogin",
+			Text: "let's go!",
 			IsSubmit: true,
+		},
+		"UsernameInputRegister": components.Input{
+			ID: "usernameRegister",
+			Placeholder: "Username",
+		},
+		"PasswordInputRegister": components.Input{
+			ID: "passwordRegister",
+			Type: "password",
+			Placeholder: "Password",
+		},
+		"PasswordInputTester": components.Input{
+			ID: "passwordTest",
+			Type: "password",
+			Placeholder: "re-type Password",
+		},
+		"EmailInputRegister": components.Input{
+			ID: "email",
+			Placeholder: "Email compatible with Google",
+		},
+		"SubmitButtonRegister": components.Button{
+			ID: "submitButtonRegister",
+			Text: "let's go!",
+			IsSubmit: true,
+		},
+		"Switch": components.Button{
+			ID: "switchButton",
+			Text: "register",
+			IsSubmit: false,
 		},
 	})
 }

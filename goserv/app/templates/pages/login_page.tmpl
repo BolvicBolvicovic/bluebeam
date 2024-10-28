@@ -1,44 +1,138 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body class="bg-gray-100" onload="OnLoad()">
-    {{template "navbar" .Navbar}}
-    <div>
-      <div>
-        {{template "input" .UsernameInput}}
-        {{template "input" .PasswordInput}}
-        {{template "button" .SubmitButton}}
-        <div id="messageOutput"></div>
+    <div class="w-full">
+      {{template "navbar" .Navbar}}
+    </div>
+    <br/>
+    
+    <!-- Main Content -->
+    <div class="w-full max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+      <h2 id="titleText" class="text-2xl font-semibold text-center mb-6">Login</h2>
+      <form id="loginForm" class="flex flex-col space-y-4">
+        {{template "input" .UsernameInputLogin}}
+        {{template "input" .PasswordInputLogin}}
+        {{template "button" .SubmitButtonLogin}}
+      </form>
+      <form id="registerForm" class="flex flex-col space-y-4">
+        {{template "input" .UsernameInputRegister}}
+        {{template "input" .PasswordInputRegister}}
+        {{template "input" .PasswordInputTester}}
+        {{template "input" .EmailInputRegister}}
+        {{template "button" .SubmitButtonRegister}}
+      </form>
+      <div class="place-content-end p-2 py-4">
+        {{template "button" .Switch}}
+        <div id="messageOutput" class="text-red-500 text-sm mt-2"></div>
       </div>
     </div>
     <script>
-    function OnLoad() {
-      document.getElementById("submitButton").addEventListener("click", (e) => {
-        e.preventDefault();
-        let body = JSON.stringify({
-          username: document.getElementById("username").value,
-          password: document.getElementById("password").value,
+      function OnLoad() {
+        const messageOutput = document.getElementById("messageOutput");
+        const loginForm = document.getElementById("loginForm");
+        const registerForm = document.getElementById("registerForm");
+        const switchButton = document.getElementById("switchButton");
+
+        switchButton.removeAttribute("onclick");
+        registerForm.style.display = "none";
+
+        switchButton.addEventListener("click", (e) => {
+          const titleText = document.getElementById("titleText");
+
+          messageOutput.innerHTML = "";
+          if (titleText.innerText == "Login") {
+            titleText.innerText = "Register";
+            loginForm.style.display = "none";
+            registerForm.style.display = "block";
+            switchButton.innerText = "back"
+          } else {
+            titleText.innerText = "Login";
+            registerForm.style.display = "none";
+            loginForm.style.display = "block";
+            switchButton.innerText = "register"
+          }
         });
-        fetch('https://localhost/login', {
-          method: 'POST',
-          mode: 'cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: body
-        })
-        .then(response => response.text())
+        loginForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+
+          const username = document.getElementById("usernameLogin").value;
+          const password = document.getElementById("passwordLogin").value;
+          const body = JSON.stringify({ username, password });
+
+          fetch('https://localhost/login', {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: body
+          })
+          .then(response => response.json())
           .then(data => {
-            const jsonData = JSON.parse(data);
-            if (jsonData.error != undefined) {
-              document.getElementById("messageOutput").innerText = jsonData.error;
+            if (data.error) {
+              messageOutput.innerHTML = data.error;
             } else {
-              document.location.href = "https://localhost";
+              window.location.href = "https://localhost";
             }
-        })
-        .catch(error => console.error('Error sending data:', error));
-      });
-    }
+          })
+          .catch(error => {
+            console.error('Error sending data:', error);
+            document.getElementById("messageOutput").innerText = 'An unexpected error occurred. Please try again.';
+          });
+        });
+        registerForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+
+          const username = document.getElementById("usernameRegister").value;
+          const password = document.getElementById("passwordRegister").value;
+          const passwordTest = document.getElementById("passwordTest").value;
+          const email = document.getElementById("email").value;
+          const body = JSON.stringify({ username, password, email });
+          if (!username || !password || !email) {
+            messageOutput.innerHTML = 'Please fill all fields.';
+            return;
+          }
+
+          if (password != passwordTest) {
+            messageOutput.innerHTML = 'The two passwords are different.';
+            return;
+          }
+
+          if (password.length < 8) {
+            messageOutput.innerHTML = 'Password needs to be 8 or more characters long.';
+            return;
+          }
+
+          fetch('https://localhost/registerAccount', {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: body
+          })
+          .then(response => response.json())
+          .then(data => {
+            const messageOutput = document.getElementById("messageOutput");
+
+            if (data.error) {
+              messageOutput.innerText = data.error;
+            } else {
+              messageOutput.innerText = data.message;
+            }
+          })
+          .catch(error => {
+            console.error('Error sending data:', error);
+            document.getElementById("messageOutput").innerText = 'An unexpected error occurred. Please try again.';
+          });
+        });
+      }
     </script>
   </body>
 </html>
+

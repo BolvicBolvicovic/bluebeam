@@ -4,6 +4,7 @@ type Navbar struct {
 	WhysButton 	Button
 	SettingsButton 	Button
 	ApisButton 	Button
+	AnalyzerButton	Button
 	LoginButton	Button
 	LogoutButton	Button
 	IsLoggedIn	bool
@@ -12,8 +13,8 @@ type Navbar struct {
 func NewNavbar(isLoggedIn bool) Navbar {
 	return Navbar{
 		WhysButton: 	Button{
-			Text:		"why bluebeam?",
-			Link:		"",
+			Text:		"why bluebeam",
+			Link:		"/whyBluebeam",
 			IsSubmit:	false,
 			IsPrimary:	false,
 		},
@@ -23,9 +24,15 @@ func NewNavbar(isLoggedIn bool) Navbar {
 			IsSubmit:	false,
 			IsPrimary:	false,
 		},
+		AnalyzerButton: Button{
+			Text:		"analyzer",
+			Link:		"/analyzerPage",
+			IsSubmit:	false,
+			IsPrimary:	false,
+		},
 		ApisButton: 	Button{
 			Text:		"api",
-			Link:		"",
+			Link:		"/apiPage",
 			IsSubmit:	false,
 			IsPrimary:	false,
 		},

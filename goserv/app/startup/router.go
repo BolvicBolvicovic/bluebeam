@@ -62,14 +62,22 @@ func BuildRouter() *gin.Engine {
 	
 	router.LoadHTMLGlob("templates/*/**")
 
-	router.StaticFile("/favicon.ico", "./favicon.ico")
-	router.StaticFile("/logo.png", "./logo.png")
+	router.StaticFile("/favicon.ico", "./images/favicon.ico")
+	router.StaticFile("/logo.png", "./images/logo.png")
+	router.StaticFile("/example.png", "./images/example.png")
+	router.StaticFile("/example2.png", "./images/example2.png")
+	router.StaticFile("/main_page.md", "./templates/pages/main_page.md")
+	router.StaticFile("/api_page.md", "./templates/pages/api_page.md")
+	router.StaticFile("/why_bluebeam.md", "./templates/pages/why_bluebeam.md")
 
 	router.GET("/ping", api.Pong)
 	router.GET("/settings", api.Settings)
 	router.GET("/loginPage", api.LoginPage)
 	router.GET("/", api.MainPage)
 	router.GET("/logout", api.Logout)
+	router.GET("/whyBluebeam", api.WhyBluebeam)
+	router.GET("/apiPage", api.ApiPage)
+	router.GET("/analyzerPage", api.AnalyzerPage)
 
 	router.POST("/login", api.Login)
 	router.POST("/registerAccount", api.ResgisterAccount)

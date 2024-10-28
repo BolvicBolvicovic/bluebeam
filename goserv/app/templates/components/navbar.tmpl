@@ -1,13 +1,20 @@
 {{define "navbar"}}
-  <div class="container mx-auto flex flex-wrap p-5 items-center bg-blue-200 shadow-md  top-0 z-50 w-full">
-    <a href="/" class="relative overflow-visible">
-      <img src="/logo.png" class="w-24 h-24 md:w-28 md:h-28 -mb-4 md:-mb-6">
+  <div class="container pr-4 mx-auto flex items-center justify-between bg-blue-400 shadow-md top-0 z-50 w-full h-32 rounded-b-lg">
+    <!-- Logo on the left -->
+    <a href="/" class="relative overflow-hidden">
+      <img 
+        src="/logo.png" 
+        class="h-full w-auto object-cover"
+        alt="Logo"
+      >
     </a>
 
+    <!-- Buttons on the right -->
     <div class="ml-auto flex space-x-4">
       {{template "button" .WhysButton}}
       {{template "button" .ApisButton}}
       {{if .IsLoggedIn}}
+        {{template "button" .AnalyzerButton}}
         {{template "button" .SettingsButton}}
         {{template "button" .LogoutButton}}
       {{else}}
@@ -16,3 +23,4 @@
     </div>
   </div>
 {{end}}
+
