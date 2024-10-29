@@ -115,14 +115,14 @@ func sendLLMQuestion(f criterias.Feature, sd *ScrapedDefault, r *LLMResponse) {
 }
 
 func Analyzer(c *gin.Context, sd ScrapedDefault, username string) {
-	crits, err := criterias.Get(c, username)
+	crits, index_file, err := criterias.Get(c, username)
 	if err != nil && err != sql.ErrNoRows {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": ("No criterias chosen or " + err.Error())})
 		return
 	}
 	log.Println(crits)
 	var response LLMResponse
-	for _, feat := range crits.Features {
+	for _, feat := range crits[index_file].Features {
 		wg.Add(1)
 		go sendLLMQuestion(feat, &sd, &response)				
 	}

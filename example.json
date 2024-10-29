@@ -4,29 +4,39 @@
 		"featurename": "arguments",
 		"featuretype": "content",
 		"description": "Is there any argument on why the user should use the language?",
-		"minimumcriterias": ["There is at least one argument"],
-		"yescases": [""],
-		"nocases": ["there is just a try playground and no argument"],
-		"authorizeddata": ["all"]
+		"minimumcriterias": "There is at least one argument",
+		"yescases": "",
+		"nocases": "there is just a try playground and no argument",
+		"authorizeddata": "all"
 	},
 	{
 		"topic": "pizzeria_webpage",
 		"featurename": "pizza_type",
 		"featuretype": "content",
 		"description": "Is there any pizza available?",
-		"minimumcriterias": ["There is at least two types of pizzas"],
-		"yescases": [""],
-		"nocases": ["if there is one or less pizza available"],
-		"authorizeddata": ["all"]
+		"minimumcriterias": "There is at least two types of pizzas",
+		"yescases": "",
+		"nocases": "if there is one or less pizza available",
+		"authorizeddata": "all"
 	},
 	{
 		"topic": "programming_language_webpage",
 		"featurename": "community_section",
 		"featuretype": "content",
 		"description": "Is there a community section?",
-		"minimumcriterias": ["there is a button that links to a community section"],
-		"yescases": [""],
-		"nocases": [""],
-		"authorizeddata": ["buttons"]
+		"minimumcriterias": "there is a button that links to a community section",
+		"yescases": "",
+		"nocases": "",
+		"authorizeddata": "buttons"
+	},
+	{
+		"topic": "programming_language_webpage",
+		"featurename": "example",
+		"featuretype": "content",
+		"description": "Is there an example of how the language is and works?",
+		"minimumcriterias": "there are some lines of code demonstarting",
+		"yescases": "there is a playground",
+		"nocases": "",
+		"authorizeddata": "all"
 	}
 ]

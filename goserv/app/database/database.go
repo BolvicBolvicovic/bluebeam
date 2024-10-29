@@ -36,7 +36,9 @@ CREATE TABLE IF NOT EXISTS users (
 	email VARCHAR(50) NOT NULL,
 	session_key VARCHAR(72),
 	creation_key_time VARCHAR(72),
-	criterias_file VARBINARY(15000)
+	criterias_files VARBINARY(15000),
+	current_file_index INT
+
 );
 	`); err != nil {
 		log.Fatal(err)

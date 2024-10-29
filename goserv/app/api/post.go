@@ -4,6 +4,7 @@ import (
 	"time"
 	"net/http"
 	"github.com/gin-gonic/gin"
+	"github.com/BolvicBolvicovic/bluebeam/templates/components"
 	"github.com/BolvicBolvicovic/bluebeam/database"
 	"github.com/BolvicBolvicovic/bluebeam/analyzer"
 	"github.com/BolvicBolvicovic/bluebeam/criterias"
@@ -18,7 +19,7 @@ import (
 	"log"
 )
 
-func clearSessionKey(username string) error {
+func clearSessionKey(username string, c *gin.Context) error {
 	query := `
 UPDATE
 	users
@@ -28,6 +29,8 @@ SET
 WHERE
 	username = ?;
 	`
+	c.SetCookie("bluebeam_username", "", -1, "/", "localhost", true, true)
+	c.SetCookie("bluebeam_session_key", "", -1, "/", "localhost", true, true)
 	_, err := database.Db.Exec(query, username)
 	return err
 }
@@ -46,6 +49,7 @@ WHERE
 	var sk, ckt sql.NullString
 	if err := row.Scan(&sk, &ckt); err != nil {
 		if err == sql.ErrNoRows {
+			clearSessionKey(username, c)
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username/key"})
 		} else {
 			log.Println(err)
@@ -54,10 +58,12 @@ WHERE
 		return false
 	}
 	if !sk.Valid || !ckt.Valid {
+		clearSessionKey(username, c)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username/key"})
 		return false
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(sk.String), []byte(session_key)); err != nil {
+		clearSessionKey(username, c)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username/key"})
 		return false
 	}
@@ -71,7 +77,10 @@ WHERE
 	y1, m1, d1 := time.Now().Date()
 	//TODO: Handle the session key hourly or with the ping function
 	if d0 != d1 || m0 != m1 || y0 != y1 {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Outdated key"})
+		clearSessionKey(username, c)
+		c.HTML(http.StatusOK, "main_page.tmpl", gin.H{
+			"Navbar": components.NewNavbar(false),
+		})
 		return false
 	}
 	return true
@@ -90,6 +99,7 @@ func StoreCriterias(c *gin.Context) {
 		return
 	}
 	if err := c.ShouldBindJSON(&crits); err != nil {
+		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
@@ -430,11 +440,11 @@ WHERE
 		query = `
 INSERT INTO
 	users
-	(username, password, email)
+	(username, password, email, current_file_index)
 VALUES
-	(?, ?, ?);
+	(?, ?, ?, ?);
 		`
-		if _, err := database.Db.Exec(query, newUser.Username, hash, newUser.Email); err != nil {
+		if _, err := database.Db.Exec(query, newUser.Username, hash, newUser.Email, -1); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
 		}
 		c.JSON(http.StatusAccepted, gin.H{"message": "Account successfuly created"})

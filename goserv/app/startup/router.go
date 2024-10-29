@@ -78,6 +78,7 @@ func BuildRouter() *gin.Engine {
 	router.GET("/loginPage", api.LoginPage)
 
 	router.GET("/dashboard", api.Dashboard)
+	router.GET("/dashboard/inputFiles", api.InputFiles)
 	router.GET("/logout", api.Logout)
 
 	router.POST("/login", api.Login)
@@ -87,6 +88,8 @@ func BuildRouter() *gin.Engine {
 	router.POST("/updateEmail", api.UpdateEmail)
 	router.POST("/outputGoogleSpreadsheet", api.OutputGoogleSpreadsheet)
 	router.POST("urls", api.Urls)
+
+	router.PATCH("/currentInputFile", api.CurrentInputFile)
 
 	return router
 }

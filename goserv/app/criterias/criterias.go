@@ -20,10 +20,10 @@ import (
 var aeadInstance tink.AEAD
 
 type Feature struct {
-	Topic 		string    `json:"topic" ` 
-	FeatureName 	string    `json:"featurename" `
-	FeatureType	string	  `json:"featuretype" `
-	Description 	string    `json:"description" `
+	Topic 		string  `json:"topic" ` 
+	FeatureName 	string  `json:"featurename" `
+	FeatureType	string	`json:"featuretype" `
+	Description 	string  `json:"description" `
 	MinimumCriterias string `json:"minimumcriterias" `
 	YesCases 	string  `json:"yescases" `
 	NoCases 	string  `json:"nocases" `
@@ -32,13 +32,15 @@ type Feature struct {
 
 type Criterias struct {
 	Features	[]Feature `json:"features"`
+	FileName	string	  `json:"filename"`	
 }
 
 func Store(c *gin.Context, crits Criterias, username string) {
-	data, _ := json.Marshal(crits)
+	currentCriteriasFiles,_, _ := Get(c, username)
+	currentCriteriasFiles = append(currentCriteriasFiles, crits)
+	data, _ := json.Marshal(currentCriteriasFiles)
 	encryptedData, err := aeadInstance.Encrypt(data, nil)
 	if err != nil {
-		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
 		return
 	}
@@ -46,11 +48,12 @@ func Store(c *gin.Context, crits Criterias, username string) {
 UPDATE
 	users
 SET
-	criterias_file = ?
+	criterias_files = ?,
+	current_file_index = ?
 WHERE
 	username = ?;
 	`
-	if _, err := database.Db.Exec(query, encryptedData, username); err != nil {
+	if _, err := database.Db.Exec(query, encryptedData, len(currentCriteriasFiles) - 1, username); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error loading file into database"})
 		return
@@ -58,10 +61,11 @@ WHERE
 	c.JSON(http.StatusOK, gin.H{"message": "Criterias well recieved, Data processed!"})
 }
 
-func Get(c *gin.Context, username string) (Criterias, error) {
+func Get(c *gin.Context, username string) ([]Criterias, int, error) {
 	query := `
 SELECT
-	criterias_file
+	criterias_files,
+	current_file_index
 FROM
 	users
 WHERE
@@ -69,25 +73,29 @@ WHERE
 	`
 	row := database.Db.QueryRow(query, username)
 	var encryptedData sql.Null[[]byte]
-	if err := row.Scan(&encryptedData); err != nil {
+	var index_file int
+	if err := row.Scan(&encryptedData, &index_file); err != nil {
 		if err != sql.ErrNoRows {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
 		}
-		return Criterias{}, err
+		return make([]Criterias, 0), -1, err
+	}
+	if !encryptedData.Valid {
+		return make([]Criterias, 0), -1, nil
 	}
 	decryptedData, err := aeadInstance.Decrypt(encryptedData.V, nil)
 	if err != nil {
 		log.Printf("Failed to decrypt data: %v", err)
-		return Criterias{}, err
+		return make([]Criterias, 0), -1, err
 	}
-	var decryptedStruct Criterias
+	decryptedStruct := make([]Criterias, 0)
 	err = json.Unmarshal(decryptedData, &decryptedStruct)
 	if err != nil {
 		log.Printf("Failed to deserialize decrypted data: %v", err)
-		return Criterias{}, err
+		return make([]Criterias, 0), -1, err
 	}
-	return decryptedStruct, nil
+	return decryptedStruct, index_file, nil
 }
 
 func SetKey() {

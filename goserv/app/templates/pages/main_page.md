@@ -101,7 +101,7 @@ Furthermore, you will need to create a OAuth2.0 client and an API key in your go
 If you intend to use the web extention:<br/>
 Running web-ext will open firefox. Because the server is running on localhost and the certificate is self-signed (at the moment),
 you need to go to Settings -> Tools -> Advanced -> View Certificates -> Servers -> Add Exception then Add https://localhost.<br/>
-If you intend to use the dashboard, login on the <a href="https://localhost/loginPage">website</a> and go to the dedicated section.<br/>
+If you intend to use the dashboard, login on the <a href="/loginPage">website</a> and go to the dedicated section.<br/>
 If you intend to use the API, you will have to wait, it is not implemented yet :)
 
 ### Register an account

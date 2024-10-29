@@ -2,10 +2,10 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/BolvicBolvicovic/bluebeam/criterias"
 	"github.com/BolvicBolvicovic/bluebeam/templates/components"
 	"net/http"
 )
-
 
 func Pong(c *gin.Context) {
 	username, err := c.Cookie("bluebeam_username")
@@ -48,7 +48,37 @@ func Dashboard(c *gin.Context) {
 			Text: "let's go!",
 			IsSubmit: true,
 		},
+		"InputChoiceSubmitButton": components.Button{
+			Text: "update input file",
+			IsSubmit: true,
+		},
 	})
+}
+
+func InputFiles(c *gin.Context) {
+	username, err := c.Cookie("bluebeam_username")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Need to log in again"})
+		return
+	}
+	session_key, err := c.Cookie("bluebeam_session_key")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Need to log in again"})
+		return
+	}
+
+	if !validUser(c, username, session_key) {
+		return
+	}
+	inputFiles, index_file, err := criterias.Get(c, username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Error"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H {
+		"files": inputFiles,
+		"index": index_file,
+	})	
 }
 
 func MainPage(c *gin.Context) {
@@ -195,10 +225,6 @@ func Logout(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	clearSessionKey(username)
-	c.SetCookie("bluebeam_username", "", -1, "/", "localhost", true, true)
-	c.SetCookie("bluebeam_session_key", "", -1, "/", "localhost", true, true)
-	c.HTML(http.StatusOK, "main_page.tmpl", gin.H{
-		"Navbar": components.NewNavbar(false),
-	})
+	clearSessionKey(username, c)
+	c.Redirect(http.StatusTemporaryRedirect, "/")
 }
