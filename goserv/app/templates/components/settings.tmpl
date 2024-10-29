@@ -131,7 +131,7 @@
         const emailStatus = document.getElementById("emailStatus");
 
         fetch('https://localhost/updateEmail', {
-          method: 'POST',
+          method: 'PATCH',
           mode: 'cors',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

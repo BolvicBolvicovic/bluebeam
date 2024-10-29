@@ -45,7 +45,7 @@ func BuildRouter() *gin.Engine {
 
 	config := cors.Config {
 		AllowOrigins: []string{"https://localhost", "moz-extension://"},
-		AllowMethods: []string{"GET", "POST", "OPTIONS"},
+		AllowMethods: []string{"GET", "POST", "OPTIONS", "PATCH"},
 		AllowHeaders: []string{"Content-Type"},
 		ExposeHeaders:[]string{"Content-Type"},
 		AllowWildcard:true,
@@ -85,10 +85,10 @@ func BuildRouter() *gin.Engine {
 	router.POST("/registerAccount", api.ResgisterAccount)
 	router.POST("/analyze", api.Analyze)
 	router.POST("/criterias", api.StoreCriterias)
-	router.POST("/updateEmail", api.UpdateEmail)
 	router.POST("/outputGoogleSpreadsheet", api.OutputGoogleSpreadsheet)
 	router.POST("urls", api.Urls)
 
+	router.PATCH("/updateEmail", api.UpdateEmail)
 	router.PATCH("/currentInputFile", api.CurrentInputFile)
 
 	return router
