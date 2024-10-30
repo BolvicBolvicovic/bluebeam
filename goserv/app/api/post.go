@@ -225,6 +225,26 @@ func createAndFillSpreadsheet(srv *sheets.Service, d *drive.Service, data json.R
 	return fmt.Sprintf("https://docs.google.com/spreadsheets/d/%s", spreadsheetID), nil
 }
 
+func storeUrlOutput(url string, username string) {
+	urls, err := getUrls(username)
+	if err != nil {
+		log.Println("Error getting urls:", err)
+		return
+	}
+	urls = append(urls, []byte(url)...)
+	query := `
+UPDATE
+	users
+SET
+	output_files_ids = ?
+WHERE
+	username = ?;
+	`
+	if _, err := database.Db.Exec(query, []byte(urls), username); err != nil {
+		log.Println(err)
+	}
+}
+
 func OutputGoogleSpreadsheet(c *gin.Context) {
 	var output struct {
 		Data		json.RawMessage `json:"data"`
@@ -295,6 +315,7 @@ WHERE
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	storeUrlOutput(url, username)
 	c.JSON(http.StatusOK, gin.H{"spreadsheetUrl": url})
 }
 

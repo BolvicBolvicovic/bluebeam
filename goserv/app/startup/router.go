@@ -79,6 +79,7 @@ func BuildRouter() *gin.Engine {
 
 	router.GET("/dashboard", api.Dashboard)
 	router.GET("/dashboard/inputFiles", api.InputFiles)
+	router.GET("/dashboard/urlsOutput", api.UrlsOutput)
 	router.GET("/logout", api.Logout)
 
 	router.POST("/login", api.Login)

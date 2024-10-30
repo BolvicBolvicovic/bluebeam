@@ -11,7 +11,7 @@
              class="py-2 px-4 bg-blue-400 text-white font-semibold rounded-lg hover:bg-blue-500 transition" 
              onclick="initOAuth(event)" 
              id="googleSsButton">
-             Submit Google Spreadsheet criteria
+             submit Google Spreadsheet criteria
            </button>
          </div>
 
@@ -31,8 +31,9 @@
            />
            <button 
              type="submit" 
+             id="submitJSON"
              class="mt-2 py-2 px-4 bg-blue-400 text-white font-semibold rounded-lg hover:bg-blue-500 transition">
-             Submit JSON criteria file
+             submit JSON criteria file
            </button>
            <div id="fileStatus" class="text-center text-red-500 mt-2"></div>
          </div>
@@ -55,7 +56,7 @@
      <button 
        type="submit" 
        class="w-full py-2 bg-blue-400 text-white font-semibold rounded-lg hover:bg-blue-500 transition">
-       Update Email
+       update email
      </button>
      
      <!-- Notification Message -->
@@ -80,6 +81,14 @@
         event.preventDefault();
         const file = document.getElementById("criterias").files[0];
         const fileStatus = document.getElementById("fileStatus");
+        const submitJSON = document.getElementById("submitJSON");
+
+        if (submitJSON.disabled) {
+          return;
+        }
+        submitJSON.disabled = true;
+        setTimeout(() => { submitJSON.disabled = false }, 3000);
+
 
         if (!file) {
           fileStatus.textContent = "Please select a file before submitting.";

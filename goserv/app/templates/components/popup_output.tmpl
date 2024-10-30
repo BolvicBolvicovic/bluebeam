@@ -1,0 +1,8 @@
+{{define "popupOutput"}}
+  <div id="{{.ID}}" class="p-6 bg-white shadow-lg rounded-lg border border-gray-200">
+    <h3 class="text-xl font-semibold text-gray-700">previous input files</h3>
+    {{template "button" .JSONButton}}
+    {{template "button" .SpreadSheetButton}}
+    <div id="messagePopup" class="text-red-500 text-sm mt-2"></div>
+  </div>
+{{end}}

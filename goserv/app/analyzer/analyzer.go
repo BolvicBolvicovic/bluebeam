@@ -120,7 +120,6 @@ func Analyzer(c *gin.Context, sd ScrapedDefault, username string) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": ("No criterias chosen or " + err.Error())})
 		return
 	}
-	log.Println(crits)
 	var response LLMResponse
 	for _, feat := range crits[index_file].Features {
 		wg.Add(1)
