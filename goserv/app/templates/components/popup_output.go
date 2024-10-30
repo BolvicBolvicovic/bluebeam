@@ -12,11 +12,13 @@ func NewPopupOutput(id string) PopupOutput {
 			ID: "JSONButton",
 			Text: "JSON format",
 			IsSubmit: false,
+			IsPrimary: true,
 		},
 		SpreadSheetButton: Button {
 			ID: "spreadSheetButton",
 			Text: "Spreadsheet format",
 			IsSubmit: false,
+			IsPrimary: true,
 		},
 		ID: id,
 	}

@@ -70,7 +70,43 @@
       const popupOutput = document.getElementById("popupOutput");
 
       popupOutput.style.display = "none";
-      //TODO: Handle the popup output and its buttons
+
+      function handlePopup(data) {
+        const spreadSheetButton = document.getElementById("spreadSheetButton");
+        const JSONButton = document.getElementById("JSONButton");
+        const messagePopup = document.getElementById("messagePopup");
+        // JSON
+        const dataStr = JSON.stringify(data, null, 2);
+        const blob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+
+        JSONButton.onclick = () => {
+          popupOutput.style.display = "none";
+          window.open(url, "_blank");
+        };
+        //Google Sheet
+        spreadSheetButton.onclick = () => {
+          messagePopup.innerHTML = "Data sent to Google, a new page will open soon...";
+          fetch('/outputGoogleSpreadsheet', {
+            method: "POST",
+            mode: "cors",
+            headers: { "Content-Type": "application/json" },
+            body: dataStr
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (!data.error) {
+              popupOutput.style.display = "none";
+              window.open(data.spreadsheetUrl);
+            } else {
+              console.error(data.error);
+            }
+          })
+          .catch(e => console.error(e));
+        };
+        
+        popupOutput.style.display = "flex";
+      }
 
       window.addEventListener("load", () => {
         fetch("/dashboard/inputFiles")
@@ -195,7 +231,7 @@
           if (data.error) {
             messageOutput.innerHTML = data.error;
           } else {
-            messageOutput.innerHTML = data.message;
+            handlePopup(data.message);
           }
         })
         .catch(error => {

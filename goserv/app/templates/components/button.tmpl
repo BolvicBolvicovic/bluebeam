@@ -4,7 +4,7 @@
     id="{{.ID}}"
     {{if eq .IsSubmit true}}
       type="submit"
-    {{else}}
+    {{else if eq .IsPrimary false}}
       onclick="location.href='{{.Link}}'; return false;"
     {{end}}>
     {{.Text}}
