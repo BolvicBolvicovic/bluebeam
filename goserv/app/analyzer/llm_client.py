@@ -4,11 +4,14 @@ import sys
 import json
 
 question_json = sys.argv[1]
-question_data = json.loads(question_json)
+with open(question_json, 'r') as f:
+    question_data = json.load(f)
 
 system_message = question_data.get('systemmessage')
 data = question_data.get('data')
 feature = question_data.get('feature')
+content = f"Data: {data}, Feature: {feature}"
+
 client = OpenAI()
 try:
     response = client.chat.completions.create(
@@ -20,7 +23,7 @@ try:
             },
             {
                 "role": "user",
-                "content": f"Data: {data}, Feature: {feature}"
+                "content": content
             }
         ],
         response_format={
@@ -54,11 +57,11 @@ try:
     
     print(response.choices[0].message.content);
 except openai.APIConnectionError as e:
-    print("The server could not be reached")
+    print("error: The server could not be reached")
     print(e.__cause__)  # an underlying Exception, likely raised within httpx.
 except openai.RateLimitError as e:
-    print("A 429 status code was received; we should back off a bit.")
+    print("error: A 429 status code was received; we should back off a bit.")
 except openai.APIStatusError as e:
-    print("Another non-200-range status code was received")
-    print(e.status_code)
+    print("error: Another non-200-range status code was received")
     print(e.response)
+    print(content)

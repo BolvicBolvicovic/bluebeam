@@ -153,73 +153,84 @@ func Analyze(c *gin.Context) {
 	analyzer.Analyzer(c, scrapedData, username)
 }
 
+type ResponseJSON struct {
+	FeatureName    string `json:"feature_name"`
+	IsPresent      bool   `json:"ispresent"`
+	TextIfPresent  string `json:"textifpresent"`
+	ThoughtProcess string `json:"thoughtprocess"`
+}
+
 func createAndFillSpreadsheet(srv *sheets.Service, d *drive.Service, data json.RawMessage, email string) (string, error) {
+	// Create the spreadsheet
 	spreadsheet := &sheets.Spreadsheet{
-	    Properties: &sheets.SpreadsheetProperties{
-	        Title: "New dataset",
-	    },
-	}
-	
-	sheet, err := srv.Spreadsheets.Create(spreadsheet).Do()
-	if err != nil {
-	    return "", fmt.Errorf("unable to create spreadsheet: %v", err)
-	}
-	
-	spreadsheetID := sheet.SpreadsheetId
-	
-	// Parse the JSON data
-	var records []map[string]interface{}
-	if err := json.Unmarshal(data, &records); err != nil {
-	    return "", fmt.Errorf("error parsing JSON: %v", err)
-	}
-	
-	// Check if records are available
-	if len(records) == 0 {
-	    return "", fmt.Errorf("no data to fill")
-	}
-	
-	// Extract headers from the first record
-	headers := []string{}
-	for key := range records[0] {
-	    headers = append(headers, key)
-	}
-	
-	// Prepare the 2D array for Google Sheets
-	values := [][]interface{}{}
-	
-	// Add headers as the first row
-	headerRow := make([]interface{}, len(headers))
-	for i, header := range headers {
-	    headerRow[i] = header
-	}
-	values = append(values, headerRow)
-	
-	// Convert each JSON object into a row
-	for _, record := range records {
-	    row := make([]interface{}, len(headers))
-	    for i, header := range headers {
-	        row[i] = record[header]
-	    }
-	    values = append(values, row)
-	}
-	
-	vr := &sheets.ValueRange{
-	    Values: values,
-	}
-	
-	_, err = srv.Spreadsheets.Values.Update(spreadsheetID, "Sheet1!A1", vr).ValueInputOption("RAW").Do()
-	if err != nil {
-	    return "", fmt.Errorf("unable to update spreadsheet values: %v", err)
+		Properties: &sheets.SpreadsheetProperties{
+			Title: "New dataset",
+		},
 	}
 
+	// Create a new spreadsheet
+	sheet, err := srv.Spreadsheets.Create(spreadsheet).Do()
+	if err != nil {
+		return "", fmt.Errorf("unable to create spreadsheet: %v", err)
+	}
+
+	spreadsheetID := sheet.SpreadsheetId
+	fmt.Println(string(data))
+	// Parse the JSON data into an array of responses
+	var responses [][]ResponseJSON
+	if err := json.Unmarshal(data, &responses); err != nil {
+		return "", fmt.Errorf("error parsing JSON: %v", err)
+	}
+
+	// Iterate over each response set to create a new sheet
+	for i, responseSet := range responses {
+		sheetTitle := fmt.Sprintf("Response %d", i+1)
+		_, err = srv.Spreadsheets.BatchUpdate(spreadsheetID, &sheets.BatchUpdateSpreadsheetRequest{
+			Requests: []*sheets.Request{
+				{
+					AddSheet: &sheets.AddSheetRequest{
+						Properties: &sheets.SheetProperties{
+							Title: sheetTitle,
+						},
+					},
+				},
+			},
+		}).Do()
+		if err != nil {
+			return "", fmt.Errorf("unable to create sheet %s: %v", sheetTitle, err)
+		}
+
+		// Prepare headers and values for the new sheet
+		headers := []string{"FeatureName", "IsPresent", "TextIfPresent", "ThoughtProcess"}
+		values := [][]interface{}{
+			{headers[0], headers[1], headers[2], headers[3]},
+		}
+
+		// Populate the rows from each ResponseJSON item in responseSet
+		for _, record := range responseSet {
+			row := []interface{}{record.FeatureName, record.IsPresent, record.TextIfPresent, record.ThoughtProcess}
+			values = append(values, row)
+		}
+
+		// Write the values to the new sheet
+		vr := &sheets.ValueRange{
+			Values: values,
+		}
+		_, err = srv.Spreadsheets.Values.Update(spreadsheetID, fmt.Sprintf("%s!A1", sheetTitle), vr).ValueInputOption("RAW").Do()
+		if err != nil {
+			return "", fmt.Errorf("unable to update values in sheet %s: %v", sheetTitle, err)
+		}
+	}
+
+	// Share the spreadsheet with the specified email
 	permission := &drive.Permission{
 		Type:         "user",
-		Role:         "writer", // Can be "reader" or "writer"
+		Role:         "writer",
 		EmailAddress: email,
 	}
 	_, err = d.Permissions.Create(spreadsheetID, permission).SendNotificationEmail(true).Do()
 	if err != nil {
-	        return "", fmt.Errorf("unable to share spreadsheet: %v", err)
+		return "", fmt.Errorf("unable to share spreadsheet: %v", err)
 	}
 
 	return fmt.Sprintf("https://docs.google.com/spreadsheets/d/%s", spreadsheetID), nil
@@ -260,6 +271,7 @@ func OutputGoogleSpreadsheet(c *gin.Context) {
 		return
 	}
 	if err := c.ShouldBindJSON(&output); err != nil {
+		fmt.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}

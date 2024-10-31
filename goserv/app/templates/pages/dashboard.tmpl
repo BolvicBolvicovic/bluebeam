@@ -91,7 +91,7 @@
             method: "POST",
             mode: "cors",
             headers: { "Content-Type": "application/json" },
-            body: dataStr
+            body: JSON.stringify({data: data})
           })
           .then(response => response.json())
           .then(data => {
@@ -155,8 +155,9 @@
             messageOutput.innerText = "An unexpected error occurred. Please try again.";
           });
         fetch("/dashboard/urlsOutput")
-          .then(response => response.json())
-          .then(data => {
+          .then(response => response.text())
+          .then(text => {
+            let data = text.length > 0 ? JSON.parse(text) : {error: "Empty response"};
             if (data.error) {
               outputFilesLinks.innerHTML = data.error;
               return;
@@ -220,18 +221,22 @@
         const parsedUrls = textArea.value.split('\n').map(line => line.trim()).filter(line => line !== '');
         const body = JSON.stringify({ urls: parsedUrls });
 
+        messageOutput.innerText = "message sent, data is being analized..."
+
         fetch("/urls", {
           method: 'POST',
           mode: 'cors',
           headers: { 'Content-Type': 'application/json' },
           body: body
         })
-        .then(response => response.json())
-        .then(data => {
+        .then(response => response.text())
+        .then(text => {
+          let data = text.length > 0 ? JSON.parse(text) : {error: "Empty response"};
           if (data.error) {
             messageOutput.innerHTML = data.error;
           } else {
             handlePopup(data.message);
+            messageOutput.innerHTML = "";
           }
         })
         .catch(error => {
