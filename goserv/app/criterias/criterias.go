@@ -38,7 +38,11 @@ type Criterias struct {
 func Store(c *gin.Context, crits Criterias, username string) {
 	currentCriteriasFiles,_, _ := Get(c, username)
 	currentCriteriasFiles = append(currentCriteriasFiles, crits)
-	data, _ := json.Marshal(currentCriteriasFiles)
+	data, err := json.Marshal(currentCriteriasFiles)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	encryptedData, err := aeadInstance.Encrypt(data, nil)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})

@@ -17,7 +17,8 @@ client = OpenAI()
 count = 0
 
 def getResponse():
-    count = count + 1
+    global count
+    count += 1
     if (count > 200):
         print(f"error: too many tries ({count})")
         return

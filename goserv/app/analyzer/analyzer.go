@@ -124,6 +124,7 @@ func sendLLMQuestion(f criterias.Feature, sd *json.RawMessage, r *LLMResponse, w
 	} else {
 		strResponse = string(response)
 	}
+	log.Println("LLMResponse:", strResponse)
 	if (strings.Contains(strResponse, "error: ")) {
 		return
 	}
@@ -180,6 +181,7 @@ func HandleUrls(c *gin.Context, su ScrapedUrls, username string) {
 		go crawlWebsite(item, &crawledWebsites, &wgUrls)
 	}
 	wgUrls.Wait()
+	log.Println(crawledWebsites)
 	
 	responses := make([]LLMResponse,150)
 	for i, site := range crawledWebsites.Websites {

@@ -111,6 +111,8 @@ func processNode(n *html.Node, content *ScrapedDefault, mutexes *ScrapedDefaultM
 	defer wg.Done()
 	if n.Type == html.ElementNode {
 		switch n.Data {
+		case "script", "style", "noscript":
+			return
 		case "a":
 			var link _Link
 			for _, attr := range n.Attr {
@@ -197,9 +199,11 @@ func processNode(n *html.Node, content *ScrapedDefault, mutexes *ScrapedDefaultM
 			mutexes.MutexHeaders.Unlock()
 		}
 	} else if n.Type == html.TextNode {
-		mutexes.MutexBodyInnerText.Lock();
-		content.BodyInnerText += strings.TrimSpace(n.Data)
-		mutexes.MutexBodyInnerText.Unlock();
+		if text := strings.TrimSpace(n.Data); text != "" {
+			mutexes.MutexBodyInnerText.Lock();
+			content.BodyInnerText += text + " "
+			mutexes.MutexBodyInnerText.Unlock();
+		}
 	}
 	// Recur for child nodes
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
