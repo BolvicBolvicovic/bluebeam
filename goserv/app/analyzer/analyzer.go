@@ -124,7 +124,6 @@ func sendLLMQuestion(f criterias.Feature, sd *json.RawMessage, r *LLMResponse, w
 	} else {
 		strResponse = string(response)
 	}
-	log.Println("LLMResponse:", strResponse)
 	if (strings.Contains(strResponse, "error: ")) {
 		return
 	}

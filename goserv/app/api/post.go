@@ -175,7 +175,6 @@ func createAndFillSpreadsheet(srv *sheets.Service, d *drive.Service, data json.R
 	}
 
 	spreadsheetID := sheet.SpreadsheetId
-	fmt.Println(string(data))
 	// Parse the JSON data into an array of responses
 	var responses [][]ResponseJSON
 	if err := json.Unmarshal(data, &responses); err != nil {

@@ -221,7 +221,7 @@
         const parsedUrls = textArea.value.split('\n').map(line => line.trim()).filter(line => line !== '');
         const body = JSON.stringify({ urls: parsedUrls });
 
-        messageOutput.innerText = "message sent, data is being analized..."
+        messageOutput.innerText = "message sent, data is being analized (averaging 15 sec per criterion)..."
 
         fetch("/urls", {
           method: 'POST',
