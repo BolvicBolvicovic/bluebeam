@@ -113,7 +113,7 @@ Furthermore, you will need to create a OAuth2.0 client and an API key in your go
 If you intend to use the web extention:<br/>
 Running web-ext will open firefox. Because the server is running on localhost and the certificate is self-signed (at the moment),
 you need to go to Settings -> Tools -> Advanced -> View Certificates -> Servers -> Add Exception then Add https://localhost.<br/>
-If you intend to use the dashboard, login on the <a href="https://localhost/loginPage">website</a> and go to the dedicated section.<br/>
+If you intend to use the dashboard, login on the <a href="https://localhost/loginPage">website</a> and go to the dedicated section. Then write the URL of the website you want to audit in the first text input and submit. A popup will open with the output in two format.<br/>
 If you intend to use the API, you will have to wait, it is not implemented yet :)
 
 ### Register an account
@@ -160,7 +160,8 @@ Here is a concret output example with the <a href="https://github.com/BolvicBolv
 
 - [x] Response with a json/google spreadsheet that applies the chosen criteria on the website
 - [x] Google spreadsheet format as the criteria's input
-- [ ] Possibility to audit many websites at the same time
+- [x] Possibility to audit many websites at the same time
+- [ ] Possibility to choose your AI
 - [ ] API service that can be integrated to your application
 - [ ] Image analysis
 - [ ] Scraping social-medias
