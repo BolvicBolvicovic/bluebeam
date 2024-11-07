@@ -14,10 +14,16 @@
         <h2 class="text-3xl font-bold text-blue-400 text-center mb-6">
           Välkommen, <span class="text-gray-700">{{ .username }}</span>
         </h2>
+        <br/>
         
+        <!-- Additional Settings -->
+        <div class="mt-6 w-full border-t border-gray-200 pt-4">
+          <label class="text-gray-700 font-semibold text-xl">Settings</label>
+          {{template "settings"}}
+        </div>
         <!-- Form Section -->
         <form id="urls" class="w-full space-y-4">
-          <label for="textarea" class="text-gray-700 font-medium">Enter root URLs:</label>
+          <label for="textarea" class="text-gray-700 font-semibold text-xl">Analyzer</label>
           <textarea 
             id="textArea"
             class="w-full h-32 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-200" 
@@ -30,10 +36,6 @@
           </div>
         </form>
         
-        <!-- Additional Settings -->
-        <div class="mt-6 w-full border-t border-gray-200 pt-4">
-          {{template "settings"}}
-        </div>
       </div>
       
       <!-- Right Column -->
@@ -45,6 +47,13 @@
           <div class="mt-4">
             {{template "button" .InputChoiceSubmitButton}}
           </div>
+        </form>
+        <form id="formAIChoice" for="dropdownAIChoice" class="p-6 bg-white shadow-lg rounded-lg border border-gray-200">
+          <h3 class="text-xl font-semibold text-gray-700 mb-4">Current AI</h3>
+          <select id="dropdownAIChoice" name="dropdownAIChoice" class="w-full p-3 text-gray-700 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="gpt-4o-mini">gpt-4o-mini</option>
+            <option value="test">test</option>
+          </select>
         </form>
 
         <div class="p-6 bg-white shadow-lg rounded-lg">
@@ -64,8 +73,13 @@
       const urls = document.getElementById("urls");
       const textArea = document.getElementById("textArea");
       const inputFilesLinks = document.getElementById("inputFilesLinks");
+
       const dropdownInputChoice = document.getElementById("dropdownInputChoice");
       const formInputChoice = document.getElementById("formInputChoice");
+
+      const dropdownAIChoice = document.getElementById("dropdownAIChoice");
+      const formAIChoice = document.getElementById("formAIChoice");
+
       const outputFilesLinks = document.getElementById("outputFilesLinks");
       const popupOutput = document.getElementById("popupOutput");
 
@@ -187,39 +201,41 @@
             messageOutput.innerText = "An unexpected error occurred. Please try again.";
           });
       });
-
-      formInputChoice.addEventListener("submit", (e) => {
-        e.preventDefault();
-        if (dropdownInputChoice.disabled) {
-          return;
-        }
-        const body = JSON.stringify({ newindex: dropdownInputChoice.value })
-
-        fetch("/currentInputFile", {
-          method: 'PATCH',
-          mode: 'cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: body
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.error) {
-            messageOutput.innerHTML = data.error;
-          } else {
-            messageOutput.innerHTML = data.message;
+      function patch_data(form, dropdown, path) {
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+          if (dropdown.disabled) {
+            return;
           }
-        })
-        .catch(error => {
-          console.error('Error sending data:', error);
-          messageOutput.innerText = 'An unexpected error occurred. Please try again.';
+          const body = JSON.stringify({ newindex: dropdown.value })
+
+          fetch(path, {
+            method: 'PATCH',
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: body
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.error) {
+              messageOutput.innerHTML = data.error;
+            } else {
+              messageOutput.innerHTML = data.message;
+            }
+          })
+          .catch(error => {
+            console.error('Error sending data:', error);
+            messageOutput.innerText = 'An unexpected error occurred. Please try again.';
+          });
         });
-      });
-            
+      }
+      patch_data(formInputChoice, dropdownInputChoice, "/currentInputFile");
+      
       urls.addEventListener("submit", (e) => {
         e.preventDefault();
 
         const parsedUrls = textArea.value.split('\n').map(line => line.trim()).filter(line => line !== '');
-        const body = JSON.stringify({ urls: parsedUrls });
+        const body = JSON.stringify({ urls: parsedUrls, ai: dropdownAIChoice.value});
 
         messageOutput.innerText = "message sent, data is being analized (averaging 15 sec per criterion)..."
 

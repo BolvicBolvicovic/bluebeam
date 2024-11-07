@@ -19,7 +19,7 @@ count = 0
 def getResponse():
     global count
     count += 1
-    if (count > 200):
+    if (count >= 10):
         print(f"error: too many tries ({count})")
         return
     try:

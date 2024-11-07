@@ -148,7 +148,8 @@ Here is a concret output example with the <a href="https://github.com/BolvicBolv
 
 - [x] Response with a json/google spreadsheet that applies the chosen criteria on the website
 - [x] Google spreadsheet format as the criteria's input
-- [ ] Possibility to audit many websites at the same time
+- [x] Possibility to audit many websites at the same time
+- [ ] Possibility to choose your AI
 - [ ] API service that can be integrated to your application
 - [ ] Image analysis
 - [ ] Scraping social-medias

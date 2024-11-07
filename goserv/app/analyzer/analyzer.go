@@ -58,7 +58,8 @@ type ScrapedDefault struct {
 }
 
 type ScrapedUrls struct {
-	Urls        []string      `json:"urls"`
+	Urls		[]string	`json:"urls"`
+	Ai		string		`json:"ai"`
 }
 
 type LLMQuestions struct {
@@ -83,15 +84,23 @@ type WebsiteGroup struct {
 	mutex		sync.Mutex
 }
 
-func sendLLMQuestion(f criterias.Feature, sd *json.RawMessage, r *LLMResponse, wg *sync.WaitGroup) {
+func sendLLMQuestion(f criterias.Feature, sd *json.RawMessage, r *LLMResponse, wg *sync.WaitGroup, ai string) {
 	defer wg.Done()
 
+	ai_client := ""
+	switch ai {
+	case "gpt-4o-mini":
+		ai_client = "analyzer/openai/llm_client.py"
+	default:
+	    log.Printf("AI %s does not exist\n", ai)
+	    return
+	}
 	tempFile, err := os.CreateTemp("", "sd_data_*.json")
 	if err != nil {
 	    log.Println("Error creating temp file:", err)
 	    return
 	}
-	defer os.Remove(tempFile.Name()) // Clean up after usage
+	defer os.Remove(tempFile.Name())
 	
 	question := LLMQuestion {
 		SystemMessage: "You extract feature from data into JSON data if you find the feature in data else precise otherwise in the JSON data",
@@ -108,13 +117,12 @@ func sendLLMQuestion(f criterias.Feature, sd *json.RawMessage, r *LLMResponse, w
 	    return
 	}
 
-
 	var strResponse string
 	response, err := exec.Command(
 			"/venv/bin/python3",
-			"analyzer/llm_client.py",
+			ai_client,
 			tempFile.Name(),
-		).Output()
+			).Output()
 	if err != nil {
 		if exitError, ok := err.(*exec.ExitError); ok {
 			strResponse = string(exitError.Stderr)
@@ -155,7 +163,7 @@ func Analyzer(c *gin.Context, sd ScrapedDefault, username string) {
 	rsdm := json.RawMessage(string(sdm))
 	for _, feat := range crits[index_file].Features {
 		wg.Add(1)
-		go sendLLMQuestion(feat, &rsdm, &response, &wg)				
+		go sendLLMQuestion(feat, &rsdm, &response, &wg, "gpt-4o-mini")				
 	}
 	wg.Wait()
 	var finalResponse [][]json.RawMessage
@@ -181,7 +189,6 @@ func HandleUrls(c *gin.Context, su ScrapedUrls, username string) {
 		go crawlWebsite(item, &crawledWebsites, &wgUrls)
 	}
 	wgUrls.Wait()
-	log.Println(crawledWebsites)
 	
 	responses := make([]LLMResponse,150)
 	for i, site := range crawledWebsites.Websites {
@@ -203,7 +210,7 @@ func HandleUrls(c *gin.Context, su ScrapedUrls, username string) {
 			rsdm := json.RawMessage(string(sdm))
 			for _, feat := range crits[index_file].Features {
 				wg.Add(1)
-				go sendLLMQuestion(feat, &rsdm, &responses[i], &wg)				
+				go sendLLMQuestion(feat, &rsdm, &responses[i], &wg, su.Ai)				
 			}
 			wg.Wait()
 		}()
