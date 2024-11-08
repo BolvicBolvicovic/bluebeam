@@ -5,6 +5,8 @@ RUN apt-get update && apt-get -y install netcat-openbsd openssl ca-certificates 
 RUN /venv/bin/pip install --upgrade pip && \
     /venv/bin/pip install openai
 
+RUN /venv/bin/pip install -q -U google-generativeai
+
 ENV PATH="/venv/bin:$PATH"
 
 # Set the working directory

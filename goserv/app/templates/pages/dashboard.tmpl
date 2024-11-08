@@ -7,7 +7,7 @@
     {{template "navbar" .Navbar}}
     <br/>
     {{template "popupOutput" .PopupOutput}}
-    <div class="flex gap-6 place-content-center">
+    <div id="page" class="flex gap-6 place-content-center">
       <!-- Left Column -->
       <div class="flex flex-col items-center p-8 bg-white shadow-lg rounded-lg max-w-3xl w-2/3">
         <!-- Welcome Message -->
@@ -35,6 +35,9 @@
             <div id="messageOutput" class="text-red-500 text-sm mt-2"></div>
           </div>
         </form>
+
+        <!-- Divider -->
+        <div class="border-t border-gray-300 my-6"></div>
         
       </div>
       
@@ -52,7 +55,8 @@
           <h3 class="text-xl font-semibold text-gray-700 mb-4">Current AI</h3>
           <select id="dropdownAIChoice" name="dropdownAIChoice" class="w-full p-3 text-gray-700 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option value="gpt-4o-mini">gpt-4o-mini</option>
-            <option value="test">test</option>
+            <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+            <option value="gemini-1.5-pro">gemini-1.5-pro</option>
           </select>
         </form>
 
@@ -69,197 +73,6 @@
       </div>
     </div>
     <br/>
-    <script>
-      const urls = document.getElementById("urls");
-      const textArea = document.getElementById("textArea");
-      const inputFilesLinks = document.getElementById("inputFilesLinks");
-
-      const dropdownInputChoice = document.getElementById("dropdownInputChoice");
-      const formInputChoice = document.getElementById("formInputChoice");
-
-      const dropdownAIChoice = document.getElementById("dropdownAIChoice");
-      const formAIChoice = document.getElementById("formAIChoice");
-
-      const outputFilesLinks = document.getElementById("outputFilesLinks");
-      const popupOutput = document.getElementById("popupOutput");
-
-      popupOutput.style.display = "none";
-
-      function handlePopup(data) {
-        const spreadSheetButton = document.getElementById("spreadSheetButton");
-        const JSONButton = document.getElementById("JSONButton");
-        const messagePopup = document.getElementById("messagePopup");
-        // JSON
-        const dataStr = JSON.stringify(data, null, 2);
-        const blob = new Blob([dataStr], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-
-        JSONButton.onclick = () => {
-          popupOutput.style.display = "none";
-          window.open(url, "_blank");
-        };
-        //Google Sheet
-        spreadSheetButton.onclick = () => {
-          messagePopup.innerHTML = "Data sent to Google, a new page will open soon...";
-          fetch('/outputGoogleSpreadsheet', {
-            method: "POST",
-            mode: "cors",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({data: data})
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (!data.error) {
-              popupOutput.style.display = "none";
-              window.open(data.spreadsheetUrl);
-            } else {
-              console.error(data.error);
-            }
-          })
-          .catch(e => console.error(e));
-        };
-        
-        popupOutput.style.display = "flex";
-      }
-
-      window.addEventListener("load", () => {
-        fetch("/dashboard/inputFiles")
-          .then(response => response.json())
-          .then(data => {
-            if (data.error) {
-              inputFilesLinks.innerHTML = data.error;
-              dropdownInputChoice.disabled = true;              
-            } else if (data.index === -1) {
-              dropdownInputChoice.disabled = true;              
-              return;
-            } else {
-              inputFilesLinks.innerHTML = "";
-              // Loop through each file and create links for each filename
-              let i = 0;
-              data.files.forEach(file => {
-                const option = document.createElement("option")
-                const fileLink = document.createElement("a");
-
-                option.value = i;
-                option.innerText = file.filename;
-                if (file.filename.indexOf('.json') == -1) {
-                  fileLink.href = file.filename;
-                } else {
-                  const parsedFeatures = JSON.stringify(file.features);
-                  const blob = new Blob([parsedFeatures], {type: "application/json"});
-                  const url  = URL.createObjectURL(blob);
-                  fileLink.href = url;
-                  // fileLink.download = file.filename;
-                }
-                fileLink.textContent = file.filename;
-                fileLink.className = "text-gray-600";
-      
-                const listItem = document.createElement("li");
-                listItem.appendChild(fileLink);
-      
-                dropdownInputChoice.appendChild(option);
-                inputFilesLinks.appendChild(listItem);
-                i++;
-              });
-              dropdownInputChoice.getElementsByTagName('option')[data.index].selected = true;
-            }
-          })
-          .catch(error => {
-            console.error("Error fetching data:", error);
-            messageOutput.innerText = "An unexpected error occurred. Please try again.";
-          });
-        fetch("/dashboard/urlsOutput")
-          .then(response => response.text())
-          .then(text => {
-            let data = text.length > 0 ? JSON.parse(text) : {error: "Empty response"};
-            if (data.error) {
-              outputFilesLinks.innerHTML = data.error;
-              return;
-            }
-            const decodedUrls = atob(data.urlsoutput);
-            const urls = decodedUrls.match(/https?:\/\/[^\s]+?(?=https?:\/\/|$)/g);
-            if (urls == null) {
-              return;
-            } else {
-              outputFilesLinks.innerHTML = "";
-              urls.forEach(url => {
-                const urlLink = document.createElement("a");
-
-                urlLink.href = url;
-                urlLink.textContent = url;
-                urlLink.className = "text-gray-600";
-
-                const listItem = document.createElement("li");
-                listItem.appendChild(urlLink);
-      
-                outputFilesLinks.appendChild(listItem);
-              });
-            }
-          })
-          .catch(error => {
-            console.error("Error fetching data:", error);
-            messageOutput.innerText = "An unexpected error occurred. Please try again.";
-          });
-      });
-      function patch_data(form, dropdown, path) {
-        form.addEventListener("submit", (e) => {
-          e.preventDefault();
-          if (dropdown.disabled) {
-            return;
-          }
-          const body = JSON.stringify({ newindex: dropdown.value })
-
-          fetch(path, {
-            method: 'PATCH',
-            mode: 'cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: body
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.error) {
-              messageOutput.innerHTML = data.error;
-            } else {
-              messageOutput.innerHTML = data.message;
-            }
-          })
-          .catch(error => {
-            console.error('Error sending data:', error);
-            messageOutput.innerText = 'An unexpected error occurred. Please try again.';
-          });
-        });
-      }
-      patch_data(formInputChoice, dropdownInputChoice, "/currentInputFile");
-      
-      urls.addEventListener("submit", (e) => {
-        e.preventDefault();
-
-        const parsedUrls = textArea.value.split('\n').map(line => line.trim()).filter(line => line !== '');
-        const body = JSON.stringify({ urls: parsedUrls, ai: dropdownAIChoice.value});
-
-        messageOutput.innerText = "message sent, data is being analized (averaging 15 sec per criterion)..."
-
-        fetch("/urls", {
-          method: 'POST',
-          mode: 'cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: body
-        })
-        .then(response => response.text())
-        .then(text => {
-          let data = text.length > 0 ? JSON.parse(text) : {error: "Empty response"};
-          if (data.error) {
-            messageOutput.innerHTML = data.error;
-          } else {
-            handlePopup(data.message);
-            messageOutput.innerHTML = "";
-          }
-        })
-        .catch(error => {
-          console.error('Error sending data:', error);
-          document.getElementById("messageOutput").innerText = 'An unexpected error occurred. Please try again.';
-        });
-      });
-    </script>
+    <script src="/dashboard.js"></script>
   </body>
 </html>

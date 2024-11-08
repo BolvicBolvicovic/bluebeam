@@ -46,7 +46,7 @@ func crawlWebsite(rootURL string, crawledWebsites *WebsiteGroup, wgUrls *sync.Wa
 		colly.AllowedDomains(domain),
 		colly.Async(true),
 		colly.MaxDepth(2),
-		colly.MaxBodySize(60000),
+		colly.MaxBodySize(20000),
 	)
 
 	visited := make(map[string]struct{})

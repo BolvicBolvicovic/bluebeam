@@ -91,6 +91,8 @@ func sendLLMQuestion(f criterias.Feature, sd *json.RawMessage, r *LLMResponse, w
 	switch ai {
 	case "gpt-4o-mini":
 		ai_client = "analyzer/openai/llm_client.py"
+	case "gemini-1.5-flash", "gemini-1.5-pro":
+		ai_client = "analyzer/gemini/llm_client.py"
 	default:
 	    log.Printf("AI %s does not exist\n", ai)
 	    return
@@ -122,6 +124,7 @@ func sendLLMQuestion(f criterias.Feature, sd *json.RawMessage, r *LLMResponse, w
 			"/venv/bin/python3",
 			ai_client,
 			tempFile.Name(),
+			ai,
 			).Output()
 	if err != nil {
 		if exitError, ok := err.(*exec.ExitError); ok {

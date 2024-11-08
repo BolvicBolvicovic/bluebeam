@@ -69,6 +69,7 @@ func BuildRouter() *gin.Engine {
 	router.StaticFile("/main_page.md", "./templates/pages/main_page.md")
 	router.StaticFile("/api_page.md", "./templates/pages/api_page.md")
 	router.StaticFile("/why_bluebeam.md", "./templates/pages/why_bluebeam.md")
+	router.StaticFile("/dashboard.js", "./templates/pages/dashboard.js")
 
 	router.GET("/ping", api.Pong)
 
