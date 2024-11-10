@@ -7,6 +7,7 @@ import (
 	"github.com/BolvicBolvicovic/bluebeam/database"
 	"github.com/BolvicBolvicovic/bluebeam/criterias"
 	"fmt"
+	"os"
 )
 
 type Shutdown = func()
@@ -17,7 +18,8 @@ func Server() {
 	defer shutdown()
 	fmt.Printf("Launching server on: %v:%v\n", env.ServerHost, env.ServerPort)
 	criterias.SetKey()
-	http.ListenAndServeTLS(addr, "server.crt", "server.key", router)
+	err := http.ListenAndServeTLS(addr, os.Getenv("SSL_CERT"), os.Getenv("SSL_KEY"), router)
+	fmt.Printf("Server shutting down... error:", err)
 }
 
 

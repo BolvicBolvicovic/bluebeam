@@ -44,7 +44,7 @@ func BuildRouter() *gin.Engine {
 	router := gin.Default()
 
 	config := cors.Config {
-		AllowOrigins: []string{"https://localhost", "moz-extension://"},
+		AllowOrigins: []string{"https://localhost", "https://bluebeam.dev", "moz-extension://"},
 		AllowMethods: []string{"GET", "POST", "OPTIONS", "PATCH"},
 		AllowHeaders: []string{"Content-Type"},
 		ExposeHeaders:[]string{"Content-Type"},
