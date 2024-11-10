@@ -8,6 +8,9 @@ import (
 	"sync"
 	"net/http"
 	"github.com/BolvicBolvicovic/bluebeam/criterias"
+	"github.com/BolvicBolvicovic/bluebeam/database"
+	"fmt"
+	"errors"
 	"os/exec"
 	"os"
 	"encoding/json"
@@ -84,7 +87,34 @@ type WebsiteGroup struct {
 	mutex		sync.Mutex
 }
 
-func sendLLMQuestion(f criterias.Feature, sd *json.RawMessage, r *LLMResponse, wg *sync.WaitGroup, ai string) {
+func getAPIKey(name string, username string) (string, error) {
+	key := func() string {
+		if name == "GEMINI_API_KEY" { return "gemini_api_key"}
+		return "openai_api_key"
+	}() 
+	query := `
+SELECT
+	%s
+FROM
+	users
+WHERE
+	username = ?;
+	`
+	query = fmt.Sprintf(query, key)
+	fmt.Printf("Query:", query)
+	row := database.Db.QueryRow(query, username)
+
+	var apiKey sql.NullString
+	if err := row.Scan(&apiKey); err != nil {
+		return "", err
+	}
+	if !apiKey.Valid {
+		return "", errors.New("no key")
+	}
+	return fmt.Sprintf("%s=%s", name, apiKey.String), nil	
+}
+
+func sendLLMQuestion(f criterias.Feature, sd *json.RawMessage, r *LLMResponse, wg *sync.WaitGroup, ai string, ai_key string) {
 	defer wg.Done()
 
 	ai_client := ""
@@ -120,12 +150,9 @@ func sendLLMQuestion(f criterias.Feature, sd *json.RawMessage, r *LLMResponse, w
 	}
 
 	var strResponse string
-	response, err := exec.Command(
-			"/venv/bin/python3",
-			ai_client,
-			tempFile.Name(),
-			ai,
-			).Output()
+	command := exec.Command("/venv/bin/python3", ai_client, tempFile.Name(), ai)
+	command.Env = append(command.Env, ai_key)
+	response, err := command.Output()
 	if err != nil {
 		if exitError, ok := err.(*exec.ExitError); ok {
 			strResponse = string(exitError.Stderr)
@@ -148,6 +175,11 @@ func sendLLMQuestion(f criterias.Feature, sd *json.RawMessage, r *LLMResponse, w
 
 func Analyzer(c *gin.Context, sd ScrapedDefault, username string) {
 	var wg sync.WaitGroup
+	ai_key, err := getAPIKey("OPENAI_API_KEY", username)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "No API key for openai"})
+		return
+	}
 	crits, index_file, err := criterias.Get(c, username)
 	if err != nil && err != sql.ErrNoRows {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": ("No criterias chosen or " + err.Error())})
@@ -166,7 +198,7 @@ func Analyzer(c *gin.Context, sd ScrapedDefault, username string) {
 	rsdm := json.RawMessage(string(sdm))
 	for _, feat := range crits[index_file].Features {
 		wg.Add(1)
-		go sendLLMQuestion(feat, &rsdm, &response, &wg, "gpt-4o-mini")				
+		go sendLLMQuestion(feat, &rsdm, &response, &wg, "gpt-4o-mini", ai_key)
 	}
 	wg.Wait()
 	var finalResponse [][]json.RawMessage
@@ -176,6 +208,15 @@ func Analyzer(c *gin.Context, sd ScrapedDefault, username string) {
 
 func HandleUrls(c *gin.Context, su ScrapedUrls, username string) {
 	var wgUrls sync.WaitGroup
+	ai_name := func () string {
+		if strings.Contains(su.Ai, "gemini") { return "GEMINI_API_KEY" }
+		return "OPENAI_API_KEY"
+	}()
+	ai_key, err := getAPIKey(ai_name, username)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": ("No API key for the chosen AI" + err.Error())})
+		return
+	}
 
 	crits, index_file, err := criterias.Get(c, username)
 	if err != nil && err != sql.ErrNoRows {
@@ -213,7 +254,7 @@ func HandleUrls(c *gin.Context, su ScrapedUrls, username string) {
 			rsdm := json.RawMessage(string(sdm))
 			for _, feat := range crits[index_file].Features {
 				wg.Add(1)
-				go sendLLMQuestion(feat, &rsdm, &responses[i], &wg, su.Ai)				
+				go sendLLMQuestion(feat, &rsdm, &responses[i], &wg, su.Ai, ai_key)
 			}
 			wg.Wait()
 		}()

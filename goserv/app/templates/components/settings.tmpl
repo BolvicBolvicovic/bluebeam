@@ -38,27 +38,46 @@
            <div id="fileStatus" class="text-center text-red-500 mt-2"></div>
          </div>
        </div>
-      </form>
-
-    <!-- Email Update Form -->
-    <form class="space-y-4" onsubmit="updateEmail(event)">
-     <input 
-       type="email" 
-       id="email" 
-       name="email" 
-       placeholder="Enter new email" 
-       required 
-       class="w-full py-2 px-4 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" 
-     />
-     <button 
-       type="submit" 
-       class="w-full py-2 bg-blue-400 text-white font-semibold rounded-lg hover:bg-blue-500 transition">
-       update email
-     </button>
-     
-     <!-- Notification Message -->
-     <div id="emailStatus" class="text-center text-red-500 mt-2"></div>
     </form>
+
+    <div class="flex justify-between mt-4 space-x-4">
+      <!-- Email Update Form -->
+      <form class="space-y-4" onsubmit="updateEmail(event)">
+       <input 
+         type="email" 
+         id="email" 
+         name="email" 
+         placeholder="Enter new email" 
+         required 
+         class="w-full py-2 px-4 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" 
+       />
+       <button 
+         type="submit" 
+         class="w-full py-2 bg-blue-400 text-white font-semibold rounded-lg hover:bg-blue-500 transition">
+         update email
+       </button>
+       
+       <!-- Notification Message -->
+       <div id="emailStatus" class="text-center text-red-500 mt-2"></div>
+      </form>
+      <form class="space-y-4" onsubmit="updateAPIKey(event)">
+       <input 
+         id="apiKey" 
+         name="apiKey" 
+         placeholder="Enter new OpenAI or Gemini API key" 
+         required 
+         class="w-full py-2 px-4 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" 
+       />
+       <button 
+         type="submit" 
+         class="w-full py-2 bg-blue-400 text-white font-semibold rounded-lg hover:bg-blue-500 transition">
+         update API key
+       </button>
+       
+       <!-- Notification Message -->
+       <div id="apiKeyStatus" class="text-center text-red-500 mt-2"></div>
+      </form>
+    </div>
 
     <!-- Divider -->
     <div class="border-t border-gray-300 my-6"></div>

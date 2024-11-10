@@ -23,4 +23,4 @@ COPY . .
 
 RUN go build -o app ./cmd/main.go
 
-CMD ["./launch_serv.sh"]
+ENTRYPOINT ["./launch_serv.sh"]

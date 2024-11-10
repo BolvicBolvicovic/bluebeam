@@ -4,8 +4,11 @@
     <!-- Popup Content -->
     <div class="relative bg-white p-8 rounded-lg shadow-lg border border-gray-300 w-full max-w-md">
       <!-- Close Button -->
-      <button id="exitPopup" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 transition duration-200" 
-              onclick="document.getElementById('{{.ID}}').style.display = 'none';">
+      <button 
+        id="exitPopup"
+        class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 transition duration-200" 
+        onclick="document.getElementById('{{.ID}}').style.display = 'none';"
+      >
         &times;
       </button>
       <!-- Header -->

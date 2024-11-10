@@ -91,6 +91,7 @@ func BuildRouter() *gin.Engine {
 	router.POST("urls", api.Urls)
 
 	router.PATCH("/updateEmail", api.UpdateEmail)
+	router.PATCH("/updateAPIKey", api.UpdateAPIKey)
 	router.PATCH("/currentInputFile", api.CurrentInputFile)
 
 	return router

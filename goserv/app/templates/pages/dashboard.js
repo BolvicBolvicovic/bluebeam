@@ -67,11 +67,11 @@ function load_input_files() {
         inputFilesLinks.innerHTML = data.error;
         dropdownInputChoice.disabled = true;              
       } else if (data.index === -1) {
-        dropdownInputChoice.disabled = true;   Analyzer             
+        dropdownInputChoice.disabled = true;            
         return;
       } else {
+        dropdownInputChoice.disabled = false;
         inputFilesLinks.innerHTML = "";
-        // Loop through each file and create links for each filename
 	remove_all_children(dropdownInputChoice);
 	remove_all_children(inputFilesLinks);
         let i = 0;
@@ -212,6 +212,11 @@ urls.addEventListener("submit", (e) => {
   .catch(error => {
     console.error('Error sending data:', error);
     document.getElementById("messageOutput").innerText = 'An unexpected error occurred. Please try again.';
+  })
+  .finally(() => {
+    setTimeout(() => {
+      document.getElementById("messageOutput").innerText = "";
+    }, 5000);
   });
 });
 
@@ -280,6 +285,11 @@ function sendCriterias(event) {
       fileStatus.textContent = "Error submitting criteria.";
       fileStatus.classList.remove("text-blue-400");
       fileStatus.classList.add("text-blue-800");
+    })
+    .finally(() => {
+      setTimeout(() => {
+        fileStatus.textContent = "";
+      }, 5000);
     });
   }
 
@@ -310,6 +320,46 @@ function updateEmail(event) {
     emailStatus.textContent = "Error updating email.";
     emailStatus.classList.remove("text-blue-400");
     emailStatus.classList.add("text-blue-800");
+  })
+  .finally(() => {
+    setTimeout(() => {
+      document.getElementById("email").value = "";
+      apiKeyStatus.textContent = "";
+    }, 5000);
+  });
+}
+
+function updateAPIKey(event) {
+  event.preventDefault();
+  const apiKey = document.getElementById("apiKey").value;
+  const apiKeyStatus = document.getElementById("apiKeyStatus");
+  const api = apiKey.indexOf("-") == -1 ? "gemini" : "openai";
+  fetch('https://localhost/updateAPIKey', {
+    method: 'PATCH',
+    mode: 'cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      type: api,
+      apikey: apiKey
+    }),
+  })
+  .then(response => response.text())
+  .then(data => {
+    apiKeyStatus.textContent = `${api} API key updated successfully!`;
+    apiKeyStatus.classList.remove("text-blue-800");
+    apiKeyStatus.classList.add("text-blue-400");
+  })
+  .catch(error => {
+    console.error('Error updating API key:', error);
+    apiKeyStatus.textContent = "Error updating API key.";
+    apiKeyStatus.classList.remove("text-blue-400");
+    apiKeyStatus.classList.add("text-blue-800");
+  })
+  .finally(() => {
+    document.getElementById("apiKey").value = "";
+    setTimeout(() => {
+      apiKeyStatus.textContent = "";
+    }, 5000);
   });
 }
 

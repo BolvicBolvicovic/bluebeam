@@ -38,7 +38,9 @@ CREATE TABLE IF NOT EXISTS users (
 	creation_key_time VARCHAR(72),
 	output_files_ids VARBINARY(15000),
 	criterias_files BLOB(150000),
-	current_file_index INT
+	current_file_index INT,
+	gemini_api_key VARCHAR(100),
+	openai_api_key VARCHAR(200)
 
 );
 	`); err != nil {
