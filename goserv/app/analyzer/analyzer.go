@@ -61,8 +61,9 @@ type ScrapedDefault struct {
 }
 
 type ScrapedUrls struct {
-	Urls		[]string	`json:"urls"`
-	Ai		string		`json:"ai"`
+	Urls		[]string  `json:"urls"`
+	Ai		string	  `json:"ai"`
+	Sanitizer	string	  `json:"sanitizer"`
 }
 
 type LLMQuestions struct {
@@ -83,7 +84,7 @@ type LLMResponse struct {
 }
 
 type WebsiteGroup struct {
-	Websites	[]Website
+	Websites	[][]PageData  `json:"crawledwebsites"`
 	mutex		sync.Mutex
 }
 
@@ -135,7 +136,7 @@ func sendLLMQuestion(f criterias.Feature, sd *json.RawMessage, r *LLMResponse, w
 	defer os.Remove(tempFile.Name())
 	
 	question := LLMQuestion {
-		SystemMessage: "You extract feature from data into JSON data if you find the feature in data else precise otherwise in the JSON data",
+		SystemMessage: "You extract feature from data into the JSON output if feature is found in data else precise otherwise in the JSON output",
 		Data: *sd,
 		Feature: f,
 	}
@@ -171,6 +172,86 @@ func sendLLMQuestion(f criterias.Feature, sd *json.RawMessage, r *LLMResponse, w
 	r.mutex.Lock()
 	r.Response = append(r.Response, jsonResponse)
 	r.mutex.Unlock()
+}
+
+func sanitizeCrawledWebsites(crawledWebsites WebsiteGroup, ai_name string, ai_key string, sanitizer string) (WebsiteGroup, error) {
+	var finalResponse WebsiteGroup
+	ai_client := ""
+	switch ai_name {
+	case "gpt-4o-mini":
+		ai_client = "analyzer/openai/llm_sanitizer.py"
+	case "gemini-1.5-flash", "gemini-1.5-pro":
+		ai_client = "analyzer/gemini/llm_sanitizer.py"
+	default:
+		return crawledWebsites, errors.New(fmt.Sprintf("AI %s does not exist\n", ai_name))
+	}
+	tempFile, err := os.CreateTemp("", "cw_data_*.json")
+	if err != nil {
+		return crawledWebsites, err
+	}
+	defer os.Remove(tempFile.Name())
+	type Question struct {
+		CrawledWebsites [][]PageData	`json:"crawledwebsites"`
+		AIName		string		`json:"ainame"`
+		SystemMessage	string		`json:"systemmessage"`
+		Sanitizer	string		`json:"sanitizer"`
+	}
+	question := Question{
+		CrawledWebsites: crawledWebsites.Websites,
+		AIName: ai_name,
+		SystemMessage: `
+You are a Data Sanitizer Assistant designed to process datasets, preserving their original structure while removing irrelevant or extraneous information. When a dataset is provided:
+
+    Preserve Structure:
+        Return the dataset in the exact structure and order it was received, including all keys, subkeys, and hierarchical relationships.
+        Do not add, remove, or rename keys unless instructed explicitly in the user prompt.
+
+    Sanitize Data Content:
+        Identify and remove any irrelevant or extraneous information within the fields based on user-provided criteria.
+        Ensure that each field contains only data directly relevant to the task, flagging irrelevant content for removal.
+
+    Consistency and Accuracy:
+        Retain valid data and correct minor errors within fields, such as format inconsistencies or minor typographical errors.
+        Do not alter values or units unless explicitly requested.
+
+    Return Format:
+        Return the sanitized dataset without any additional comments or explanation, ensuring it matches the format of the original data exactly.
+        If the dataset contains multiple levels (e.g., nested objects), apply sanitization consistently at each level.
+	Do not return the sanitizater specification as it is the user instruction on how to sanitize.
+
+Your task is to ensure the dataset returned is cleaned of irrelevant data and remains in a consistent, structured format that closely mirrors the input.
+		`,
+		Sanitizer: sanitizer,
+	}
+
+	marshaledQuestion, err := json.Marshal(question)
+	if err != nil {
+		return crawledWebsites, err
+	}
+	if _, err := tempFile.Write(marshaledQuestion); err != nil {
+		return crawledWebsites, err
+	}
+	var strResponse string
+	command := exec.Command("/venv/bin/python3", ai_client, tempFile.Name())
+	command.Env = append(command.Env, ai_key)
+	response, err := command.Output()
+	if err != nil {
+		if exitError, ok := err.(*exec.ExitError); ok {
+			strResponse = string(exitError.Stderr)
+		} else {
+			strResponse = err.Error()
+		}
+	} else {
+		strResponse = string(response)
+	}
+	if (strings.Contains(strResponse, "error: ")) {
+		return crawledWebsites, errors.New(strResponse)
+	}
+	if err = json.Unmarshal([]byte(strResponse), finalResponse.Websites); err != nil {
+		return crawledWebsites, err
+	}
+	
+	return finalResponse, nil
 }
 
 func Analyzer(c *gin.Context, sd ScrapedDefault, username string) {
@@ -234,19 +315,28 @@ func HandleUrls(c *gin.Context, su ScrapedUrls, username string) {
 	}
 	wgUrls.Wait()
 	
+	if su.Sanitizer != "" {
+		crawledWebsites, err = sanitizeCrawledWebsites(crawledWebsites, su.Ai, ai_key, su.Sanitizer)
+		if err != nil {
+			log.Println("error sanitizer:", err)
+		} else {
+			log.Println("first sanitized page:", crawledWebsites.Websites[0][0])
+		}
+	}	
+	
 	responses := make([]LLMResponse,150)
 	for i, site := range crawledWebsites.Websites {
 		if i >= 150 {
 			break
 		}
-		if site.Pages == nil {
+		if site == nil {
 			continue
 		}
 		wgUrls.Add(1)
 		go func() {
 			defer wgUrls.Done()
 			var wg sync.WaitGroup
-			sdm, err := json.Marshal(site.Pages)
+			sdm, err := json.Marshal(site)
 			if err != nil {
 				log.Println("here",err)
 				return

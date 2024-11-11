@@ -138,7 +138,7 @@ See roadmap below for future improvements.
 ## Example
 
 Here is a concret output example with the <a href="https://github.com/BolvicBolvicovic/bluebeam/blob/main/example.json">example.json</a> file used as an input and the <a href="https://go.dev/">Go website</a>.
-![Alt text](images/example.png)
+![Alt text](example.png)
 
 <!-- ROADMAP -->
 ## Roadmap

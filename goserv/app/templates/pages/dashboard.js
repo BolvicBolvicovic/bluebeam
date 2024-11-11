@@ -1,6 +1,7 @@
 const urls = document.getElementById("urls");
 const textArea = document.getElementById("textArea");
 const inputFilesLinks = document.getElementById("inputFilesLinks");
+const sanitizerPrompt = document.getElementById("sanitizerPrompt");
 
 const dropdownInputChoice = document.getElementById("dropdownInputChoice");
 const formInputChoice = document.getElementById("formInputChoice");
@@ -189,7 +190,7 @@ urls.addEventListener("submit", (e) => {
   e.preventDefault();
 
   const parsedUrls = textArea.value.split('\n').map(line => line.trim()).filter(line => line !== '');
-  const body = JSON.stringify({ urls: parsedUrls, ai: dropdownAIChoice.value});
+  const body = JSON.stringify({ urls: parsedUrls, ai: dropdownAIChoice.value, sanitizer: sanitizerPrompt.value});
 
   messageOutput.innerText = "message sent, data is being analized (averaging 15 sec per criterion)..."
 

@@ -11,6 +11,7 @@ class ResponseFormat(TypedDict):
     feature_name: str
     is_feature_present: bool
     text_if_feature_present: str
+    url_of_page_text_if_feature_present: str
     thought_process: str
 
 question_json = sys.argv[1]

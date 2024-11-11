@@ -103,7 +103,7 @@ func crawlWebsite(rootURL string, crawledWebsites *WebsiteGroup, wgUrls *sync.Wa
 
 	c.Wait()
 	crawledWebsites.mutex.Lock()
-	crawledWebsites.Websites = append(crawledWebsites.Websites, currentWebsite)
+	crawledWebsites.Websites = append(crawledWebsites.Websites, currentWebsite.Pages)
 	crawledWebsites.mutex.Unlock()
 }
 

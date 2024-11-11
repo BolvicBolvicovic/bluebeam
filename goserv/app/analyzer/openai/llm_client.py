@@ -54,6 +54,10 @@ def getResponse():
                                 "description": "If the feature is present then extract a part from the provided data set proving the presence of the feature else leave an empty string",
                                 "type": "string"
                             },
+                            "urlifpresent": {
+                                "description": "If the feature is present then extract the url of the page where you found the information else leave an empty string",
+                                "type": "string"
+                            },
                             "thoughtprocess": {
                                "description": "Give a very short (1 line) explaination of how the data you extracted validates the feature or, if the feature is not found why no data match the feature.",
                                 "type": "string"
