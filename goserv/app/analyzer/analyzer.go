@@ -102,7 +102,6 @@ WHERE
 	username = ?;
 	`
 	query = fmt.Sprintf(query, key)
-	fmt.Printf("Query:", query)
 	row := database.Db.QueryRow(query, username)
 
 	var apiKey sql.NullString
@@ -248,6 +247,7 @@ Your task is to ensure the dataset returned is cleaned of irrelevant data and re
 		return crawledWebsites, errors.New(strResponse)
 	}
 	if err = json.Unmarshal([]byte(strResponse), finalResponse.Websites); err != nil {
+		log.Printf("The error is here:", strResponse)
 		return crawledWebsites, err
 	}
 	

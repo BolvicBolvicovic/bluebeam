@@ -118,7 +118,8 @@ def getResponse():
                                             },
                                             "bodyText": { "type": "string" }
                                         }
-                                    }
+                                    },
+                                    "required": [ "pageurl", "pagecontent" ]
                                 }
                             }
                         }
