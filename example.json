@@ -4,7 +4,7 @@
 		"featurename": "arguments",
 		"featuretype": "content",
 		"description": "Is there any argument on why the user should use the language?",
-		"minimumcriterias": "There is at least one argument",
+		"minimumcriterias": "There has to be at least one argument",
 		"yescases": "",
 		"nocases": "there is just a try playground and no argument",
 		"authorizeddata": "all"
@@ -14,7 +14,7 @@
 		"featurename": "pizza_type",
 		"featuretype": "content",
 		"description": "Is there any pizza available?",
-		"minimumcriterias": "There is at least two types of pizzas",
+		"minimumcriterias": "There has to be at least two types of pizzas in the webpage",
 		"yescases": "",
 		"nocases": "if there is one or less pizza available",
 		"authorizeddata": "all"
@@ -24,7 +24,7 @@
 		"featurename": "community_section",
 		"featuretype": "content",
 		"description": "Is there a community section?",
-		"minimumcriterias": "there is a button that links to a community section",
+		"minimumcriterias": "there has to be a button that links to a community section",
 		"yescases": "",
 		"nocases": "",
 		"authorizeddata": "buttons"
@@ -34,7 +34,7 @@
 		"featurename": "example",
 		"featuretype": "content",
 		"description": "Is there an example of how the language is and works?",
-		"minimumcriterias": "there are some lines of code demonstarting",
+		"minimumcriterias": "there has to be some lines of code demonstarting",
 		"yescases": "there is a playground",
 		"nocases": "",
 		"authorizeddata": "all"

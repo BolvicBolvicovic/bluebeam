@@ -59,6 +59,16 @@
   </ol>
 </details>
 
+### Built With
+
+* [![Go][Go.dev]][Go-url]
+* [![Docker][Docker.com]][Docker-url]
+* [![Mariadb][Mariadb.org]][Mariadb-url]
+* [![Javascript][Javascript.com]][Javascript-url]
+* [![Python][Python.org]][Python-url]
+* [![GoogleCloudPlatform][GoogleCloudPlatform.com]][GoogleCloudPlatform-url]
+
+And OpenAI API, and Gemini API.
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -73,7 +83,7 @@ cd bluebeam/goserv
 sudo make
 ```
 
-Then, in a new terminal at the root of the repository, run the following commands:
+Then, if you intend to use the extension, in a new terminal at the root of the repository, run the following commands:
 
 ```sh
 cd ext
@@ -82,12 +92,12 @@ web-ext run
 
 ### Prerequisites
 
-You will need web-ext, go and docker-compose to lauch the project.
+You will need go and docker-compose to lauch the project. If you intend to run the extension, you will need web-ext.
 * go
 ```sh
 wget https://go.dev/dl/go1.23.2.linux-amd64.tar.gz
 rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.2.linux-amd64.tar.gz
-export PATH=$PATH:/usr/local/go/bin
+export PATH=$PATH:/usr/local/go/bin # You should put this in your .bashrc
 ```
 * web-ext, docker and docker-compose
 ```sh
@@ -95,14 +105,8 @@ sudo apt update && sudo apt upgrade
 sudo apt install -y web-ext docker docker-compose
 ```
 
-Furthermore, if you actually want to make some request and analyse a page, you will need an OpenAI API key.
-* in goserv/app/.env add:
-```code
-OPENAI_API_KEY="your key"
-```
-
-If you want to use the google spreadsheet feature, add your google credentials file as googlecredentials.json from the root at ./goserv/app/startup/
-Furthermore, you will need to create a OAuth2.0 client and an API key in your google cloud account for your project and add the clientId and the key to the settigns template.
+If you want to use the google spreadsheet feature, add your google credentials file as googlecredentials.json at ./goserv/app/startup/
+Furthermore, you will need to create an OAuth2.0 client in your google cloud account for your project and add the clientId to the dashboard.js file.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -110,27 +114,29 @@ Furthermore, you will need to create a OAuth2.0 client and an API key in your go
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-If you intend to use the web extention:<br/>
+### Once you have launched the <a href="#getting-started">server</a> 
+- If you intend to use the web extension:<br/>
 Running web-ext will open firefox. Because the server is running on localhost and the certificate is self-signed (at the moment),
 you need to go to Settings -> Tools -> Advanced -> View Certificates -> Servers -> Add Exception then Add https://localhost.<br/>
-If you intend to use the dashboard, login on the <a href="https://localhost/loginPage">website</a> and go to the dedicated section. Then write the URL of the website you want to audit in the first text input and submit. A popup will open with the output in two format.<br/>
-If you intend to use the API, you will have to wait, it is not implemented yet :)
+- If you intend to use the dashboard:<br/>
+Start your browser and go on localhost.<br/>
+- If you intend to use the API:<br/>
+You will have to wait, it is not implemented yet :)
 
-### Register an account
+### Register an account and log in
 
+- If you intend to use the web extension:<br/>
 Open your extension, (You have to be on a website that accepts scripting) and click on register a new account.
 Fill all fields. It's important that the email you give is a valid Google email account. It will enable the extension to provide access to the output Google Spreadsheet.
 If you get a response that is positive, you can go back and login with this account. Else, try with an other username/password.
-
-### Login
-
-Simply go on the website you want to analyse and open the extension.
-Then log in with your username and your password.
-An HTTP-only cookie will keep you connected for an hour and you will not need to reconnect yourself everytime you open the extension.
+- If you intend to use the dashboard:<br/>
+Click on the login button at the top of the page and follow the same steps as for the extension. Once you are logged in, you will get access to a new section: dashboard.
+<br/>
+An HTTP-only cookie will keep you connected for a day and you will not need to reconnect yourself everytime you open the extension or the website.
 
 ### Analyse
 
-If you have not given any criteria file, you will get an error. You need to go on settings and upload your criteria in the format you want.
+If you have not given any criteria file, you will get an error. For both the extension and the website, this is done in the dashboard. (You have a button on the extension to access it directly.)
 Current possible inputs are:
 - a JSON file
 - the first sheet of a google spreadsheet
@@ -138,17 +144,18 @@ Current possible inputs are:
 For a JSON file, it has to contain an array of features described in the template <a href="https://github.com/BolvicBolvicovic/bluebeam/blob/main/example.json">example.json</a> at the root of the repository.
 For the first sheet of a google spreadsheet, there is a <a href="images/example2.png">screenshot</a> in the folder images at the root of the repository.
 
-Once you are logged in, you can click on the analyse button and you will get a response.
+Furthermore, you will need to put your OpenAI API key (mendatory for the extension) or your Gemini API key to make it work. It is stored with the data related to your account and only you has access to it.
+
+Once everything is set, for the extension, you can click on the analyze button and you will get a response for the current page.
+For the dashboard, you need to write the root urls you want to analyze then you click on the analyze button and you will get a response for the whole website (maximum size is currently 20 000 bytes but that can be manually change in the code).
+<br/>
 Current possible outputs are:
 - a blob containing a JSON file
 - a google spreadsheet
 
-
 See roadmap below for future improvements.
 
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 ## Example
 
@@ -161,7 +168,7 @@ Here is a concret output example with the <a href="https://github.com/BolvicBolv
 - [x] Response with a json/google spreadsheet that applies the chosen criteria on the website
 - [x] Google spreadsheet format as the criteria's input
 - [x] Possibility to audit many websites at the same time
-- [ ] Possibility to choose your AI
+- [x] Possibility to choose your AI
 - [ ] API service that can be integrated to your application
 - [ ] Image analysis
 - [ ] Scraping social-medias
