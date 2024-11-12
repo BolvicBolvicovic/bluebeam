@@ -230,7 +230,7 @@ func Logout(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	clearSessionKey(username, c)
+	ClearSessionKey(username, c)
 	c.Redirect(http.StatusTemporaryRedirect, "/")
 }
 

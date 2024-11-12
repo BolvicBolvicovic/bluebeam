@@ -19,7 +19,7 @@ import (
 	"log"
 )
 
-func clearSessionKey(username string, c *gin.Context) error {
+func ClearSessionKey(username string, c *gin.Context) error {
 	query := `
 UPDATE
 	users
@@ -49,7 +49,7 @@ WHERE
 	var sk, ckt sql.NullString
 	if err := row.Scan(&sk, &ckt); err != nil {
 		if err == sql.ErrNoRows {
-			clearSessionKey(username, c)
+			ClearSessionKey(username, c)
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username/key"})
 		} else {
 			log.Println(err)
@@ -58,12 +58,12 @@ WHERE
 		return false
 	}
 	if !sk.Valid || !ckt.Valid {
-		clearSessionKey(username, c)
+		ClearSessionKey(username, c)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username/key"})
 		return false
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(sk.String), []byte(session_key)); err != nil {
-		clearSessionKey(username, c)
+		ClearSessionKey(username, c)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username/key"})
 		return false
 	}
@@ -77,7 +77,7 @@ WHERE
 	y1, m1, d1 := time.Now().Date()
 	//TODO: Handle the session key hourly or with the ping function
 	if d0 != d1 || m0 != m1 || y0 != y1 {
-		clearSessionKey(username, c)
+		ClearSessionKey(username, c)
 		c.HTML(http.StatusOK, "main_page.tmpl", gin.H{
 			"Navbar": components.NewNavbar(false),
 		})
