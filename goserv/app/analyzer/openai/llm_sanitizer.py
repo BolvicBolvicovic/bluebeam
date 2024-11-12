@@ -2,6 +2,7 @@ import openai
 from openai import OpenAI
 import sys
 import json
+import os
 import time
 
 question_json = sys.argv[1]
@@ -140,4 +141,8 @@ def getResponse():
         print(e.response)
         print(content)
 
-getResponse()
+if (os.environ["OPENAI_API_KEY"] == "mocked_key"):
+    print("[[]]")
+else:
+    getResponse()
+

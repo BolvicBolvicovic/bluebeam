@@ -19,7 +19,7 @@ func Server() {
 	fmt.Printf("Launching server on: %v:%v\n", env.ServerHost, env.ServerPort)
 	criterias.SetKey()
 	err := http.ListenAndServeTLS(addr, os.Getenv("SSL_CERT"), os.Getenv("SSL_KEY"), router)
-	fmt.Printf("Server shutting down... error:", err)
+	fmt.Println("Server shutting down... error:", err)
 }
 
 

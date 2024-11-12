@@ -76,7 +76,7 @@ func InputFiles(c *gin.Context) {
 		return
 	}
 	inputFiles, index_file, err := criterias.Get(c, username)
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Error"})
 		return
 	}

@@ -163,7 +163,7 @@ func sendLLMQuestion(f criterias.Feature, sd *json.RawMessage, r *LLMResponse, w
 		strResponse = string(response)
 	}
 	log.Println("LLMResponse:", strResponse)
-	if (strings.Contains(strResponse, "error: ")) {
+	if (strings.Contains(strResponse, "error: ") || strings.Contains(strResponse, "/venv/bin/python3: ")) {
 		return
 	}
 	jsonResponse := json.RawMessage(strResponse)
@@ -246,8 +246,8 @@ Your task is to ensure the dataset returned is cleaned of irrelevant data and re
 	if (strings.Contains(strResponse, "error: ")) {
 		return crawledWebsites, errors.New(strResponse)
 	}
-	if err = json.Unmarshal([]byte(strResponse), finalResponse.Websites); err != nil {
-		log.Printf("The error is here:", strResponse)
+	if err = json.Unmarshal([]byte(strResponse), &finalResponse.Websites); err != nil {
+		log.Println("The error is here:", strResponse)
 		return crawledWebsites, err
 	}
 	

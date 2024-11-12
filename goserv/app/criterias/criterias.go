@@ -81,7 +81,7 @@ WHERE
 	if err := row.Scan(&encryptedData, &index_file); err != nil {
 		if err != sql.ErrNoRows {
 			log.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		}
 		return make([]Criterias, 0), -1, err
 	}
