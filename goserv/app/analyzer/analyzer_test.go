@@ -17,10 +17,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Test for getAPIKey using sqlmock
 func TestGetAPIKey(t *testing.T) {
-	// Mock setup for database
-	db, mock, err := sqlmock.New() // Create a sqlmock instance
+	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("An error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -29,7 +27,7 @@ func TestGetAPIKey(t *testing.T) {
 
 	t.Run("Success - Valid Key", func(t *testing.T) {
 		expectedKey := "mocked_api_key"
-		rows := sqlmock.NewRows([]string{"api_key"}).AddRow(expectedKey)
+		rows := sqlmock.NewRows([]string{"openai_api_key"}).AddRow(expectedKey)
 		mock.ExpectQuery("SELECT openai_api_key FROM users WHERE username = ?").WithArgs("user123").WillReturnRows(rows)
 
 		key, err := getAPIKey("OPENAI_API_KEY", "user123")
@@ -48,7 +46,6 @@ func TestGetAPIKey(t *testing.T) {
 	})
 }
 
-// Mock for exec.Command to replace actual command execution
 func mockCommand(command string, args ...string) *exec.Cmd {
 	cs := []string{"-test.run=TestHelperProcess", "--", command}
 	cs = append(cs, args...)

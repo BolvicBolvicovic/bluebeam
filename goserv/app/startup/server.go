@@ -25,9 +25,9 @@ func Server() {
 
 func create(env *config.Env) (*gin.Engine, string, Shutdown) {
 	
-	shutdown := database.ConnectDB(env)
-
 	router := BuildRouter()
+	
+	shutdown := database.ConnectDB(env)
 	
 	addr := fmt.Sprintf("%s:%d", env.ServerHost, env.ServerPort)
 	return router, addr, shutdown

@@ -440,7 +440,8 @@ VALUES
 	(?, ?, ?, ?);
 		`
 		if _, err := database.Db.Exec(query, newUser.Username, hash, newUser.Email, -1); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
 		}
 		c.JSON(http.StatusAccepted, gin.H{"message": "Account successfuly created"})
 	} else {

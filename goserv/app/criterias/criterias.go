@@ -90,13 +90,11 @@ WHERE
 	}
 	decryptedData, err := aeadInstance.Decrypt(encryptedData.V, nil)
 	if err != nil {
-		log.Printf("Failed to decrypt data: %v", err)
 		return make([]Criterias, 0), -1, err
 	}
 	decryptedStruct := make([]Criterias, 0)
 	err = json.Unmarshal(decryptedData, &decryptedStruct)
 	if err != nil {
-		log.Printf("Failed to deserialize decrypted data: %v", err)
 		return make([]Criterias, 0), -1, err
 	}
 	return decryptedStruct, index_file, nil
