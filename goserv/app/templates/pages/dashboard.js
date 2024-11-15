@@ -258,7 +258,7 @@ function sendCriterias(event) {
   reader.onload = function() {
     const features = JSON.parse(reader.result);
 
-    fetch('https://localhost/criterias', {
+    fetch('/criterias', {
       method: 'POST',
       mode: 'cors',
       headers: { 'Content-Type': 'application/json' },
@@ -302,7 +302,7 @@ function updateEmail(event) {
   const email = document.getElementById("email").value;
   const emailStatus = document.getElementById("emailStatus");
 
-  fetch('https://localhost/updateEmail', {
+  fetch('/updateEmail', {
     method: 'PATCH',
     mode: 'cors',
     headers: { 'Content-Type': 'application/json' },
@@ -335,7 +335,7 @@ function updateAPIKey(event) {
   const apiKey = document.getElementById("apiKey").value;
   const apiKeyStatus = document.getElementById("apiKeyStatus");
   const api = apiKey.indexOf("-") == -1 ? "gemini" : "openai";
-  fetch('https://localhost/updateAPIKey', {
+  fetch('/updateAPIKey', {
     method: 'PATCH',
     mode: 'cors',
     headers: { 'Content-Type': 'application/json' },
@@ -478,7 +478,7 @@ async function pickerCallback(data) {
       return obj;
     });
 
-    fetch('https://localhost/criterias', {
+    fetch('/criterias', {
       method: 'POST',
       mode: 'cors',
       headers: { 'Content-Type': 'application/json' },

@@ -3,6 +3,14 @@ package api
 import (
 	"time"
 	"net/http"
+	"fmt"
+	"database/sql"
+	"crypto/rand"
+	"encoding/base64"
+	"encoding/json"
+	"log"
+	"os"
+
 	"github.com/gin-gonic/gin"
 	"github.com/BolvicBolvicovic/bluebeam/templates/components"
 	"github.com/BolvicBolvicovic/bluebeam/database"
@@ -10,13 +18,7 @@ import (
 	"github.com/BolvicBolvicovic/bluebeam/criterias"
 	"google.golang.org/api/sheets/v4"
 	"google.golang.org/api/drive/v3"
-	"fmt"
-	"database/sql"
-	"crypto/rand"
 	"golang.org/x/crypto/bcrypt"
-	"encoding/base64"
-	"encoding/json"
-	"log"
 )
 
 func ClearSessionKey(username string, c *gin.Context) error {
@@ -29,8 +31,13 @@ SET
 WHERE
 	username = ?;
 	`
-	c.SetCookie("bluebeam_username", "", -1, "/", "localhost", true, true)
-	c.SetCookie("bluebeam_session_key", "", -1, "/", "localhost", true, true)
+	if os.Getenv("MODE") == "dev" {
+		c.SetCookie("bluebeam_username", "", -1, "/", "localhost", true, true)
+		c.SetCookie("bluebeam_session_key", "", -1, "/", "localhost", true, true)
+	} else {
+		c.SetCookie("bluebeam_username", "", -1, "/", "bluebeam.dev", true, true)
+		c.SetCookie("bluebeam_session_key", "", -1, "/", "bluebeam.dev", true, true)
+	}
 	_, err := database.Db.Exec(query, username)
 	return err
 }
@@ -393,8 +400,13 @@ WHERE
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating key session"})
 			return
 		}
-		c.SetCookie("bluebeam_username", user.Username, 86400, "/", "localhost", true, true)
-		c.SetCookie("bluebeam_session_key", strkey, 86400, "/", "localhost", true, true)
+		if os.Getenv("MODE") == "dev" {
+			c.SetCookie("bluebeam_username", user.Username, 86400, "/", "localhost", true, true)
+			c.SetCookie("bluebeam_session_key", strkey, 86400, "/", "localhost", true, true)
+		} else {
+			c.SetCookie("bluebeam_username", user.Username, 86400, "/", "bluebeam.dev", true, true)
+			c.SetCookie("bluebeam_session_key", strkey, 86400, "/", "bluebeam.dev", true, true)
+		}
 		c.JSON(http.StatusAccepted, gin.H{"message": "connected!"})
 	}
 }
