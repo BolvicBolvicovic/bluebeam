@@ -1,14 +1,14 @@
 <a id="readme-top"></a>
 
-<!-- ABOUT THE PROJECT -->
-## About The Project
+## What is <span style="color:#60a5fa">bluebeam</span>?
 
-bluebeam: AI-powered web audits in one click, customized to your criteria.
+### AI-powered web research in one click, customized to your criteria.
 
-
+bluebeam is a SaaS platform bridging market research and business intelligence.
+It empowers you to conduct unlimited industry analyses by scanning websites of your choice against your own custom criteria, delivering tailored insights for smarter decision-making.
 
 <title align="center">
-  audit websites in one click
+  research websites in one click
   </br>
 </title>
 
@@ -45,8 +45,7 @@ bluebeam: AI-powered web audits in one click, customized to your criteria.
 * [![Javascript][Javascript.com]][Javascript-url]
 * [![Python][Python.org]][Python-url]
 * [![GoogleCloudPlatform][GoogleCloudPlatform.com]][GoogleCloudPlatform-url]
-
-And OpenAI API, and Gemini API.
+* OpenAI API and Gemini API
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -148,7 +147,6 @@ Here is a concret output example with the <a href="https://github.com/BolvicBolv
 - [x] Possibility to audit many websites at the same time
 - [x] Possibility to choose your AI
 - [ ] API service that can be integrated to your application
-- [ ] Image analysis
 - [ ] Scraping social-medias
 - [ ] Response with the posibility to create a report with graphs and text
 

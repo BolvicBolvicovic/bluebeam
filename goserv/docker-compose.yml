@@ -21,6 +21,7 @@ services:
       - mariadb
     ports:
       - "443:443"
+      - "80:80"
     build: ./app
     env_file: ./app/.env
     restart: on-failure
